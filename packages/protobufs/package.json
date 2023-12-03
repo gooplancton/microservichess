@@ -1,0 +1,21 @@
+{
+  "name": "protobufs",
+  "version": "0.0.0",
+  "private": true,
+  "types": "./out/index.ts",
+  "scripts": {
+    "compile-proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./out --ts_proto_opt=outputServices=grpc-js ./proto/game_svc.proto",
+    "build": "pnpm compile-proto && tsc"
+  },
+  "dependencies": {
+    "long": "^5.2.3",
+    "protobufjs": "^7.2.5",
+    "ts-proto": "^1.165.0",
+    "@grpc/grpc-js": "^1.9.12"
+  },
+  "devDependencies": {
+    "@repo/typescript-config": "workspace:*",
+    "@types/node": "^17.0.12",
+    "typescript": "^5.2.2"
+  }
+}
