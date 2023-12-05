@@ -1,24 +1,33 @@
-import { CreateGameMessage, GameCreatedMessage, GameRecordsMessage, GameServiceClient, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs";
+import { CreateGameMessage, GameCreatedMessage, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/out/proto/game_svc";
 import { GameRepository } from "../repo";
 import { IGame, gameSchema } from "types"
 import { Chess } from "chess.js"
+import { handleUnaryCall } from "@grpc/grpc-js";
 
-export class ClassicChessGameService {
+export class GameService implements GameServiceServer {
+    [k: string]: any
+
     repo: GameRepository
 
     constructor(repo: GameRepository) {
         this.repo = repo
     }
 
-    public async CreateGame(request: CreateGameMessage): Promise<GameCreatedMessage> {
+    private async _createGame(request: CreateGameMessage): Promise<GameCreatedMessage> {
         const game = gameSchema.parse(request)
         const gameId = await this.repo.createGame(game)
 
         const res: GameCreatedMessage = {
-            gameId
+            gameId: request.gameId
         }
 
         return res
+    }
+
+    public createGame: handleUnaryCall<CreateGameMessage, GameCreatedMessage> = (call, callback) => {
+        this._createGame(call.request)
+        .then(res => callback(null, res))
+        .catch(err => callback({ code: 3, message: err }))
     }
 
     private getGameClientAndTimeLeft(game: IGame) {
@@ -43,7 +52,7 @@ export class ClassicChessGameService {
         return { client, timeRemainingWhiteSec, timeRemainingBlackSec }
     }
 
-    public async GetGameState(request: GetGameStateMessage): Promise<GameStateMessage> {
+    private async _getGameState(request: GetGameStateMessage): Promise<GameStateMessage> {
         const gameId = request.gameId
         const game = await this.repo.getGame(gameId)
         if (!game) throw new Error("game not found")
@@ -62,7 +71,13 @@ export class ClassicChessGameService {
         return res
     }
 
-    public async MakeMove({ playerId, gameId, move }: MakeMoveMessage): Promise<MoveValidatedMessage> {
+    public getGameState: handleUnaryCall<GetGameStateMessage, GameStateMessage> = (call, callback) => {
+        this._getGameState(call.request)
+        .then(res => callback(null, res))
+        .catch(err => callback({ code: 3, message: err }))
+    }
+
+    private async _makeMove({ playerId, gameId, move }: MakeMoveMessage): Promise<MoveValidatedMessage> {
         const game = await this.repo.getGame(gameId)
         if (!game) throw new Error("game not found")
 
@@ -83,12 +98,24 @@ export class ClassicChessGameService {
         }
     }
 
-    public async GetGames(request: GetGamesMessage): Promise<GameRecordsMessage> {
+    public makeMove: handleUnaryCall<MakeMoveMessage, MoveValidatedMessage> = (call, callback) => {
+        this._makeMove(call.request)
+        .then(res => callback(null, res))
+        .catch(err => callback({ code: 3, message: err }))
+    }
+
+    private async _getGames(request: GetGamesMessage): Promise<GameRecordsMessage> {
         const games = await this.repo.getGames(request)
         const res: GameRecordsMessage = {
             games: games.map(game => ({ ...game, moves: game.moves.map(m => m.move) }))
         }
 
         return res
+    }
+
+    public getGames: handleUnaryCall<GetGamesMessage, GameRecordsMessage> = (call, callback) => {
+        this._getGames(call.request)
+        .then(res => callback(null, res))
+        .catch(err => callback({ code: 3, message: err }))
     }
 }

@@ -1,6 +1,6 @@
 import { IGame, IMove } from "types";
 import { GameRepository } from "./base";
-import { GetGamesMessage } from "protobufs";
+import { GetGamesMessage } from "protobufs/out/proto/game_svc";
 
 export class MemoryGameRepository implements GameRepository {
     games: Map<string, IGame>
@@ -22,11 +22,9 @@ export class MemoryGameRepository implements GameRepository {
     }
 
     createGame(game: IGame) {
-        const nGames = this.games.size        
-        const gameId = (nGames + 1).toString()
-        this.games.set(gameId, game)
+        this.games.set(game._id, game)
 
-        return Promise.resolve(gameId)
+        return Promise.resolve()
     }
 
     submitMove(gameId: string, move: IMove) {

@@ -8,6 +8,7 @@ export const moveSchema = z.strictObject({
 export type IMove = z.infer<typeof moveSchema>
 
 export const gameSchema = z.strictObject({
+	_id: z.string(),
 	whitePlayerId: z.string(),
 	blackPlayerId: z.string(),
 	createdAt: z.date().default(new Date()),

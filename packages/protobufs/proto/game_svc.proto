@@ -3,10 +3,11 @@ syntax = "proto3";
 import "google/protobuf/timestamp.proto";
 
 message CreateGameMessage {
-    string whitePlayerId = 1;
-    string blackPlayerId = 2; 
-    uint32 maxTimeForPlayerSec = 3; 
-    uint32 timeGainedOnMoveSec = 4;
+    string gameId = 1;
+    string whitePlayerId = 2;
+    string blackPlayerId = 3; 
+    uint32 maxTimeForPlayerSec = 4; 
+    uint32 timeGainedOnMoveSec = 5;
 }
 
 message GameCreatedMessage {
