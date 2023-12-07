@@ -24,6 +24,6 @@ message InvalidateLinkMessage {
 
 service InviteService {
     rpc createInviteLink(CreateInviteLinkMessage) returns (EmptyMessage) {}
-    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (EmptyMessage) {}
+    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (GameCreatedMessage) {}
     rpc invalidateInviteLink(InvalidateLinkMessage) returns (EmptyMessage) {}
 }

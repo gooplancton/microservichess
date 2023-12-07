@@ -9,7 +9,7 @@ import type {
   UntypedServiceImplementation,
 } from "@grpc/grpc-js";
 import * as _m0 from "protobufjs/minimal";
-import { GameSettingsMessage } from "./game_svc";
+import { GameCreatedMessage, GameSettingsMessage } from "./game_svc";
 
 export const protobufPackage = "";
 
@@ -358,8 +358,8 @@ export const InviteServiceService = {
     responseStream: false,
     requestSerialize: (value: ConsumeInviteLinkMessage) => Buffer.from(ConsumeInviteLinkMessage.encode(value).finish()),
     requestDeserialize: (value: Buffer) => ConsumeInviteLinkMessage.decode(value),
-    responseSerialize: (value: EmptyMessage) => Buffer.from(EmptyMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => EmptyMessage.decode(value),
+    responseSerialize: (value: GameCreatedMessage) => Buffer.from(GameCreatedMessage.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => GameCreatedMessage.decode(value),
   },
   invalidateInviteLink: {
     path: "/InviteService/invalidateInviteLink",
@@ -374,7 +374,7 @@ export const InviteServiceService = {
 
 export interface InviteServiceServer extends UntypedServiceImplementation {
   createInviteLink: handleUnaryCall<CreateInviteLinkMessage, EmptyMessage>;
-  consumeInviteLink: handleUnaryCall<ConsumeInviteLinkMessage, EmptyMessage>;
+  consumeInviteLink: handleUnaryCall<ConsumeInviteLinkMessage, GameCreatedMessage>;
   invalidateInviteLink: handleUnaryCall<InvalidateLinkMessage, EmptyMessage>;
 }
 
@@ -396,18 +396,18 @@ export interface InviteServiceClient extends Client {
   ): ClientUnaryCall;
   consumeInviteLink(
     request: ConsumeInviteLinkMessage,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
+    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
   ): ClientUnaryCall;
   consumeInviteLink(
     request: ConsumeInviteLinkMessage,
     metadata: Metadata,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
+    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
   ): ClientUnaryCall;
   consumeInviteLink(
     request: ConsumeInviteLinkMessage,
     metadata: Metadata,
     options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
+    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
   ): ClientUnaryCall;
   invalidateInviteLink(
     request: InvalidateLinkMessage,

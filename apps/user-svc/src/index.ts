@@ -1,9 +1,9 @@
 import { Server, ServerCredentials } from "@grpc/grpc-js"
-import { UserServiceService } from "protobufs/out/proto/user_svc"
+import { UserServiceService } from "protobufs/src/gen/user_svc"
 import { UserService } from "./svc"
 import { MemoryUserRepository } from "./repo/memory"
 
-const SERVER_PORT = 50052
+const SERVER_PORT = 50050
 
 const repo = new MemoryUserRepository()
 const svc = new UserService(repo)
