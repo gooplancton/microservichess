@@ -1,11 +1,10 @@
-import z from "zod";
+import { z } from "zod";
+import { gameSettingsSchema } from "./game";
 
-const inviteLinkSchema = z.object({
+export const inviteLinkSchema = z.object({
     playerId: z.string(),
     createdAt: z.date().default(new Date()),
-    maxTimeForPlayerSec: z.number().default(Infinity),
-	timeGainedOnMoveSec: z.number().default(0),
-    expiresInSeconds: z.number().default(Infinity)
+    settings: gameSettingsSchema
 })
 
 export type IInviteLink = z.infer<typeof inviteLinkSchema>

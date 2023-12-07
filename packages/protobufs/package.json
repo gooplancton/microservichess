@@ -4,7 +4,7 @@
   "private": true,
   "main": "./dist/index.js",
   "scripts": {
-    "compile-proto": "protoc --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./out --ts_proto_opt=outputServices=grpc-js $(find proto -iname '*.proto')",
+    "compile-proto": "protoc --proto_path=./proto --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/gen --ts_proto_opt=outputServices=grpc-js $(find -iname '*.proto')",
     "build": "pnpm compile-proto && tsc"
   },
   "dependencies": {

@@ -1,22 +1,29 @@
 syntax = "proto3";
 
+import "game_svc.proto";
+
+message EmptyMessage {}
+
 message CreateInviteLinkMessage {
     string userId = 1;
-    optional uint32 expiresInSeconds = 2;
-    optional uint32 maxTimeForPlayerSec = 3; 
-    optional uint32 timeGainedOnMoveSec = 4;
+    GameSettingsMessage settings = 2;
 }
 
 message ConsumeInviteLinkMessage {
     string userId = 1;
-    string gameId = 2;
+    string inviterId = 2;
 }
 
-message GameIdMessage {
+message InviteLinkConsumedMessage {
     string gameId = 1;
 }
 
+message InvalidateLinkMessage {
+    string userId = 1;
+}
+
 service InviteService {
-    rpc createInviteLink(CreateInviteLinkMessage) returns (GameIdMessage) {}
-    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (GameIdMessage) {}
+    rpc createInviteLink(CreateInviteLinkMessage) returns (EmptyMessage) {}
+    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (EmptyMessage) {}
+    rpc invalidateInviteLink(InvalidateLinkMessage) returns (EmptyMessage) {}
 }

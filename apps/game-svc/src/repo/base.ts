@@ -1,9 +1,8 @@
-import { IGame, IMove } from "types"
-import { GetGamesMessage } from "protobufs/out/proto/game_svc"
+import { IGame, IGameSettings, IMove } from "types"
 
 export interface GameRepository {
-    createGame(game: IGame): Promise<void>
+    createGame(whitePlayerId: string, blackPlayerId: string, settings: IGameSettings): Promise<IGame>
     getGame(gameId: string): Promise<IGame | undefined>
-    getGames(query: GetGamesMessage): Promise<Array<IGame & { gameId: string }>>
-    submitMove(gameId: string, move: IMove): Promise<IGame>
+    getGames(playerId: string): Promise<IGame[]>
+    submitMove(gameId: string, move: IMove, isGameEndingMove: boolean): Promise<IGame>
 }

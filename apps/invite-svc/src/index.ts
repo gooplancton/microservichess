@@ -1,14 +1,14 @@
 import { Server, ServerCredentials } from "@grpc/grpc-js"
-import { InviteLinkRepository } from "./repo"
+import { MemoryInviteLinkRepository } from "./repo"
 import { InviteService } from "./svc"
-import { InviteServiceService } from "protobufs/out/proto/invite_svc"
+import { InviteServiceService } from "protobufs/src/gen/invite_svc"
 
 const SERVER_PORT = 50051
 
-const repo = new MemoryGameRepository()
-const svc = new GameService(repo)
+const repo = new MemoryInviteLinkRepository()
+const svc = new InviteService(repo)
 const server = new Server()
-server.addService(GameServiceService, svc)
+server.addService(InviteServiceService, svc)
 server.bindAsync(`0.0.0.0:${SERVER_PORT}`, ServerCredentials.createInsecure(), (err, port) => {
     if (err) {
         console.error('Server binding failed:', err)

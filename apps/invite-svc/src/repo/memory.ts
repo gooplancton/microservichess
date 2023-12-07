@@ -1,26 +1,32 @@
+import { IGameSettings, IInviteLink, inviteLinkSchema } from "types";
 import { InviteLinkRepository } from "./base";
-import { v4 as uuidv4 } from "uuid"
 
-type GameId = string
-type PlayerId = string
+type InviterId = string
 
 export class MemoryInviteLinkRepository implements InviteLinkRepository {
-    links: Map<GameId, PlayerId>
+    links: Map<InviterId, IInviteLink>
 
     constructor() {
         this.links = new Map()
     }
     
-    async createInviteLink(playerId: string): Promise<string> {
-        const gameId = uuidv4()
-        this.links.set(gameId, playerId)
+    async createInviteLink(inviterId: string, settings: IGameSettings): Promise<IInviteLink> {
+        const inviteLink = inviteLinkSchema.parse({
+            userId: inviterId,
+            settings
+        }) 
 
-        return gameId
+        this.links.set(inviterId, inviteLink)
+
+        return inviteLink
     }
 
-    async consumeInviteLink(gameId: string): Promise<string | undefined> {
-        const linksExisted = this.links.delete(gameId)
-        if (linksExisted) return gameId
-        else return undefined
+    async deleteInviteLink(inviterId: string): Promise<IInviteLink | undefined> {
+        const inviteLink = this.links.get(inviterId)
+        if (!inviteLink) return undefined
+
+        this.links.delete(inviterId)
+
+        return inviteLink
     }
 }

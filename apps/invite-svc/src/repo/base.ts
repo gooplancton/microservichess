@@ -1,6 +1,6 @@
-import { IInviteLink } from "types"
+import { IGameSettings, IInviteLink } from "types"
 
 export interface InviteLinkRepository {
-    createInviteLink(playerId: string, expiresInSeconds: string): Promise<IInviteLink>
-    consumeInviteLink(gameId: string): Promise<string | undefined>
+    createInviteLink(userId: string, settings: IGameSettings): Promise<IInviteLink>
+    deleteInviteLink(userId: string): Promise<IInviteLink | undefined>
 }

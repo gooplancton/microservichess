@@ -1,6 +1,6 @@
-import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/out/proto/game_svc";
-import { GameRepository } from "../repo";
-import { IGame, gameSchema } from "types"
+import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
+import type { GameRepository } from "../repo";
+import { IGame, gameSettingsSchema } from "types"
 import { Chess } from "chess.js"
 import { handleUnaryCall } from "@grpc/grpc-js";
 
@@ -14,11 +14,11 @@ export class GameService implements GameServiceServer {
     }
 
     private async _createGame(request: CreateGameMessage): Promise<GameCreatedMessage> {
-        const game = gameSchema.parse(request)
-        await this.repo.createGame(game)
+        const settings = gameSettingsSchema.parse(request.settings)
+        const game = await this.repo.createGame(request.whitePlayerId, request.blackPlayerId, settings)
 
         const res: GameCreatedMessage = {
-            gameId: request.gameId
+            gameId: game._id
         }
 
         return res
@@ -33,16 +33,16 @@ export class GameService implements GameServiceServer {
     private getGameClientAndTimeLeft(game: IGame) {
         const client = new Chess()
 
-        let timeRemainingWhiteSec = game.maxTimeForPlayerSec
-        let timeRemainingBlackSec = game.maxTimeForPlayerSec
+        let timeRemainingWhiteSec = game.settings.maxTimeForPlayerSec
+        let timeRemainingBlackSec = game.settings.maxTimeForPlayerSec
         let lastMoveTime = game.createdAt.getTime()
 
         let isWhiteTurn = true
         for (const { move, createdAt } of game.moves) {
             const elapsedSeconds = Math.floor((createdAt.getTime() - lastMoveTime) / 1000)
 
-            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + game.timeGainedOnMoveSec
-            else timeRemainingBlackSec -= elapsedSeconds + game.timeGainedOnMoveSec
+            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + game.settings.timeGainedOnMoveSec
+            else timeRemainingBlackSec -= elapsedSeconds + game.settings.timeGainedOnMoveSec
 
             client.move(move)
 
@@ -60,8 +60,6 @@ export class GameService implements GameServiceServer {
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
 
         const res: GameStateMessage = {
-            whitePlayerId: game.whitePlayerId,
-            blackPlayerId: game.blackPlayerId,
             fen: client.fen(),
             timeRemainingBlackSec,
             timeRemainingWhiteSec,
@@ -99,15 +97,20 @@ export class GameService implements GameServiceServer {
         }
 
         let outcome: GameOutcome
+        let isGameEndingMove: boolean
+
         if (client.isGameOver()) {
+            isGameEndingMove = true
+
             if (client.isDraw()) outcome = GameOutcome.TIE
             else if (client.turn() === "b") outcome = GameOutcome.WHITE_WINS
             else outcome = GameOutcome.BLACK_WINS
         } else {
+            isGameEndingMove = false
             outcome = GameOutcome.KEEP_PLAYING
         }
 
-        this.repo.submitMove(gameId, { createdAt: now, move })
+        this.repo.submitMove(gameId, { createdAt: now, move }, isGameEndingMove)
 
         return { resultingFen: client.fen(), outcome, timeRemainingWhiteSec, timeRemainingBlackSec }
     }
@@ -119,9 +122,15 @@ export class GameService implements GameServiceServer {
     }
 
     private async _getGames(request: GetGamesMessage): Promise<GameRecordsMessage> {
-        const games = await this.repo.getGames(request)
+        const games = await this.repo.getGames(request.playerId)
         const res: GameRecordsMessage = {
-            games: games.map(game => ({ ...game, moves: game.moves.map(m => m.move) }))
+            games: games.map(game => ({
+                gameId: game._id,
+                whitePlayerId: game.whitePlayerId,
+                blackPlayerId: game.blackPlayerId,
+                createdAt: game.createdAt,
+                moves: game.moves.map(m => m.move)
+            }))
         }
 
         return res
