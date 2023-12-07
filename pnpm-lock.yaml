@@ -53,6 +53,31 @@ importers:
         specifier: workspace:*
         version: link:../../packages/typescript-config
 
+  apps/invite-svc:
+    dependencies:
+      '@grpc/grpc-js':
+        specifier: ^1.9.12
+        version: 1.9.12
+      protobufs:
+        specifier: workspace:*
+        version: link:../../packages/protobufs
+      types:
+        specifier: workspace:*
+        version: link:../../packages/types
+      uuid:
+        specifier: ^9.0.1
+        version: 9.0.1
+    devDependencies:
+      '@repo/typescript-config':
+        specifier: workspace:*
+        version: link:../../packages/typescript-config
+      '@types/bcrypt':
+        specifier: ^5.0.2
+        version: 5.0.2
+      '@types/uuid':
+        specifier: ^9.0.7
+        version: 9.0.7
+
   apps/user-svc:
     dependencies:
       '@grpc/grpc-js':

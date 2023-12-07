@@ -2,6 +2,13 @@ syntax = "proto3";
 
 import "google/protobuf/timestamp.proto";
 
+enum GameOutcome {
+    WHITE_WINS = 0;
+    BLACK_WINS = 1;
+    TIE = 2;
+    KEEP_PLAYING = 3;
+}
+
 message CreateGameMessage {
     string gameId = 1;
     string whitePlayerId = 2;
@@ -22,6 +29,9 @@ message MakeMoveMessage {
 
 message MoveValidatedMessage {
     string resultingFen = 1;
+    GameOutcome outcome = 2;
+    uint32 timeRemainingWhiteSec = 3;
+    uint32 timeRemainingBlackSec = 4;
 }
 
 message GetGameStateMessage {

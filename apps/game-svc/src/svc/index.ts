@@ -1,4 +1,4 @@
-import { CreateGameMessage, GameCreatedMessage, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/out/proto/game_svc";
+import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/out/proto/game_svc";
 import { GameRepository } from "../repo";
 import { IGame, gameSchema } from "types"
 import { Chess } from "chess.js"
@@ -15,7 +15,7 @@ export class GameService implements GameServiceServer {
 
     private async _createGame(request: CreateGameMessage): Promise<GameCreatedMessage> {
         const game = gameSchema.parse(request)
-        const gameId = await this.repo.createGame(game)
+        await this.repo.createGame(game)
 
         const res: GameCreatedMessage = {
             gameId: request.gameId
@@ -26,8 +26,8 @@ export class GameService implements GameServiceServer {
 
     public createGame: handleUnaryCall<CreateGameMessage, GameCreatedMessage> = (call, callback) => {
         this._createGame(call.request)
-        .then(res => callback(null, res))
-        .catch(err => callback({ code: 3, message: err }))
+            .then(res => callback(null, res))
+            .catch(err => callback({ code: 3, message: err }))
     }
 
     private getGameClientAndTimeLeft(game: IGame) {
@@ -73,35 +73,49 @@ export class GameService implements GameServiceServer {
 
     public getGameState: handleUnaryCall<GetGameStateMessage, GameStateMessage> = (call, callback) => {
         this._getGameState(call.request)
-        .then(res => callback(null, res))
-        .catch(err => callback({ code: 3, message: err }))
+            .then(res => callback(null, res))
+            .catch(err => callback({ code: 3, message: err }))
     }
 
     private async _makeMove({ playerId, gameId, move }: MakeMoveMessage): Promise<MoveValidatedMessage> {
+        const now = new Date()
         const game = await this.repo.getGame(gameId)
         if (!game) throw new Error("game not found")
 
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
         const lastMoveTime = game.moves.at(-1)?.createdAt.getTime() ?? game.createdAt.getTime()
-        const elapsedSeconds = Math.floor((Date.now() - lastMoveTime) / 1000)
+        const elapsedSeconds = Math.floor((now.getTime() - lastMoveTime) / 1000)
 
-        if ((timeRemainingWhiteSec <= elapsedSeconds && playerId === game.whitePlayerId) ||
-            (timeRemainingBlackSec <= elapsedSeconds && playerId === game.blackPlayerId)) {
-            throw new Error("no time left")
+        if (timeRemainingWhiteSec <= elapsedSeconds && playerId === game.whitePlayerId) {
+            return { resultingFen: client.fen(), outcome: GameOutcome.BLACK_WINS, timeRemainingWhiteSec: 0, timeRemainingBlackSec }
+        } else if (timeRemainingBlackSec <= elapsedSeconds && playerId === game.blackPlayerId) {
+            return { resultingFen: client.fen(), outcome: GameOutcome.WHITE_WINS, timeRemainingWhiteSec, timeRemainingBlackSec: 0 }
         }
 
         try {
             client.move(move)
-            return { resultingFen: client.fen() }
         } catch (e) {
             throw new Error("invalid move")
         }
+
+        let outcome: GameOutcome
+        if (client.isGameOver()) {
+            if (client.isDraw()) outcome = GameOutcome.TIE
+            else if (client.turn() === "b") outcome = GameOutcome.WHITE_WINS
+            else outcome = GameOutcome.BLACK_WINS
+        } else {
+            outcome = GameOutcome.KEEP_PLAYING
+        }
+
+        this.repo.submitMove(gameId, { createdAt: now, move })
+
+        return { resultingFen: client.fen(), outcome, timeRemainingWhiteSec, timeRemainingBlackSec }
     }
 
     public makeMove: handleUnaryCall<MakeMoveMessage, MoveValidatedMessage> = (call, callback) => {
         this._makeMove(call.request)
-        .then(res => callback(null, res))
-        .catch(err => callback({ code: 3, message: err }))
+            .then(res => callback(null, res))
+            .catch(err => callback({ code: 3, message: err }))
     }
 
     private async _getGames(request: GetGamesMessage): Promise<GameRecordsMessage> {
@@ -115,7 +129,7 @@ export class GameService implements GameServiceServer {
 
     public getGames: handleUnaryCall<GetGamesMessage, GameRecordsMessage> = (call, callback) => {
         this._getGames(call.request)
-        .then(res => callback(null, res))
-        .catch(err => callback({ code: 3, message: err }))
+            .then(res => callback(null, res))
+            .catch(err => callback({ code: 3, message: err }))
     }
 }

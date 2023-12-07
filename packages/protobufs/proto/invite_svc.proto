@@ -1,0 +1,22 @@
+syntax = "proto3";
+
+message CreateInviteLinkMessage {
+    string userId = 1;
+    optional uint32 expiresInSeconds = 2;
+    optional uint32 maxTimeForPlayerSec = 3; 
+    optional uint32 timeGainedOnMoveSec = 4;
+}
+
+message ConsumeInviteLinkMessage {
+    string userId = 1;
+    string gameId = 2;
+}
+
+message GameIdMessage {
+    string gameId = 1;
+}
+
+service InviteService {
+    rpc createInviteLink(CreateInviteLinkMessage) returns (GameIdMessage) {}
+    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (GameIdMessage) {}
+}
