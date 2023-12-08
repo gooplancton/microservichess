@@ -27,8 +27,19 @@ export interface GuestAuthRequestMessage {
   username?: string | undefined;
 }
 
+export interface GetUserMessage {
+  userId: string;
+}
+
 export interface AuthResponseMessage {
   userId: string;
+}
+
+export interface UserRecordMessage {
+  userId: string;
+  isGuest: boolean;
+  username?: string | undefined;
+  email?: string | undefined;
 }
 
 function createBaseUserLoginRequestMessage(): UserLoginRequestMessage {
@@ -251,6 +262,63 @@ export const GuestAuthRequestMessage = {
   },
 };
 
+function createBaseGetUserMessage(): GetUserMessage {
+  return { userId: "" };
+}
+
+export const GetUserMessage = {
+  encode(message: GetUserMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGetUserMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): GetUserMessage {
+    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
+  },
+
+  toJSON(message: GetUserMessage): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<GetUserMessage>, I>>(base?: I): GetUserMessage {
+    return GetUserMessage.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<GetUserMessage>, I>>(object: I): GetUserMessage {
+    const message = createBaseGetUserMessage();
+    message.userId = object.userId ?? "";
+    return message;
+  },
+};
+
 function createBaseAuthResponseMessage(): AuthResponseMessage {
   return { userId: "" };
 }
@@ -308,6 +376,110 @@ export const AuthResponseMessage = {
   },
 };
 
+function createBaseUserRecordMessage(): UserRecordMessage {
+  return { userId: "", isGuest: false, username: undefined, email: undefined };
+}
+
+export const UserRecordMessage = {
+  encode(message: UserRecordMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.userId !== "") {
+      writer.uint32(10).string(message.userId);
+    }
+    if (message.isGuest === true) {
+      writer.uint32(16).bool(message.isGuest);
+    }
+    if (message.username !== undefined) {
+      writer.uint32(26).string(message.username);
+    }
+    if (message.email !== undefined) {
+      writer.uint32(34).string(message.email);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserRecordMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseUserRecordMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.userId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 16) {
+            break;
+          }
+
+          message.isGuest = reader.bool();
+          continue;
+        case 3:
+          if (tag !== 26) {
+            break;
+          }
+
+          message.username = reader.string();
+          continue;
+        case 4:
+          if (tag !== 34) {
+            break;
+          }
+
+          message.email = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): UserRecordMessage {
+    return {
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+      isGuest: isSet(object.isGuest) ? globalThis.Boolean(object.isGuest) : false,
+      username: isSet(object.username) ? globalThis.String(object.username) : undefined,
+      email: isSet(object.email) ? globalThis.String(object.email) : undefined,
+    };
+  },
+
+  toJSON(message: UserRecordMessage): unknown {
+    const obj: any = {};
+    if (message.userId !== "") {
+      obj.userId = message.userId;
+    }
+    if (message.isGuest === true) {
+      obj.isGuest = message.isGuest;
+    }
+    if (message.username !== undefined) {
+      obj.username = message.username;
+    }
+    if (message.email !== undefined) {
+      obj.email = message.email;
+    }
+    return obj;
+  },
+
+  create<I extends Exact<DeepPartial<UserRecordMessage>, I>>(base?: I): UserRecordMessage {
+    return UserRecordMessage.fromPartial(base ?? ({} as any));
+  },
+  fromPartial<I extends Exact<DeepPartial<UserRecordMessage>, I>>(object: I): UserRecordMessage {
+    const message = createBaseUserRecordMessage();
+    message.userId = object.userId ?? "";
+    message.isGuest = object.isGuest ?? false;
+    message.username = object.username ?? undefined;
+    message.email = object.email ?? undefined;
+    return message;
+  },
+};
+
 export type UserServiceService = typeof UserServiceService;
 export const UserServiceService = {
   userLogin: {
@@ -337,12 +509,22 @@ export const UserServiceService = {
     responseSerialize: (value: AuthResponseMessage) => Buffer.from(AuthResponseMessage.encode(value).finish()),
     responseDeserialize: (value: Buffer) => AuthResponseMessage.decode(value),
   },
+  getUser: {
+    path: "/UserService/GetUser",
+    requestStream: false,
+    responseStream: false,
+    requestSerialize: (value: GetUserMessage) => Buffer.from(GetUserMessage.encode(value).finish()),
+    requestDeserialize: (value: Buffer) => GetUserMessage.decode(value),
+    responseSerialize: (value: UserRecordMessage) => Buffer.from(UserRecordMessage.encode(value).finish()),
+    responseDeserialize: (value: Buffer) => UserRecordMessage.decode(value),
+  },
 } as const;
 
 export interface UserServiceServer extends UntypedServiceImplementation {
   userLogin: handleUnaryCall<UserLoginRequestMessage, AuthResponseMessage>;
   guestLogin: handleUnaryCall<GuestAuthRequestMessage, AuthResponseMessage>;
   userSignup: handleUnaryCall<UserSignupRequestMessage, AuthResponseMessage>;
+  getUser: handleUnaryCall<GetUserMessage, UserRecordMessage>;
 }
 
 export interface UserServiceClient extends Client {
@@ -390,6 +572,21 @@ export interface UserServiceClient extends Client {
     metadata: Metadata,
     options: Partial<CallOptions>,
     callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
+  ): ClientUnaryCall;
+  getUser(
+    request: GetUserMessage,
+    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
+  ): ClientUnaryCall;
+  getUser(
+    request: GetUserMessage,
+    metadata: Metadata,
+    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
+  ): ClientUnaryCall;
+  getUser(
+    request: GetUserMessage,
+    metadata: Metadata,
+    options: Partial<CallOptions>,
+    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
   ): ClientUnaryCall;
 }
 

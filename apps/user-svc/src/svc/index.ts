@@ -1,5 +1,5 @@
 import { handleUnaryCall } from "@grpc/grpc-js";
-import { AuthResponseMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/src/gen/user_svc"
+import { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/src/gen/user_svc"
 import { UserRepository } from "../repo";
 import { hash } from "bcrypt"
 
@@ -60,6 +60,26 @@ export class UserService implements UserServiceServer {
 
     userSignup: handleUnaryCall<UserSignupRequestMessage, AuthResponseMessage> = (call, callback) => {
         this._userSignup(call.request)
+            .then(res => callback(null, res))
+            .catch(err => callback({ code: 3, message: err }))
+    }
+
+    private async _getUser(request: GetUserMessage): Promise<UserRecordMessage> {
+        const user = await this.repo.findUserById(request.userId)
+        if (!user) throw new Error("could not find user")
+
+        const res: UserRecordMessage = {
+            userId: user._id,
+            isGuest: user.isGuest,
+            username: user.username,
+            email: user.isGuest ? undefined : user.email
+        }
+
+        return res
+    }
+
+    getUser: handleUnaryCall<GetUserMessage, UserRecordMessage> = (call, callback) => {
+        this._getUser(call.request)
             .then(res => callback(null, res))
             .catch(err => callback({ code: 3, message: err }))
     }

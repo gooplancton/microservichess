@@ -1,5 +1,5 @@
 import { z } from "zod"
-import { router } from "../trpc"
+import { authenticatedProcedure, router } from "../trpc"
 import { possiblyCreateGuest, publicProcedure } from "../trpc";
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config";
@@ -39,8 +39,17 @@ const signupUser = publicProcedure
 		})
 	}))
 
+const getCurrentUser = authenticatedProcedure
+	.query(({ ctx }) => new Promise((resolve, reject) => {
+		userClient.getUser({ userId: ctx.userId }, (error, res) => {
+			if (error) reject(error)
+			resolve(createUserJWT(res.userId, false))
+		})
+	}))
+
 export const userRouter = router({
 	loginUser,
 	loginGuest,
-	signupUser
+	signupUser,
+	getCurrentUser
 })

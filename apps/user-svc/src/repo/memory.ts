@@ -3,8 +3,10 @@ import { UserRepository } from "./base";
 import { v4 as uuid4 } from "uuid"
 import { genSalt, hash } from "bcrypt"
 
+type UserId = string
+
 export class MemoryUserRepository implements UserRepository {
-    users: Map<string, IUser>
+    users: Map<UserId, IUser>
 
     constructor() {
         this.users = new Map()
@@ -35,6 +37,11 @@ export class MemoryUserRepository implements UserRepository {
 
         this.users.set(_id, user)
 
+        return user
+    }
+
+    async findUserById(userId: string): Promise<IUser | undefined> {
+        const user = this.users.get(userId)
         return user
     }
 }

@@ -15,12 +15,24 @@ message GuestAuthRequestMessage {
     optional string username = 1;
 }
 
+message GetUserMessage {
+    string userId = 1;
+}
+
 message AuthResponseMessage {
     string userId = 1;
+}
+
+message UserRecordMessage {
+    string userId = 1;
+    bool isGuest = 2;
+    optional string username = 3;
+    optional string email = 4;
 }
 
 service UserService {
     rpc UserLogin(UserLoginRequestMessage) returns (AuthResponseMessage) {}
     rpc GuestLogin(GuestAuthRequestMessage) returns (AuthResponseMessage) {}
     rpc UserSignup(UserSignupRequestMessage) returns (AuthResponseMessage) {}
+    rpc GetUser(GetUserMessage) returns (UserRecordMessage) {}
 }
