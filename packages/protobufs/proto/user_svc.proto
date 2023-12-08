@@ -1,6 +1,11 @@
 syntax = "proto3";
 
-message UserAuthRequestMessage {
+message UserLoginRequestMessage {
+    string email = 1;
+    string password = 2;
+}
+
+message UserSignupRequestMessage {
     string username = 1;
     string password = 2;
     string email = 3;
@@ -15,7 +20,7 @@ message AuthResponseMessage {
 }
 
 service UserService {
-    rpc UserLogin(UserAuthRequestMessage) returns (AuthResponseMessage) {}
+    rpc UserLogin(UserLoginRequestMessage) returns (AuthResponseMessage) {}
     rpc GuestLogin(GuestAuthRequestMessage) returns (AuthResponseMessage) {}
-    rpc UserSignup(UserAuthRequestMessage) returns (AuthResponseMessage) {}
+    rpc UserSignup(UserSignupRequestMessage) returns (AuthResponseMessage) {}
 }

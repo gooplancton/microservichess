@@ -1,5 +1,5 @@
 import { handleUnaryCall } from "@grpc/grpc-js";
-import { AuthResponseMessage, GuestAuthRequestMessage, UserAuthRequestMessage, UserServiceServer } from "protobufs/src/gen/user_svc"
+import { AuthResponseMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/src/gen/user_svc"
 import { UserRepository } from "../repo";
 import { hash } from "bcrypt"
 
@@ -12,7 +12,7 @@ export class UserService implements UserServiceServer {
         this.repo = repo
     }
 
-    private async _userLogin(request: UserAuthRequestMessage): Promise<AuthResponseMessage> {
+    private async _userLogin(request: UserLoginRequestMessage): Promise<AuthResponseMessage> {
         const user = await this.repo.findUserByEmail(request.email)
         if (!user) throw new Error("user not found")
 
@@ -26,7 +26,7 @@ export class UserService implements UserServiceServer {
         return res
     }
 
-    public userLogin: handleUnaryCall<UserAuthRequestMessage, AuthResponseMessage> = (call, callback) => {
+    public userLogin: handleUnaryCall<UserLoginRequestMessage, AuthResponseMessage> = (call, callback) => {
         this._userLogin(call.request)
             .then(res => callback(null, res))
             .catch(err => callback({ code: 3, message: err }))
@@ -48,7 +48,7 @@ export class UserService implements UserServiceServer {
             .catch(err => callback({ code: 3, message: err }))
     }
 
-    private async _userSignup(request: UserAuthRequestMessage): Promise<AuthResponseMessage> {
+    private async _userSignup(request: UserSignupRequestMessage): Promise<AuthResponseMessage> {
         const user = await this.repo.createUser(request.username, request.email, request.password)
 
         const res = {
@@ -58,7 +58,7 @@ export class UserService implements UserServiceServer {
         return res
     }
 
-    userSignup: handleUnaryCall<UserAuthRequestMessage, AuthResponseMessage> = (call, callback) => {
+    userSignup: handleUnaryCall<UserSignupRequestMessage, AuthResponseMessage> = (call, callback) => {
         this._userSignup(call.request)
             .then(res => callback(null, res))
             .catch(err => callback({ code: 3, message: err }))

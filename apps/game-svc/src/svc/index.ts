@@ -80,14 +80,18 @@ export class GameService implements GameServiceServer {
         const game = await this.repo.getGame(gameId)
         if (!game) throw new Error("game not found")
 
+        const colorToMove = game.moves.length % 2 === 0 ? "w" : "b"
+        if (colorToMove === "w" && playerId !== game.whitePlayerId) throw new Error("invalid move")
+        if (colorToMove === "b" && playerId !== game.blackPlayerId) throw new Error("invalid move")
+
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
         const lastMoveTime = game.moves.at(-1)?.createdAt.getTime() ?? game.createdAt.getTime()
         const elapsedSeconds = Math.floor((now.getTime() - lastMoveTime) / 1000)
 
         if (timeRemainingWhiteSec <= elapsedSeconds && playerId === game.whitePlayerId) {
-            return { resultingFen: client.fen(), outcome: GameOutcome.BLACK_WINS, timeRemainingWhiteSec: 0, timeRemainingBlackSec }
+            return { gameId: game._id, resultingFen: client.fen(), outcome: GameOutcome.BLACK_WINS, timeRemainingWhiteSec: 0, timeRemainingBlackSec }
         } else if (timeRemainingBlackSec <= elapsedSeconds && playerId === game.blackPlayerId) {
-            return { resultingFen: client.fen(), outcome: GameOutcome.WHITE_WINS, timeRemainingWhiteSec, timeRemainingBlackSec: 0 }
+            return { gameId: game._id, resultingFen: client.fen(), outcome: GameOutcome.WHITE_WINS, timeRemainingWhiteSec, timeRemainingBlackSec: 0 }
         }
 
         try {
@@ -112,7 +116,7 @@ export class GameService implements GameServiceServer {
 
         this.repo.submitMove(gameId, { createdAt: now, move }, isGameEndingMove)
 
-        return { resultingFen: client.fen(), outcome, timeRemainingWhiteSec, timeRemainingBlackSec }
+        return { gameId: game._id, resultingFen: client.fen(), outcome, timeRemainingWhiteSec, timeRemainingBlackSec }
     }
 
     public makeMove: handleUnaryCall<MakeMoveMessage, MoveValidatedMessage> = (call, callback) => {

@@ -38,10 +38,11 @@ message MakeMoveMessage {
 }
 
 message MoveValidatedMessage {
-    string resultingFen = 1;
-    GameOutcome outcome = 2;
-    uint32 timeRemainingWhiteSec = 3;
-    uint32 timeRemainingBlackSec = 4;
+    string gameId = 1;
+    string resultingFen = 2;
+    GameOutcome outcome = 3;
+    uint32 timeRemainingWhiteSec = 4;
+    uint32 timeRemainingBlackSec = 5;
 }
 
 message GetGameStateMessage {

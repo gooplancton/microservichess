@@ -120,6 +120,7 @@ export interface MakeMoveMessage {
 }
 
 export interface MoveValidatedMessage {
+  gameId: string;
   resultingFen: string;
   outcome: GameOutcome;
   timeRemainingWhiteSec: number;
@@ -486,22 +487,25 @@ export const MakeMoveMessage = {
 };
 
 function createBaseMoveValidatedMessage(): MoveValidatedMessage {
-  return { resultingFen: "", outcome: 0, timeRemainingWhiteSec: 0, timeRemainingBlackSec: 0 };
+  return { gameId: "", resultingFen: "", outcome: 0, timeRemainingWhiteSec: 0, timeRemainingBlackSec: 0 };
 }
 
 export const MoveValidatedMessage = {
   encode(message: MoveValidatedMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.gameId !== "") {
+      writer.uint32(10).string(message.gameId);
+    }
     if (message.resultingFen !== "") {
-      writer.uint32(10).string(message.resultingFen);
+      writer.uint32(18).string(message.resultingFen);
     }
     if (message.outcome !== 0) {
-      writer.uint32(16).int32(message.outcome);
+      writer.uint32(24).int32(message.outcome);
     }
     if (message.timeRemainingWhiteSec !== 0) {
-      writer.uint32(24).uint32(message.timeRemainingWhiteSec);
+      writer.uint32(32).uint32(message.timeRemainingWhiteSec);
     }
     if (message.timeRemainingBlackSec !== 0) {
-      writer.uint32(32).uint32(message.timeRemainingBlackSec);
+      writer.uint32(40).uint32(message.timeRemainingBlackSec);
     }
     return writer;
   },
@@ -518,24 +522,31 @@ export const MoveValidatedMessage = {
             break;
           }
 
-          message.resultingFen = reader.string();
+          message.gameId = reader.string();
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.outcome = reader.int32() as any;
+          message.resultingFen = reader.string();
           continue;
         case 3:
           if (tag !== 24) {
             break;
           }
 
-          message.timeRemainingWhiteSec = reader.uint32();
+          message.outcome = reader.int32() as any;
           continue;
         case 4:
           if (tag !== 32) {
+            break;
+          }
+
+          message.timeRemainingWhiteSec = reader.uint32();
+          continue;
+        case 5:
+          if (tag !== 40) {
             break;
           }
 
@@ -552,6 +563,7 @@ export const MoveValidatedMessage = {
 
   fromJSON(object: any): MoveValidatedMessage {
     return {
+      gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
       resultingFen: isSet(object.resultingFen) ? globalThis.String(object.resultingFen) : "",
       outcome: isSet(object.outcome) ? gameOutcomeFromJSON(object.outcome) : 0,
       timeRemainingWhiteSec: isSet(object.timeRemainingWhiteSec) ? globalThis.Number(object.timeRemainingWhiteSec) : 0,
@@ -561,6 +573,9 @@ export const MoveValidatedMessage = {
 
   toJSON(message: MoveValidatedMessage): unknown {
     const obj: any = {};
+    if (message.gameId !== "") {
+      obj.gameId = message.gameId;
+    }
     if (message.resultingFen !== "") {
       obj.resultingFen = message.resultingFen;
     }
@@ -581,6 +596,7 @@ export const MoveValidatedMessage = {
   },
   fromPartial<I extends Exact<DeepPartial<MoveValidatedMessage>, I>>(object: I): MoveValidatedMessage {
     const message = createBaseMoveValidatedMessage();
+    message.gameId = object.gameId ?? "";
     message.resultingFen = object.resultingFen ?? "";
     message.outcome = object.outcome ?? 0;
     message.timeRemainingWhiteSec = object.timeRemainingWhiteSec ?? 0;
