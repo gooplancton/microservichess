@@ -4,8 +4,8 @@ import { possiblyCreateGuest, publicProcedure } from "../trpc";
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config";
 
-function createUserJWT(userId: string): string {
-	return jwt.sign({ sub: userId }, JWT_SECRET)
+function createUserJWT(userId: string, isGuest: boolean): string {
+	return jwt.sign({ sub: userId, isGuest }, JWT_SECRET)
 }
 
 const userLoginInputSchema = z.strictObject({
@@ -18,13 +18,13 @@ const loginUser = publicProcedure
 	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
 		userClient.userLogin(input, (error, res) => {
 			if (error) reject(error)
-			resolve(createUserJWT(res.userId))
+			resolve(createUserJWT(res.userId, false))
 		})
 	}))
 
 const loginGuest = publicProcedure
 	.use(possiblyCreateGuest)
-	.mutation(({ ctx }) => createUserJWT(ctx.userId))
+	.mutation(({ ctx }) => createUserJWT(ctx.userId, true))
 
 const signupUserInputSchema = userLoginInputSchema.extend({
 	username: z.string()
@@ -35,7 +35,7 @@ const signupUser = publicProcedure
 	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
 		userClient.userSignup(input, (error, res) => {
 			if (error) reject(error)
-			resolve(createUserJWT(res.userId))
+			resolve(createUserJWT(res.userId, false))
 		})
 	}))
 

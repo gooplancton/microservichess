@@ -5,15 +5,16 @@ import { JWT_SECRET } from "./config";
 
 type Context = {
 	userId?: string
+	isGuest?: boolean
 }
 
-function getUserIdFromAuthHeader(authHeader: string): string {
+function getClaimsFromAuthHeader(authHeader: string): jwt.JwtPayload {
 	if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "UNAUTHORIZED" })
 	const token = authHeader.split(" ")[1]!
 
 	try {
 		const claims = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
-		if (claims.sub) return claims.sub
+		return claims
 	} catch (e) {}
 
 	throw new TRPCError({ code: "UNAUTHORIZED" })
@@ -23,8 +24,11 @@ export async function createContext({ req }: trpcExpress.CreateExpressContextOpt
 	const authHeader = req.headers.authorization
 	if (!authHeader) return {}
 
-	const userId = getUserIdFromAuthHeader(authHeader)
-	return { userId }
+	const claims = getClaimsFromAuthHeader(authHeader)
+	const userId = claims.sub!
+	const isGuest = claims.isGuest!
+
+	return { userId, isGuest }
 }
 
 const t = initTRPC.context<Context>().create()
@@ -35,6 +39,12 @@ export const isAuthenticated = t.middleware(({ ctx, next }) => {
 	throw new TRPCError({ code: "UNAUTHORIZED" })
 })
 
+export const isRegisteredUser = t.middleware(({ ctx, next }) => {
+	if (!ctx.userId || ctx.isGuest) throw new TRPCError({ code: "UNAUTHORIZED" })
+
+	return next({ ctx: ctx as { userId: string, isGuest: false }})
+})
+
 export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 	if (!ctx.userId) {
 		ctx.userId = await new Promise<string>((resolve, reject) => {
@@ -43,11 +53,14 @@ export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 				resolve(res.userId)
 			})
 		})
+
+		ctx.isGuest = true
 	}
 
-	return next({ ctx: ctx as { userId: string } })
+	return next({ ctx: ctx as { userId: string, isGuest: boolean } })
 })
 
 export const router = t.router
 export const publicProcedure = t.procedure
 export const authenticatedProcedure = t.procedure.use(isAuthenticated)
+export const registeredUserProcedure = t.procedure.use(isRegisteredUser)

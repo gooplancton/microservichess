@@ -1,6 +1,6 @@
 import { z } from "zod"
 import { observable } from '@trpc/server/observable';
-import { authenticatedProcedure, router } from "../trpc";
+import { authenticatedProcedure, registeredUserProcedure, router } from "../trpc";
 import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
 import { EventEmitter } from "events"
 
@@ -40,7 +40,7 @@ const makeMove = authenticatedProcedure
 		})
 	}))
 
-const list = authenticatedProcedure
+const list = registeredUserProcedure
 	.query(({ ctx }) => new Promise<GameRecordsMessage_GameRecordMessage[]>((resolve, reject) => {
 		gameClient.getGames({ playerId: ctx.userId }, (error, res) => {
 			if (error) reject(error)
