@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { observable } from '@trpc/server/observable';
 import { authenticatedProcedure, router } from "../trpc";
-import { MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
+import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
 import { EventEmitter } from "events"
 
 const emitter = new EventEmitter()
@@ -40,7 +40,16 @@ const makeMove = authenticatedProcedure
 		})
 	}))
 
+const list = authenticatedProcedure
+	.query(({ ctx }) => new Promise<GameRecordsMessage_GameRecordMessage[]>((resolve, reject) => {
+		gameClient.getGames({ playerId: ctx.userId }, (error, res) => {
+			if (error) reject(error)
+			resolve(res.games)
+		})
+	}))
+
 export const gameRouter = router({
 	join,
-	makeMove
+	makeMove,
+	list
 })
