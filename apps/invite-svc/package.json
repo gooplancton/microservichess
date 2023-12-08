@@ -2,11 +2,11 @@
   "name": "invite-svc",
   "version": "0.0.0",
   "private": true,
+  "main": "./dist/index.js",
+  "types": "./src/index.ts",
   "scripts": {
-    "dev": "echo 'Add dev script here'",
-    "build": "echo 'Add build script here'",
-    "test": "echo 'Add test script here'",
-    "lint": "echo 'Add lint script here'"
+    "dev": "node ./dist/index.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.12",
@@ -17,6 +17,7 @@
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
     "@types/bcrypt": "^5.0.2",
-    "@types/uuid": "^9.0.7"
+    "@types/uuid": "^9.0.7",
+    "typescript": "^5.2.2"
   }
 }

@@ -3,8 +3,8 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "echo 'Add dev script here'",
-    "build": "echo 'Add build script here'"
+    "dev": "node ./dist/index.js",
+    "build": "tsc"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.12",
@@ -14,6 +14,7 @@
     "types": "workspace:*"
   },
   "devDependencies": {
-    "@repo/typescript-config": "workspace:*"
+    "@repo/typescript-config": "workspace:*",
+    "typescript": "^5.2.2"
   }
 }

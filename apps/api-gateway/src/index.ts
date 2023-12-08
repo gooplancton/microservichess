@@ -33,3 +33,5 @@ app.use("/trpc", trpcExpress.createExpressMiddleware({
 
 app.listen(8080)
 
+export type AppRouter = typeof appRouter
+
