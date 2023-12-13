@@ -5,8 +5,8 @@ import { InviteServiceService } from "protobufs/dist/invite_svc"
 import { GameServiceClient } from "protobufs/dist/game_svc"
 import { credentials } from "@grpc/grpc-js"
 
-const GAME_SERVER_ADDR = "0.0.0.0:50052"
-const SERVER_PORT = 50053
+const GAME_SERVER_ADDR = "0.0.0.0:50051"
+const SERVER_PORT = 50052
 
 const repo = new MemoryInviteLinkRepository()
 const gameClient = new GameServiceClient(GAME_SERVER_ADDR, credentials.createInsecure())
