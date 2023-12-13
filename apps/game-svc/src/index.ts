@@ -1,7 +1,7 @@
 import { Server, ServerCredentials } from "@grpc/grpc-js"
 import { MemoryGameRepository } from "./repo"
 import { GameService } from "./svc"
-import { GameServiceService } from "protobufs/src/gen/game_svc"
+import { GameServiceService } from "protobufs/dist/game_svc"
 
 const SERVER_PORT = 50051
 

@@ -2,16 +2,15 @@
   "name": "protobufs",
   "version": "0.0.0",
   "private": true,
-  "main": "./dist/index.js",
   "scripts": {
-    "compile-proto": "protoc --proto_path=./proto --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src/gen --ts_proto_opt=outputServices=grpc-js $(find . -iname '*.proto')",
+    "compile-proto": "protoc --proto_path=./proto --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src --ts_proto_opt=outputServices=grpc-js $(find . -iname '*.proto')",
     "build": "pnpm compile-proto && tsc"
   },
   "dependencies": {
+    "@grpc/grpc-js": "^1.9.12",
     "long": "^5.2.3",
     "protobufjs": "^7.2.5",
-    "ts-proto": "^1.165.0",
-    "@grpc/grpc-js": "^1.9.12"
+    "ts-proto": "^1.165.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

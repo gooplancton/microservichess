@@ -1,5 +1,5 @@
 import { handleUnaryCall } from "@grpc/grpc-js";
-import { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/src/gen/user_svc"
+import { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/dist/user_svc"
 import { UserRepository } from "../repo";
 import { hash } from "bcrypt"
 

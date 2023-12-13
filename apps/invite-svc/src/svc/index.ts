@@ -1,6 +1,6 @@
 import { handleUnaryCall } from "@grpc/grpc-js";
-import { ConsumeInviteLinkMessage, CreateInviteLinkMessage, EmptyMessage, InvalidateLinkMessage, InviteServiceServer } from "protobufs/src/gen/invite_svc"
-import { InviteLinkRepository } from "../repo"; import { gameSettingsSchema } from "../../../../packages/types/src"; import { CreateGameMessage, GameCreatedMessage, GameServiceClient } from "protobufs/src/gen/game_svc";
+import { ConsumeInviteLinkMessage, CreateInviteLinkMessage, EmptyMessage, InvalidateLinkMessage, InviteServiceServer } from "protobufs/dist/invite_svc"
+import { InviteLinkRepository } from "../repo"; import { gameSettingsSchema } from "../../../../packages/types/src"; import { CreateGameMessage, GameCreatedMessage, GameServiceClient } from "protobufs/dist/game_svc";
 import { promisify } from "util"
 
 export class InviteService implements InviteServiceServer {

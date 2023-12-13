@@ -1,4 +1,4 @@
-import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
+import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceServer, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/dist/game_svc";
 import type { GameRepository } from "../repo";
 import { IGame, gameSettingsSchema } from "types"
 import { Chess } from "chess.js"

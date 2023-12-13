@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { gameSettingsSchema } from "types"
 import { authenticatedProcedure, possiblyCreateGuest, publicProcedure, router } from "../trpc";
-import { ConsumeInviteLinkMessage, CreateInviteLinkMessage } from "protobufs/src/gen/invite_svc";
+import { ConsumeInviteLinkMessage, CreateInviteLinkMessage } from "protobufs/dist/invite_svc";
 
 const create = authenticatedProcedure
 	.input(gameSettingsSchema.partial())

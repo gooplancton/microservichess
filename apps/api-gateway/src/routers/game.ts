@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { observable } from '@trpc/server/observable';
 import { authenticatedProcedure, registeredUserProcedure, router } from "../trpc";
-import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/src/gen/game_svc";
+import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/dist/game_svc";
 import { EventEmitter } from "events"
 
 const emitter = new EventEmitter()

@@ -1,5 +1,5 @@
 import { Server, ServerCredentials } from "@grpc/grpc-js"
-import { UserServiceService } from "protobufs/src/gen/user_svc"
+import { UserServiceService } from "protobufs/dist/user_svc"
 import { UserService } from "./svc"
 import { MemoryUserRepository } from "./repo/memory"
 

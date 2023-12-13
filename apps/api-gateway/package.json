@@ -2,8 +2,6 @@
   "name": "api-gateway",
   "version": "0.0.0",
   "private": true,
-  "main": "./dist/index.js",
-  "types": "./src/index.ts",
   "scripts": {
     "dev": "node ./dist/index.js",
     "build": "tsc"

@@ -1,8 +1,8 @@
 import { Server, ServerCredentials } from "@grpc/grpc-js"
 import { MemoryInviteLinkRepository } from "./repo"
 import { InviteService } from "./svc"
-import { InviteServiceService } from "protobufs/src/gen/invite_svc"
-import { GameServiceClient } from "protobufs/src/gen/game_svc"
+import { InviteServiceService } from "protobufs/dist/invite_svc"
+import { GameServiceClient } from "protobufs/dist/game_svc"
 import { credentials } from "@grpc/grpc-js"
 
 const GAME_SERVER_ADDR = "0.0.0.0:50052"
