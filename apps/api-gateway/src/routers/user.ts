@@ -3,6 +3,7 @@ import { authenticatedProcedure, router } from "../trpc"
 import { possiblyCreateGuest, publicProcedure } from "../trpc";
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "../config";
+import { GrpcUserClient } from "../grpc-clients";
 
 function createUserJWT(userId: string, isGuest: boolean): string {
 	return jwt.sign({ sub: userId, isGuest }, JWT_SECRET)
@@ -16,7 +17,7 @@ const userLoginInputSchema = z.strictObject({
 const loginUser = publicProcedure
 	.input(userLoginInputSchema)
 	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
-		userClient.userLogin(input, (error, res) => {
+		GrpcUserClient.instance.userLogin(input, (error, res) => {
 			if (error) reject(error)
 			resolve(createUserJWT(res.userId, false))
 		})
@@ -33,7 +34,7 @@ const signupUserInputSchema = userLoginInputSchema.extend({
 const signupUser = publicProcedure
 	.input(signupUserInputSchema)
 	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
-		userClient.userSignup(input, (error, res) => {
+		GrpcUserClient.instance.userSignup(input, (error, res) => {
 			if (error) reject(error)
 			resolve(createUserJWT(res.userId, false))
 		})
@@ -41,7 +42,7 @@ const signupUser = publicProcedure
 
 const getCurrentUser = authenticatedProcedure
 	.query(({ ctx }) => new Promise((resolve, reject) => {
-		userClient.getUser({ userId: ctx.userId }, (error, res) => {
+		GrpcUserClient.instance.getUser({ userId: ctx.userId }, (error, res) => {
 			if (error) reject(error)
 			resolve(createUserJWT(res.userId, false))
 		})

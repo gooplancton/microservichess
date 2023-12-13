@@ -2,6 +2,7 @@ import { TRPCError, initTRPC } from "@trpc/server"
 import * as trpcExpress from '@trpc/server/adapters/express';
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "./config";
+import { GrpcUserClient } from "./grpc-clients";
 
 type Context = {
 	userId?: string
@@ -48,7 +49,7 @@ export const isRegisteredUser = t.middleware(({ ctx, next }) => {
 export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 	if (!ctx.userId) {
 		ctx.userId = await new Promise<string>((resolve, reject) => {
-			userClient.guestLogin({}, (error, res) => {
+			GrpcUserClient.instance.guestLogin({}, (error, res) => {
 				if (error) reject(error)
 				resolve(res.userId)
 			})

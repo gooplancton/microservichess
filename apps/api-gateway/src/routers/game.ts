@@ -3,6 +3,7 @@ import { observable } from '@trpc/server/observable';
 import { authenticatedProcedure, registeredUserProcedure, router } from "../trpc";
 import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/dist/game_svc";
 import { EventEmitter } from "events"
+import { GrpcGameClient } from "../grpc-clients";
 
 const emitter = new EventEmitter()
 
@@ -33,7 +34,7 @@ const makeMove = authenticatedProcedure
 	.input(submitMoveInputSchema)
 	.mutation(({ ctx, input }) => new Promise<void>((resolve, reject) => {
 		const req: MakeMoveMessage = { playerId: ctx.userId, ...input }
-		gameClient.makeMove(req, (error, res) => {
+		GrpcGameClient.instance.makeMove(req, (error, res) => {
 			if (error) reject(error)
 			emitter.emit('move', res)
 			resolve()
@@ -42,7 +43,7 @@ const makeMove = authenticatedProcedure
 
 const list = registeredUserProcedure
 	.query(({ ctx }) => new Promise<GameRecordsMessage_GameRecordMessage[]>((resolve, reject) => {
-		gameClient.getGames({ playerId: ctx.userId }, (error, res) => {
+		GrpcGameClient.instance.getGames({ playerId: ctx.userId }, (error, res) => {
 			if (error) reject(error)
 			resolve(res.games)
 		})

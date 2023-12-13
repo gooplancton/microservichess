@@ -1,23 +1,9 @@
-import { GameServiceClient } from "protobufs/dist/game_svc"
-import { InviteServiceClient } from "protobufs/dist/invite_svc"
-import { UserServiceClient } from "protobufs/dist/user_svc"
-import { credentials } from "@grpc/grpc-js"
 import express from "express"
 import * as trpcExpress from "@trpc/server/adapters/express"
 import { createContext, router } from "./trpc"
 import { inviteRouter } from "./routers/invite"
 import { userRouter } from "./routers/user"
 import { gameRouter } from "./routers/game"
-
-declare global {
-	var gameClient: GameServiceClient
-	var inviteClient: InviteServiceClient
-	var userClient: UserServiceClient
-}
-
-userClient = new UserServiceClient("0.0.0.0:50050", credentials.createInsecure())
-gameClient = new GameServiceClient("0.0.0.0:50051", credentials.createInsecure())
-inviteClient = new InviteServiceClient("0.0.0.0:50052", credentials.createInsecure())
 
 const app = express()
 const appRouter = router({
