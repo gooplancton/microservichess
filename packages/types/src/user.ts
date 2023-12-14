@@ -7,7 +7,7 @@ export const registeredUserSchema = z.strictObject({
     email: z.string().email(),
     passwordHash: z.string(),
     hashSalt: z.string(),
-    isGuest: z.literal(false)
+    isGuest: z.literal(false).default(false)
 })
 
 export type IRegisteredUser = z.infer<typeof registeredUserSchema>
@@ -15,7 +15,7 @@ export type IRegisteredUser = z.infer<typeof registeredUserSchema>
 export const guestSchema = z.strictObject({
 	_id: z.string().default(uuidv4),
     username: z.string().optional(),
-    isGuest: z.literal(true)
+    isGuest: z.literal(true).default(true)
 })
 
 export type IGuest = z.infer<typeof guestSchema>

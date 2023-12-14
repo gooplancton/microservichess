@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "dev": "node ./dist/apps/invite-svc/src/index.js",
+    "dev": "node ./dist/index.js",
     "build": "tsc"
   },
   "dependencies": {

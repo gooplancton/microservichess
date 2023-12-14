@@ -12,7 +12,7 @@ export class MemoryInviteLinkRepository implements InviteLinkRepository {
     
     async createInviteLink(inviterId: string, settings: IGameSettings): Promise<IInviteLink> {
         const inviteLink = inviteLinkSchema.parse({
-            userId: inviterId,
+            playerId: inviterId,
             settings
         }) 
 
