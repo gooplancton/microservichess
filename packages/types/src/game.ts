@@ -16,8 +16,8 @@ enum PlayAs {
 
 export const gameSettingsSchema = z.strictObject({
 	playAs: z.nativeEnum(PlayAs).default(PlayAs.RANDOM),
-	maxTimeForPlayerSec: z.number().default(Infinity),
-	timeGainedOnMoveSec: z.number().default(0),
+	maxTimeForPlayerSec: z.number().min(0).optional(),
+	timeGainedOnMoveSec: z.number().min(0).optional(),
 })
 
 export type IGameSettings = z.infer<typeof gameSettingsSchema>

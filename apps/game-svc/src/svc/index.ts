@@ -24,16 +24,16 @@ export class GameService implements GameServiceImplementation {
     private getGameClientAndTimeLeft(game: IGame) {
         const client = new Chess()
 
-        let timeRemainingWhiteSec = game.settings.maxTimeForPlayerSec
-        let timeRemainingBlackSec = game.settings.maxTimeForPlayerSec
+        let timeRemainingWhiteSec = game.settings.maxTimeForPlayerSec ?? Infinity
+        let timeRemainingBlackSec = game.settings.maxTimeForPlayerSec ?? Infinity
         let lastMoveTime = game.createdAt.getTime()
 
         let isWhiteTurn = true
         for (const { move, createdAt } of game.moves) {
             const elapsedSeconds = Math.floor((createdAt.getTime() - lastMoveTime) / 1000)
 
-            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + game.settings.timeGainedOnMoveSec
-            else timeRemainingBlackSec -= elapsedSeconds + game.settings.timeGainedOnMoveSec
+            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + (game.settings.timeGainedOnMoveSec ?? 0)
+            else timeRemainingBlackSec -= elapsedSeconds + (game.settings.timeGainedOnMoveSec ?? 0)
 
             client.move(move)
 

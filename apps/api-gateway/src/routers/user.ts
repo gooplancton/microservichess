@@ -16,7 +16,7 @@ const userLoginInputSchema = z.strictObject({
 
 const loginUser = publicProcedure
 	.input(userLoginInputSchema)
-	.mutation(({ input }) => GrpcUserClient.instance.userLogin(input))
+	.mutation(({ input }) => GrpcUserClient.instance.userLogin(input).then((res) => createUserJWT(res.userId, false)))
 
 const loginGuest = publicProcedure
 	.use(possiblyCreateGuest)
