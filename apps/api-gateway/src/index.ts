@@ -4,6 +4,7 @@ import { createContext, router } from "./trpc"
 import { inviteRouter } from "./routers/invite"
 import { userRouter } from "./routers/user"
 import { gameRouter } from "./routers/game"
+import { renderTrpcPanel } from "trpc-panel"
 
 const app = express()
 const appRouter = router({
@@ -16,6 +17,12 @@ app.use("/trpc", trpcExpress.createExpressMiddleware({
 	router: appRouter,
 	createContext
 }))
+
+app.use("/panel", (_, res) => {
+	return res.send(
+		renderTrpcPanel(appRouter, { url: "http://localhost:8080/trpc" })
+	)
+})
 
 app.listen(8080)
 
