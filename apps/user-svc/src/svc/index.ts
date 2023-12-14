@@ -1,18 +1,15 @@
-import { handleUnaryCall } from "@grpc/grpc-js";
-import { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceServer, UserSignupRequestMessage } from "protobufs/dist/user_svc"
+import type { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceImplementation, UserSignupRequestMessage } from "protobufs/dist/user_svc"
 import { UserRepository } from "../repo";
 import { hash } from "bcrypt"
 
-export class UserService implements UserServiceServer {
-    [k: string]: any
-
+export class UserService implements UserServiceImplementation {
     repo: UserRepository
 
     constructor(repo: UserRepository) {
         this.repo = repo
     }
 
-    private async _userLogin(request: UserLoginRequestMessage): Promise<AuthResponseMessage> {
+    async userLogin(request: UserLoginRequestMessage): Promise<AuthResponseMessage> {
         const user = await this.repo.findUserByEmail(request.email)
         if (!user) throw new Error("user not found")
 
@@ -26,13 +23,8 @@ export class UserService implements UserServiceServer {
         return res
     }
 
-    public userLogin: handleUnaryCall<UserLoginRequestMessage, AuthResponseMessage> = (call, callback) => {
-        this._userLogin(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
-    }
 
-    private async _guestLogin(request: GuestAuthRequestMessage): Promise<AuthResponseMessage> {
+    async guestLogin(request: GuestAuthRequestMessage): Promise<AuthResponseMessage> {
         const guest = await this.repo.createGuest(request.username)
 
         const res = {
@@ -42,13 +34,7 @@ export class UserService implements UserServiceServer {
         return res
     }
 
-    guestLogin: handleUnaryCall<GuestAuthRequestMessage, AuthResponseMessage> = (call, callback) => {
-        this._guestLogin(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
-    }
-
-    private async _userSignup(request: UserSignupRequestMessage): Promise<AuthResponseMessage> {
+    async userSignup(request: UserSignupRequestMessage): Promise<AuthResponseMessage> {
         const user = await this.repo.createUser(request.username, request.email, request.password)
 
         const res = {
@@ -58,13 +44,7 @@ export class UserService implements UserServiceServer {
         return res
     }
 
-    userSignup: handleUnaryCall<UserSignupRequestMessage, AuthResponseMessage> = (call, callback) => {
-        this._userSignup(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
-    }
-
-    private async _getUser(request: GetUserMessage): Promise<UserRecordMessage> {
+    async getUser(request: GetUserMessage): Promise<UserRecordMessage> {
         const user = await this.repo.findUserById(request.userId)
         if (!user) throw new Error("could not find user")
 
@@ -76,11 +56,5 @@ export class UserService implements UserServiceServer {
         }
 
         return res
-    }
-
-    getUser: handleUnaryCall<GetUserMessage, UserRecordMessage> = (call, callback) => {
-        this._getUser(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
     }
 }

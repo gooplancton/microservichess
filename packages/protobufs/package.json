@@ -3,16 +3,20 @@
   "version": "0.0.0",
   "private": true,
   "scripts": {
-    "compile-proto": "protoc --proto_path=./proto --plugin=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src --ts_proto_opt=outputServices=grpc-js $(find . -iname '*.proto')",
+    "compile-proto": "grpc_tools_node_protoc --plugin=protoc-gen-ts_proto=./node_modules/.bin/protoc-gen-ts_proto --ts_proto_out=./src --ts_proto_opt=outputServices=nice-grpc,outputServices=generic-definitions,useExactTypes=false  --proto_path=./proto $(find . -iname '*.proto')",
     "build": "pnpm compile-proto && tsc"
   },
   "dependencies": {
     "@grpc/grpc-js": "^1.9.12",
+    "api-gateway": "^1.0.0",
+    "grpc-tools": "^1.12.4",
     "long": "^5.2.3",
+    "nice-grpc": "^2.1.7",
     "protobufjs": "^7.2.5",
     "ts-proto": "^1.165.0"
   },
   "devDependencies": {
+    "nice-grpc-common": "^2.0.2",
     "@repo/typescript-config": "workspace:*",
     "@types/node": "^17.0.12",
     "typescript": "^5.2.2"

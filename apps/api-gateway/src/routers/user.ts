@@ -16,12 +16,7 @@ const userLoginInputSchema = z.strictObject({
 
 const loginUser = publicProcedure
 	.input(userLoginInputSchema)
-	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
-		GrpcUserClient.instance.userLogin(input, (error, res) => {
-			if (error) reject(error)
-			resolve(createUserJWT(res.userId, false))
-		})
-	}))
+	.mutation(({ input }) => GrpcUserClient.instance.userLogin(input))
 
 const loginGuest = publicProcedure
 	.use(possiblyCreateGuest)
@@ -33,20 +28,10 @@ const signupUserInputSchema = userLoginInputSchema.extend({
 
 const signupUser = publicProcedure
 	.input(signupUserInputSchema)
-	.mutation(({ input }) => new Promise<string>((resolve, reject) => {
-		GrpcUserClient.instance.userSignup(input, (error, res) => {
-			if (error) reject(error)
-			resolve(createUserJWT(res.userId, false))
-		})
-	}))
+	.mutation(({ input }) => GrpcUserClient.instance.userSignup(input))
 
 const getCurrentUser = authenticatedProcedure
-	.query(({ ctx }) => new Promise((resolve, reject) => {
-		GrpcUserClient.instance.getUser({ userId: ctx.userId }, (error, res) => {
-			if (error) reject(error)
-			resolve(createUserJWT(res.userId, false))
-		})
-	}))
+	.query(({ ctx }) => GrpcUserClient.instance.getUser({ userId: ctx.userId }))
 
 export const userRouter = router({
 	loginUser,

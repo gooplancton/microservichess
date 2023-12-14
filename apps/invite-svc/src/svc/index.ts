@@ -1,11 +1,9 @@
-import { handleUnaryCall } from "@grpc/grpc-js";
-import { ConsumeInviteLinkMessage, CreateInviteLinkMessage, EmptyMessage, InvalidateLinkMessage, InviteServiceServer } from "protobufs/dist/invite_svc"
-import { InviteLinkRepository } from "../repo"; import { gameSettingsSchema } from "../../../../packages/types/src"; import { CreateGameMessage, GameCreatedMessage, GameServiceClient } from "protobufs/dist/game_svc";
-import { promisify } from "util"
+import type { ConsumeInviteLinkMessage, CreateInviteLinkMessage, InvalidateLinkMessage, InviteServiceImplementation } from "protobufs/dist/invite_svc"
+import type { CreateGameMessage, GameServiceClient } from "protobufs/dist/game_svc";
+import { InviteLinkRepository } from "../repo"; 
+import { gameSettingsSchema } from "types"; 
 
-export class InviteService implements InviteServiceServer {
-    [k: string]: any
-
+export class InviteService implements InviteServiceImplementation {
     repo: InviteLinkRepository
     gameClient: GameServiceClient
 
@@ -14,30 +12,14 @@ export class InviteService implements InviteServiceServer {
         this.gameClient = gameClient
     }
 
-    private async _createInviteLink(request: CreateInviteLinkMessage): Promise<EmptyMessage> {
+    async createInviteLink(request: CreateInviteLinkMessage) {
         const settings = gameSettingsSchema.parse(request.settings)
         await this.repo.createInviteLink(request.userId, settings)
 
         return {}
     }
 
-    public createInviteLink: handleUnaryCall<CreateInviteLinkMessage, EmptyMessage> = (call, callback) => {
-        this._createInviteLink(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
-    }
-
-    private sendCreateGameRequest(request: CreateGameMessage): Promise<GameCreatedMessage> {
-        return new Promise<GameCreatedMessage>((resolve, reject) => this.gameClient.createGame(
-            request,
-            (error, res) => {
-                if (error) reject(error)
-                else resolve(res)
-            }
-        ))
-    }
-
-    private async _consumeInviteLink(request: ConsumeInviteLinkMessage): Promise<GameCreatedMessage> {
+    async consumeInviteLink(request: ConsumeInviteLinkMessage) {
         if (request.inviterId === request.userId) throw new Error("cannot consume your own invite links")
 
         const inviteLink = await this.repo.deleteInviteLink(request.inviterId)
@@ -49,28 +31,15 @@ export class InviteService implements InviteServiceServer {
             settings: inviteLink.settings
         }
 
-        promisify(this.gameClient.createGame)
-        const gameCreatedResponse = await this.sendCreateGameRequest(gameCreationRequest)
+        const gameCreatedResponse = await this.gameClient.createGame(gameCreationRequest)
 
         return gameCreatedResponse
     }
 
-    public consumeInviteLink: handleUnaryCall<ConsumeInviteLinkMessage, GameCreatedMessage> = (call, callback) => {
-        this._consumeInviteLink(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
-    }
-
-    private async _invalidateLink(request: InvalidateLinkMessage): Promise<EmptyMessage> {
+    async invalidateInviteLink(request: InvalidateLinkMessage) {
         const inviteLink = await this.repo.deleteInviteLink(request.userId)
         if (!inviteLink) throw new Error("no such invite link found")
 
         return {}
-    }
-
-    public invalidateInviteLink: handleUnaryCall<InvalidateLinkMessage, EmptyMessage> = (call, callback) => {
-        this._invalidateLink(call.request)
-            .then(res => callback(null, res))
-            .catch(err => callback({ code: 3, message: err }))
     }
 }

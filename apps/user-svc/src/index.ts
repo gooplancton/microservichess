@@ -1,21 +1,14 @@
-import { Server, ServerCredentials } from "@grpc/grpc-js"
-import { UserServiceService } from "protobufs/dist/user_svc"
 import { UserService } from "./svc"
 import { MemoryUserRepository } from "./repo/memory"
+import { createServer } from "nice-grpc"
+import { UserServiceDefinition } from "protobufs/dist/user_svc"
 
 const SERVER_PORT = 50050
 
 const repo = new MemoryUserRepository()
 const svc = new UserService(repo)
-const server = new Server()
-
-server.addService(UserServiceService, svc)
-server.bindAsync(`0.0.0.0:${SERVER_PORT}`, ServerCredentials.createInsecure(), (err, port) => {
-    if (err) {
-        console.error('Server binding failed:', err)
-        return
-    }
-
-    console.log(`Server is running on port ${port}`)
-    server.start()
+const server = createServer()
+server.add(UserServiceDefinition, svc)
+server.listen(`0.0.0.0:${SERVER_PORT}`).then(() => {
+    console.log("User Server runnning on port: ", SERVER_PORT)
 })

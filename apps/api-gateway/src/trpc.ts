@@ -48,12 +48,8 @@ export const isRegisteredUser = t.middleware(({ ctx, next }) => {
 
 export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 	if (!ctx.userId) {
-		ctx.userId = await new Promise<string>((resolve, reject) => {
-			GrpcUserClient.instance.guestLogin({}, (error, res) => {
-				if (error) reject(error)
-				resolve(res.userId)
-			})
-		})
+		const guest = await GrpcUserClient.instance.guestLogin({})
+		ctx.userId = guest.userId	
 
 		ctx.isGuest = true
 	}

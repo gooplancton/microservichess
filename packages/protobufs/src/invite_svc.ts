@@ -1,13 +1,5 @@
 /* eslint-disable */
-import { ChannelCredentials, Client, makeGenericClientConstructor, Metadata } from "@grpc/grpc-js";
-import type {
-  CallOptions,
-  ClientOptions,
-  ClientUnaryCall,
-  handleUnaryCall,
-  ServiceError,
-  UntypedServiceImplementation,
-} from "@grpc/grpc-js";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
 import { GameCreatedMessage, GameSettingsMessage } from "./game_svc";
 
@@ -68,10 +60,10 @@ export const EmptyMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<EmptyMessage>, I>>(base?: I): EmptyMessage {
-    return EmptyMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<EmptyMessage>): EmptyMessage {
+    return EmptyMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<EmptyMessage>, I>>(_: I): EmptyMessage {
+  fromPartial(_: DeepPartial<EmptyMessage>): EmptyMessage {
     const message = createBaseEmptyMessage();
     return message;
   },
@@ -140,10 +132,10 @@ export const CreateInviteLinkMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateInviteLinkMessage>, I>>(base?: I): CreateInviteLinkMessage {
-    return CreateInviteLinkMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateInviteLinkMessage>): CreateInviteLinkMessage {
+    return CreateInviteLinkMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateInviteLinkMessage>, I>>(object: I): CreateInviteLinkMessage {
+  fromPartial(object: DeepPartial<CreateInviteLinkMessage>): CreateInviteLinkMessage {
     const message = createBaseCreateInviteLinkMessage();
     message.userId = object.userId ?? "";
     message.settings = (object.settings !== undefined && object.settings !== null)
@@ -216,10 +208,10 @@ export const ConsumeInviteLinkMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<ConsumeInviteLinkMessage>, I>>(base?: I): ConsumeInviteLinkMessage {
-    return ConsumeInviteLinkMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<ConsumeInviteLinkMessage>): ConsumeInviteLinkMessage {
+    return ConsumeInviteLinkMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<ConsumeInviteLinkMessage>, I>>(object: I): ConsumeInviteLinkMessage {
+  fromPartial(object: DeepPartial<ConsumeInviteLinkMessage>): ConsumeInviteLinkMessage {
     const message = createBaseConsumeInviteLinkMessage();
     message.userId = object.userId ?? "";
     message.inviterId = object.inviterId ?? "";
@@ -274,10 +266,10 @@ export const InviteLinkConsumedMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<InviteLinkConsumedMessage>, I>>(base?: I): InviteLinkConsumedMessage {
-    return InviteLinkConsumedMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<InviteLinkConsumedMessage>): InviteLinkConsumedMessage {
+    return InviteLinkConsumedMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<InviteLinkConsumedMessage>, I>>(object: I): InviteLinkConsumedMessage {
+  fromPartial(object: DeepPartial<InviteLinkConsumedMessage>): InviteLinkConsumedMessage {
     const message = createBaseInviteLinkConsumedMessage();
     message.gameId = object.gameId ?? "";
     return message;
@@ -331,105 +323,77 @@ export const InvalidateLinkMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<InvalidateLinkMessage>, I>>(base?: I): InvalidateLinkMessage {
-    return InvalidateLinkMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<InvalidateLinkMessage>): InvalidateLinkMessage {
+    return InvalidateLinkMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<InvalidateLinkMessage>, I>>(object: I): InvalidateLinkMessage {
+  fromPartial(object: DeepPartial<InvalidateLinkMessage>): InvalidateLinkMessage {
     const message = createBaseInvalidateLinkMessage();
     message.userId = object.userId ?? "";
     return message;
   },
 };
 
-export type InviteServiceService = typeof InviteServiceService;
-export const InviteServiceService = {
-  createInviteLink: {
-    path: "/InviteService/createInviteLink",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: CreateInviteLinkMessage) => Buffer.from(CreateInviteLinkMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateInviteLinkMessage.decode(value),
-    responseSerialize: (value: EmptyMessage) => Buffer.from(EmptyMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => EmptyMessage.decode(value),
-  },
-  consumeInviteLink: {
-    path: "/InviteService/consumeInviteLink",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: ConsumeInviteLinkMessage) => Buffer.from(ConsumeInviteLinkMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => ConsumeInviteLinkMessage.decode(value),
-    responseSerialize: (value: GameCreatedMessage) => Buffer.from(GameCreatedMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => GameCreatedMessage.decode(value),
-  },
-  invalidateInviteLink: {
-    path: "/InviteService/invalidateInviteLink",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: InvalidateLinkMessage) => Buffer.from(InvalidateLinkMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => InvalidateLinkMessage.decode(value),
-    responseSerialize: (value: EmptyMessage) => Buffer.from(EmptyMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => EmptyMessage.decode(value),
+export type InviteServiceDefinition = typeof InviteServiceDefinition;
+export const InviteServiceDefinition = {
+  name: "InviteService",
+  fullName: "InviteService",
+  methods: {
+    createInviteLink: {
+      name: "createInviteLink",
+      requestType: CreateInviteLinkMessage,
+      requestStream: false,
+      responseType: EmptyMessage,
+      responseStream: false,
+      options: {},
+    },
+    consumeInviteLink: {
+      name: "consumeInviteLink",
+      requestType: ConsumeInviteLinkMessage,
+      requestStream: false,
+      responseType: GameCreatedMessage,
+      responseStream: false,
+      options: {},
+    },
+    invalidateInviteLink: {
+      name: "invalidateInviteLink",
+      requestType: InvalidateLinkMessage,
+      requestStream: false,
+      responseType: EmptyMessage,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
-export interface InviteServiceServer extends UntypedServiceImplementation {
-  createInviteLink: handleUnaryCall<CreateInviteLinkMessage, EmptyMessage>;
-  consumeInviteLink: handleUnaryCall<ConsumeInviteLinkMessage, GameCreatedMessage>;
-  invalidateInviteLink: handleUnaryCall<InvalidateLinkMessage, EmptyMessage>;
+export interface InviteServiceImplementation<CallContextExt = {}> {
+  createInviteLink(
+    request: CreateInviteLinkMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<EmptyMessage>>;
+  consumeInviteLink(
+    request: ConsumeInviteLinkMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<GameCreatedMessage>>;
+  invalidateInviteLink(
+    request: InvalidateLinkMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<EmptyMessage>>;
 }
 
-export interface InviteServiceClient extends Client {
+export interface InviteServiceClient<CallOptionsExt = {}> {
   createInviteLink(
-    request: CreateInviteLinkMessage,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
-  createInviteLink(
-    request: CreateInviteLinkMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
-  createInviteLink(
-    request: CreateInviteLinkMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<CreateInviteLinkMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<EmptyMessage>;
   consumeInviteLink(
-    request: ConsumeInviteLinkMessage,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
-  consumeInviteLink(
-    request: ConsumeInviteLinkMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
-  consumeInviteLink(
-    request: ConsumeInviteLinkMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<ConsumeInviteLinkMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<GameCreatedMessage>;
   invalidateInviteLink(
-    request: InvalidateLinkMessage,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
-  invalidateInviteLink(
-    request: InvalidateLinkMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
-  invalidateInviteLink(
-    request: InvalidateLinkMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: EmptyMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<InvalidateLinkMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<EmptyMessage>;
 }
-
-export const InviteServiceClient = makeGenericClientConstructor(InviteServiceService, "InviteService") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): InviteServiceClient;
-  service: typeof InviteServiceService;
-};
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -438,10 +402,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

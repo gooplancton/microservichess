@@ -1,13 +1,5 @@
 /* eslint-disable */
-import { ChannelCredentials, Client, makeGenericClientConstructor, Metadata } from "@grpc/grpc-js";
-import type {
-  CallOptions,
-  ClientOptions,
-  ClientUnaryCall,
-  handleUnaryCall,
-  ServiceError,
-  UntypedServiceImplementation,
-} from "@grpc/grpc-js";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
 import { Timestamp } from "./google/protobuf/timestamp";
 
@@ -237,10 +229,10 @@ export const GameSettingsMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GameSettingsMessage>, I>>(base?: I): GameSettingsMessage {
-    return GameSettingsMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GameSettingsMessage>): GameSettingsMessage {
+    return GameSettingsMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GameSettingsMessage>, I>>(object: I): GameSettingsMessage {
+  fromPartial(object: DeepPartial<GameSettingsMessage>): GameSettingsMessage {
     const message = createBaseGameSettingsMessage();
     message.maxTimeForPlayerSec = object.maxTimeForPlayerSec ?? undefined;
     message.timeGainedOnMoveSec = object.timeGainedOnMoveSec ?? undefined;
@@ -326,10 +318,10 @@ export const CreateGameMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<CreateGameMessage>, I>>(base?: I): CreateGameMessage {
-    return CreateGameMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<CreateGameMessage>): CreateGameMessage {
+    return CreateGameMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<CreateGameMessage>, I>>(object: I): CreateGameMessage {
+  fromPartial(object: DeepPartial<CreateGameMessage>): CreateGameMessage {
     const message = createBaseCreateGameMessage();
     message.whitePlayerId = object.whitePlayerId ?? "";
     message.blackPlayerId = object.blackPlayerId ?? "";
@@ -387,10 +379,10 @@ export const GameCreatedMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GameCreatedMessage>, I>>(base?: I): GameCreatedMessage {
-    return GameCreatedMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GameCreatedMessage>): GameCreatedMessage {
+    return GameCreatedMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GameCreatedMessage>, I>>(object: I): GameCreatedMessage {
+  fromPartial(object: DeepPartial<GameCreatedMessage>): GameCreatedMessage {
     const message = createBaseGameCreatedMessage();
     message.gameId = object.gameId ?? "";
     return message;
@@ -474,10 +466,10 @@ export const MakeMoveMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MakeMoveMessage>, I>>(base?: I): MakeMoveMessage {
-    return MakeMoveMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<MakeMoveMessage>): MakeMoveMessage {
+    return MakeMoveMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<MakeMoveMessage>, I>>(object: I): MakeMoveMessage {
+  fromPartial(object: DeepPartial<MakeMoveMessage>): MakeMoveMessage {
     const message = createBaseMakeMoveMessage();
     message.gameId = object.gameId ?? "";
     message.playerId = object.playerId ?? "";
@@ -591,10 +583,10 @@ export const MoveValidatedMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<MoveValidatedMessage>, I>>(base?: I): MoveValidatedMessage {
-    return MoveValidatedMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<MoveValidatedMessage>): MoveValidatedMessage {
+    return MoveValidatedMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<MoveValidatedMessage>, I>>(object: I): MoveValidatedMessage {
+  fromPartial(object: DeepPartial<MoveValidatedMessage>): MoveValidatedMessage {
     const message = createBaseMoveValidatedMessage();
     message.gameId = object.gameId ?? "";
     message.resultingFen = object.resultingFen ?? "";
@@ -652,10 +644,10 @@ export const GetGameStateMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetGameStateMessage>, I>>(base?: I): GetGameStateMessage {
-    return GetGameStateMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GetGameStateMessage>): GetGameStateMessage {
+    return GetGameStateMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GetGameStateMessage>, I>>(object: I): GetGameStateMessage {
+  fromPartial(object: DeepPartial<GetGameStateMessage>): GetGameStateMessage {
     const message = createBaseGetGameStateMessage();
     message.gameId = object.gameId ?? "";
     return message;
@@ -753,10 +745,10 @@ export const GameStateMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GameStateMessage>, I>>(base?: I): GameStateMessage {
-    return GameStateMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GameStateMessage>): GameStateMessage {
+    return GameStateMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GameStateMessage>, I>>(object: I): GameStateMessage {
+  fromPartial(object: DeepPartial<GameStateMessage>): GameStateMessage {
     const message = createBaseGameStateMessage();
     message.fen = object.fen ?? "";
     message.timeRemainingWhiteSec = object.timeRemainingWhiteSec ?? 0;
@@ -843,10 +835,10 @@ export const GetGamesMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetGamesMessage>, I>>(base?: I): GetGamesMessage {
-    return GetGamesMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GetGamesMessage>): GetGamesMessage {
+    return GetGamesMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GetGamesMessage>, I>>(object: I): GetGamesMessage {
+  fromPartial(object: DeepPartial<GetGamesMessage>): GetGamesMessage {
     const message = createBaseGetGamesMessage();
     message.playerId = object.playerId ?? "";
     message.fromTime = object.fromTime ?? undefined;
@@ -906,10 +898,10 @@ export const GameRecordsMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GameRecordsMessage>, I>>(base?: I): GameRecordsMessage {
-    return GameRecordsMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GameRecordsMessage>): GameRecordsMessage {
+    return GameRecordsMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GameRecordsMessage>, I>>(object: I): GameRecordsMessage {
+  fromPartial(object: DeepPartial<GameRecordsMessage>): GameRecordsMessage {
     const message = createBaseGameRecordsMessage();
     message.games = object.games?.map((e) => GameRecordsMessage_GameRecordMessage.fromPartial(e)) || [];
     return message;
@@ -1021,14 +1013,10 @@ export const GameRecordsMessage_GameRecordMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GameRecordsMessage_GameRecordMessage>, I>>(
-    base?: I,
-  ): GameRecordsMessage_GameRecordMessage {
-    return GameRecordsMessage_GameRecordMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GameRecordsMessage_GameRecordMessage>): GameRecordsMessage_GameRecordMessage {
+    return GameRecordsMessage_GameRecordMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GameRecordsMessage_GameRecordMessage>, I>>(
-    object: I,
-  ): GameRecordsMessage_GameRecordMessage {
+  fromPartial(object: DeepPartial<GameRecordsMessage_GameRecordMessage>): GameRecordsMessage_GameRecordMessage {
     const message = createBaseGameRecordsMessage_GameRecordMessage();
     message.gameId = object.gameId ?? "";
     message.whitePlayerId = object.whitePlayerId ?? "";
@@ -1039,120 +1027,74 @@ export const GameRecordsMessage_GameRecordMessage = {
   },
 };
 
-export type GameServiceService = typeof GameServiceService;
-export const GameServiceService = {
-  createGame: {
-    path: "/GameService/CreateGame",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: CreateGameMessage) => Buffer.from(CreateGameMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => CreateGameMessage.decode(value),
-    responseSerialize: (value: GameCreatedMessage) => Buffer.from(GameCreatedMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => GameCreatedMessage.decode(value),
-  },
-  makeMove: {
-    path: "/GameService/MakeMove",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: MakeMoveMessage) => Buffer.from(MakeMoveMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => MakeMoveMessage.decode(value),
-    responseSerialize: (value: MoveValidatedMessage) => Buffer.from(MoveValidatedMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => MoveValidatedMessage.decode(value),
-  },
-  getGameState: {
-    path: "/GameService/GetGameState",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: GetGameStateMessage) => Buffer.from(GetGameStateMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => GetGameStateMessage.decode(value),
-    responseSerialize: (value: GameStateMessage) => Buffer.from(GameStateMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => GameStateMessage.decode(value),
-  },
-  getGames: {
-    path: "/GameService/GetGames",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: GetGamesMessage) => Buffer.from(GetGamesMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => GetGamesMessage.decode(value),
-    responseSerialize: (value: GameRecordsMessage) => Buffer.from(GameRecordsMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => GameRecordsMessage.decode(value),
+export type GameServiceDefinition = typeof GameServiceDefinition;
+export const GameServiceDefinition = {
+  name: "GameService",
+  fullName: "GameService",
+  methods: {
+    createGame: {
+      name: "CreateGame",
+      requestType: CreateGameMessage,
+      requestStream: false,
+      responseType: GameCreatedMessage,
+      responseStream: false,
+      options: {},
+    },
+    makeMove: {
+      name: "MakeMove",
+      requestType: MakeMoveMessage,
+      requestStream: false,
+      responseType: MoveValidatedMessage,
+      responseStream: false,
+      options: {},
+    },
+    getGameState: {
+      name: "GetGameState",
+      requestType: GetGameStateMessage,
+      requestStream: false,
+      responseType: GameStateMessage,
+      responseStream: false,
+      options: {},
+    },
+    getGames: {
+      name: "GetGames",
+      requestType: GetGamesMessage,
+      requestStream: false,
+      responseType: GameRecordsMessage,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
-export interface GameServiceServer extends UntypedServiceImplementation {
-  createGame: handleUnaryCall<CreateGameMessage, GameCreatedMessage>;
-  makeMove: handleUnaryCall<MakeMoveMessage, MoveValidatedMessage>;
-  getGameState: handleUnaryCall<GetGameStateMessage, GameStateMessage>;
-  getGames: handleUnaryCall<GetGamesMessage, GameRecordsMessage>;
+export interface GameServiceImplementation<CallContextExt = {}> {
+  createGame(
+    request: CreateGameMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<GameCreatedMessage>>;
+  makeMove(request: MakeMoveMessage, context: CallContext & CallContextExt): Promise<DeepPartial<MoveValidatedMessage>>;
+  getGameState(
+    request: GetGameStateMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<GameStateMessage>>;
+  getGames(request: GetGamesMessage, context: CallContext & CallContextExt): Promise<DeepPartial<GameRecordsMessage>>;
 }
 
-export interface GameServiceClient extends Client {
+export interface GameServiceClient<CallOptionsExt = {}> {
   createGame(
-    request: CreateGameMessage,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
-  createGame(
-    request: CreateGameMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
-  createGame(
-    request: CreateGameMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GameCreatedMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<CreateGameMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<GameCreatedMessage>;
   makeMove(
-    request: MakeMoveMessage,
-    callback: (error: ServiceError | null, response: MoveValidatedMessage) => void,
-  ): ClientUnaryCall;
-  makeMove(
-    request: MakeMoveMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: MoveValidatedMessage) => void,
-  ): ClientUnaryCall;
-  makeMove(
-    request: MakeMoveMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: MoveValidatedMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<MakeMoveMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<MoveValidatedMessage>;
   getGameState(
-    request: GetGameStateMessage,
-    callback: (error: ServiceError | null, response: GameStateMessage) => void,
-  ): ClientUnaryCall;
-  getGameState(
-    request: GetGameStateMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: GameStateMessage) => void,
-  ): ClientUnaryCall;
-  getGameState(
-    request: GetGameStateMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GameStateMessage) => void,
-  ): ClientUnaryCall;
-  getGames(
-    request: GetGamesMessage,
-    callback: (error: ServiceError | null, response: GameRecordsMessage) => void,
-  ): ClientUnaryCall;
-  getGames(
-    request: GetGamesMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: GameRecordsMessage) => void,
-  ): ClientUnaryCall;
-  getGames(
-    request: GetGamesMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: GameRecordsMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<GetGameStateMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<GameStateMessage>;
+  getGames(request: DeepPartial<GetGamesMessage>, options?: CallOptions & CallOptionsExt): Promise<GameRecordsMessage>;
 }
-
-export const GameServiceClient = makeGenericClientConstructor(GameServiceService, "GameService") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): GameServiceClient;
-  service: typeof GameServiceService;
-};
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -1161,10 +1103,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function toTimestamp(date: Date): Timestamp {
   const seconds = date.getTime() / 1_000;

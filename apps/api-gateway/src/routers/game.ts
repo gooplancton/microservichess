@@ -1,7 +1,7 @@
 import { z } from "zod"
 import { observable } from '@trpc/server/observable';
 import { authenticatedProcedure, registeredUserProcedure, router } from "../trpc";
-import type { GameRecordsMessage_GameRecordMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/dist/game_svc";
+import type { MoveValidatedMessage } from "protobufs/dist/game_svc";
 import { EventEmitter } from "events"
 import { GrpcGameClient } from "../grpc-clients";
 
@@ -32,22 +32,10 @@ const submitMoveInputSchema = z.strictObject({
 
 const makeMove = authenticatedProcedure
 	.input(submitMoveInputSchema)
-	.mutation(({ ctx, input }) => new Promise<void>((resolve, reject) => {
-		const req: MakeMoveMessage = { playerId: ctx.userId, ...input }
-		GrpcGameClient.instance.makeMove(req, (error, res) => {
-			if (error) reject(error)
-			emitter.emit('move', res)
-			resolve()
-		})
-	}))
+	.mutation(({ ctx, input }) => GrpcGameClient.instance.makeMove({ playerId: ctx.userId, ...input }))
 
 const list = registeredUserProcedure
-	.query(({ ctx }) => new Promise<GameRecordsMessage_GameRecordMessage[]>((resolve, reject) => {
-		GrpcGameClient.instance.getGames({ playerId: ctx.userId }, (error, res) => {
-			if (error) reject(error)
-			resolve(res.games)
-		})
-	}))
+	.query(({ ctx }) => GrpcGameClient.instance.getGames({ playerId: ctx.userId }))
 
 export const gameRouter = router({
 	join,

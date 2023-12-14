@@ -7,7 +7,7 @@
     "build": "tsc"
   },
   "dependencies": {
-    "@grpc/grpc-js": "^1.9.12",
+    "nice-grpc": "^2.1.7",
     "chess.js": "1.0.0-beta.6",
     "mongodb": "^6.3.0",
     "protobufs": "workspace:*",

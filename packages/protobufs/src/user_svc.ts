@@ -1,13 +1,5 @@
 /* eslint-disable */
-import { ChannelCredentials, Client, makeGenericClientConstructor, Metadata } from "@grpc/grpc-js";
-import type {
-  CallOptions,
-  ClientOptions,
-  ClientUnaryCall,
-  handleUnaryCall,
-  ServiceError,
-  UntypedServiceImplementation,
-} from "@grpc/grpc-js";
+import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
@@ -105,10 +97,10 @@ export const UserLoginRequestMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UserLoginRequestMessage>, I>>(base?: I): UserLoginRequestMessage {
-    return UserLoginRequestMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<UserLoginRequestMessage>): UserLoginRequestMessage {
+    return UserLoginRequestMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<UserLoginRequestMessage>, I>>(object: I): UserLoginRequestMessage {
+  fromPartial(object: DeepPartial<UserLoginRequestMessage>): UserLoginRequestMessage {
     const message = createBaseUserLoginRequestMessage();
     message.email = object.email ?? "";
     message.password = object.password ?? "";
@@ -193,10 +185,10 @@ export const UserSignupRequestMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UserSignupRequestMessage>, I>>(base?: I): UserSignupRequestMessage {
-    return UserSignupRequestMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<UserSignupRequestMessage>): UserSignupRequestMessage {
+    return UserSignupRequestMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<UserSignupRequestMessage>, I>>(object: I): UserSignupRequestMessage {
+  fromPartial(object: DeepPartial<UserSignupRequestMessage>): UserSignupRequestMessage {
     const message = createBaseUserSignupRequestMessage();
     message.username = object.username ?? "";
     message.password = object.password ?? "";
@@ -252,10 +244,10 @@ export const GuestAuthRequestMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GuestAuthRequestMessage>, I>>(base?: I): GuestAuthRequestMessage {
-    return GuestAuthRequestMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GuestAuthRequestMessage>): GuestAuthRequestMessage {
+    return GuestAuthRequestMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GuestAuthRequestMessage>, I>>(object: I): GuestAuthRequestMessage {
+  fromPartial(object: DeepPartial<GuestAuthRequestMessage>): GuestAuthRequestMessage {
     const message = createBaseGuestAuthRequestMessage();
     message.username = object.username ?? undefined;
     return message;
@@ -309,10 +301,10 @@ export const GetUserMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<GetUserMessage>, I>>(base?: I): GetUserMessage {
-    return GetUserMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<GetUserMessage>): GetUserMessage {
+    return GetUserMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<GetUserMessage>, I>>(object: I): GetUserMessage {
+  fromPartial(object: DeepPartial<GetUserMessage>): GetUserMessage {
     const message = createBaseGetUserMessage();
     message.userId = object.userId ?? "";
     return message;
@@ -366,10 +358,10 @@ export const AuthResponseMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<AuthResponseMessage>, I>>(base?: I): AuthResponseMessage {
-    return AuthResponseMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<AuthResponseMessage>): AuthResponseMessage {
+    return AuthResponseMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<AuthResponseMessage>, I>>(object: I): AuthResponseMessage {
+  fromPartial(object: DeepPartial<AuthResponseMessage>): AuthResponseMessage {
     const message = createBaseAuthResponseMessage();
     message.userId = object.userId ?? "";
     return message;
@@ -467,10 +459,10 @@ export const UserRecordMessage = {
     return obj;
   },
 
-  create<I extends Exact<DeepPartial<UserRecordMessage>, I>>(base?: I): UserRecordMessage {
-    return UserRecordMessage.fromPartial(base ?? ({} as any));
+  create(base?: DeepPartial<UserRecordMessage>): UserRecordMessage {
+    return UserRecordMessage.fromPartial(base ?? {});
   },
-  fromPartial<I extends Exact<DeepPartial<UserRecordMessage>, I>>(object: I): UserRecordMessage {
+  fromPartial(object: DeepPartial<UserRecordMessage>): UserRecordMessage {
     const message = createBaseUserRecordMessage();
     message.userId = object.userId ?? "";
     message.isGuest = object.isGuest ?? false;
@@ -480,120 +472,77 @@ export const UserRecordMessage = {
   },
 };
 
-export type UserServiceService = typeof UserServiceService;
-export const UserServiceService = {
-  userLogin: {
-    path: "/UserService/UserLogin",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UserLoginRequestMessage) => Buffer.from(UserLoginRequestMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UserLoginRequestMessage.decode(value),
-    responseSerialize: (value: AuthResponseMessage) => Buffer.from(AuthResponseMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthResponseMessage.decode(value),
-  },
-  guestLogin: {
-    path: "/UserService/GuestLogin",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: GuestAuthRequestMessage) => Buffer.from(GuestAuthRequestMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => GuestAuthRequestMessage.decode(value),
-    responseSerialize: (value: AuthResponseMessage) => Buffer.from(AuthResponseMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthResponseMessage.decode(value),
-  },
-  userSignup: {
-    path: "/UserService/UserSignup",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: UserSignupRequestMessage) => Buffer.from(UserSignupRequestMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => UserSignupRequestMessage.decode(value),
-    responseSerialize: (value: AuthResponseMessage) => Buffer.from(AuthResponseMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => AuthResponseMessage.decode(value),
-  },
-  getUser: {
-    path: "/UserService/GetUser",
-    requestStream: false,
-    responseStream: false,
-    requestSerialize: (value: GetUserMessage) => Buffer.from(GetUserMessage.encode(value).finish()),
-    requestDeserialize: (value: Buffer) => GetUserMessage.decode(value),
-    responseSerialize: (value: UserRecordMessage) => Buffer.from(UserRecordMessage.encode(value).finish()),
-    responseDeserialize: (value: Buffer) => UserRecordMessage.decode(value),
+export type UserServiceDefinition = typeof UserServiceDefinition;
+export const UserServiceDefinition = {
+  name: "UserService",
+  fullName: "UserService",
+  methods: {
+    userLogin: {
+      name: "UserLogin",
+      requestType: UserLoginRequestMessage,
+      requestStream: false,
+      responseType: AuthResponseMessage,
+      responseStream: false,
+      options: {},
+    },
+    guestLogin: {
+      name: "GuestLogin",
+      requestType: GuestAuthRequestMessage,
+      requestStream: false,
+      responseType: AuthResponseMessage,
+      responseStream: false,
+      options: {},
+    },
+    userSignup: {
+      name: "UserSignup",
+      requestType: UserSignupRequestMessage,
+      requestStream: false,
+      responseType: AuthResponseMessage,
+      responseStream: false,
+      options: {},
+    },
+    getUser: {
+      name: "GetUser",
+      requestType: GetUserMessage,
+      requestStream: false,
+      responseType: UserRecordMessage,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
-export interface UserServiceServer extends UntypedServiceImplementation {
-  userLogin: handleUnaryCall<UserLoginRequestMessage, AuthResponseMessage>;
-  guestLogin: handleUnaryCall<GuestAuthRequestMessage, AuthResponseMessage>;
-  userSignup: handleUnaryCall<UserSignupRequestMessage, AuthResponseMessage>;
-  getUser: handleUnaryCall<GetUserMessage, UserRecordMessage>;
+export interface UserServiceImplementation<CallContextExt = {}> {
+  userLogin(
+    request: UserLoginRequestMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<AuthResponseMessage>>;
+  guestLogin(
+    request: GuestAuthRequestMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<AuthResponseMessage>>;
+  userSignup(
+    request: UserSignupRequestMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<AuthResponseMessage>>;
+  getUser(request: GetUserMessage, context: CallContext & CallContextExt): Promise<DeepPartial<UserRecordMessage>>;
 }
 
-export interface UserServiceClient extends Client {
+export interface UserServiceClient<CallOptionsExt = {}> {
   userLogin(
-    request: UserLoginRequestMessage,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  userLogin(
-    request: UserLoginRequestMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  userLogin(
-    request: UserLoginRequestMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<UserLoginRequestMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<AuthResponseMessage>;
   guestLogin(
-    request: GuestAuthRequestMessage,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  guestLogin(
-    request: GuestAuthRequestMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  guestLogin(
-    request: GuestAuthRequestMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<GuestAuthRequestMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<AuthResponseMessage>;
   userSignup(
-    request: UserSignupRequestMessage,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  userSignup(
-    request: UserSignupRequestMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  userSignup(
-    request: UserSignupRequestMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: AuthResponseMessage) => void,
-  ): ClientUnaryCall;
-  getUser(
-    request: GetUserMessage,
-    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
-  ): ClientUnaryCall;
-  getUser(
-    request: GetUserMessage,
-    metadata: Metadata,
-    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
-  ): ClientUnaryCall;
-  getUser(
-    request: GetUserMessage,
-    metadata: Metadata,
-    options: Partial<CallOptions>,
-    callback: (error: ServiceError | null, response: UserRecordMessage) => void,
-  ): ClientUnaryCall;
+    request: DeepPartial<UserSignupRequestMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<AuthResponseMessage>;
+  getUser(request: DeepPartial<GetUserMessage>, options?: CallOptions & CallOptionsExt): Promise<UserRecordMessage>;
 }
-
-export const UserServiceClient = makeGenericClientConstructor(UserServiceService, "UserService") as unknown as {
-  new (address: string, credentials: ChannelCredentials, options?: Partial<ClientOptions>): UserServiceClient;
-  service: typeof UserServiceService;
-};
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
 
@@ -602,10 +551,6 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
-
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-export type Exact<P, I extends P> = P extends Builtin ? P
-  : P & { [K in keyof P]: Exact<P[K], I[K]> } & { [K in Exclude<keyof I, KeysOfUnion<P>>]: never };
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;
