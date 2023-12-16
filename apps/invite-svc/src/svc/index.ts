@@ -17,7 +17,7 @@ export class InviteService implements InviteServiceImplementation {
         const settings = gameSettingsSchema.parse(request.settings as GameSettingsInput)
         await this.repo.createInviteLink(request.userId, settings)
 
-        return {}
+        return { userId: request.userId }
     }
 
     async consumeInviteLink(request: ConsumeInviteLinkMessage) {

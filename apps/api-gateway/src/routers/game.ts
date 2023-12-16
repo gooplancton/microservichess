@@ -32,7 +32,11 @@ const submitMoveInputSchema = z.strictObject({
 
 const makeMove = authenticatedProcedure
 	.input(submitMoveInputSchema)
-	.mutation(({ ctx, input }) => GrpcGameClient.instance.makeMove({ playerId: ctx.userId, ...input }))
+	.mutation(async ({ ctx, input }) => {
+		const res = await GrpcGameClient.instance.makeMove({ playerId: ctx.userId, ...input })
+		emitter.emit("move", res)
+		return res
+	})
 
 const list = registeredUserProcedure
 	.query(({ ctx }) => GrpcGameClient.instance.getGames({ playerId: ctx.userId }))
