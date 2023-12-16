@@ -5,6 +5,7 @@ import { inviteRouter } from "./routers/invite"
 import { userRouter } from "./routers/user"
 import { gameRouter } from "./routers/game"
 import { renderTrpcPanel } from "trpc-panel"
+import cors from "cors"
 
 const app = express()
 const appRouter = router({
@@ -12,6 +13,8 @@ const appRouter = router({
 	user: userRouter,
 	game: gameRouter
 })
+
+app.use(cors())
 
 app.use("/trpc", trpcExpress.createExpressMiddleware({
 	router: appRouter,

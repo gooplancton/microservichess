@@ -2,6 +2,7 @@ import type { ConsumeInviteLinkMessage, CreateInviteLinkMessage, InvalidateLinkM
 import type { CreateGameMessage, GameServiceClient } from "protobufs/dist/game_svc";
 import { InviteLinkRepository } from "../repo"; 
 import { GameSettingsInput, gameSettingsSchema } from "types"; 
+import { ServerError, Status } from "nice-grpc";
 
 export class InviteService implements InviteServiceImplementation {
     repo: InviteLinkRepository
@@ -20,10 +21,10 @@ export class InviteService implements InviteServiceImplementation {
     }
 
     async consumeInviteLink(request: ConsumeInviteLinkMessage) {
-        if (request.inviterId === request.userId) throw new Error("cannot consume your own invite links")
+        if (request.inviterId === request.userId) throw new ServerError(Status.INVALID_ARGUMENT, "cannot consume your own invite links")
 
         const inviteLink = await this.repo.deleteInviteLink(request.inviterId)
-        if (!inviteLink) throw new Error("no such invite link found")
+        if (!inviteLink) throw new ServerError(Status.INVALID_ARGUMENT, "no such invite link found")
 
         const gameCreationRequest: CreateGameMessage = {
             whitePlayerId: request.inviterId,
@@ -38,7 +39,7 @@ export class InviteService implements InviteServiceImplementation {
 
     async invalidateInviteLink(request: InvalidateLinkMessage) {
         const inviteLink = await this.repo.deleteInviteLink(request.userId)
-        if (!inviteLink) throw new Error("no such invite link found")
+        if (!inviteLink) throw new ServerError(Status.INVALID_ARGUMENT, "no such invite link found")
 
         return {}
     }

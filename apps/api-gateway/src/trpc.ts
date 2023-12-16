@@ -10,7 +10,7 @@ type Context = {
 }
 
 function getClaimsFromAuthHeader(authHeader: string): jwt.JwtPayload {
-	if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "UNAUTHORIZED" })
+	if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "BAD_REQUEST" })
 	const token = authHeader.split(" ")[1]!
 
 	try {

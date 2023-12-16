@@ -2,6 +2,7 @@ import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage,
 import type { GameRepository } from "../repo";
 import { GameSettingsInput, IGame, gameSettingsSchema } from "types"
 import { Chess } from "chess.js"
+import { ServerError, Status } from "nice-grpc";
 
 export class GameService implements GameServiceImplementation {
     repo: GameRepository
@@ -46,7 +47,7 @@ export class GameService implements GameServiceImplementation {
     async getGameState(request: GetGameStateMessage): Promise<GameStateMessage> {
         const gameId = request.gameId
         const game = await this.repo.getGame(gameId)
-        if (!game) throw new Error("game not found")
+        if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found")
 
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
 
@@ -66,8 +67,8 @@ export class GameService implements GameServiceImplementation {
         if (!game) throw new Error("game not found")
 
         const colorToMove = game.moves.length % 2 === 0 ? "w" : "b"
-        if (colorToMove === "w" && playerId !== game.whitePlayerId) throw new Error("invalid move")
-        if (colorToMove === "b" && playerId !== game.blackPlayerId) throw new Error("invalid move")
+        if (colorToMove === "w" && playerId !== game.whitePlayerId) throw new ServerError(Status.INVALID_ARGUMENT, "invalid move")
+        if (colorToMove === "b" && playerId !== game.blackPlayerId) throw new ServerError(Status.INVALID_ARGUMENT, "invalid move")
 
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
         const lastMoveTime = game.moves.at(-1)?.createdAt.getTime() ?? game.createdAt.getTime()
@@ -82,7 +83,7 @@ export class GameService implements GameServiceImplementation {
         try {
             client.move(move)
         } catch (e) {
-            throw new Error("invalid move")
+            throw new ServerError(Status.INVALID_ARGUMENT, "invalid move")
         }
 
         let outcome: GameOutcome

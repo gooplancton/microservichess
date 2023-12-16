@@ -2,6 +2,7 @@ import { GuestInput, IRegisteredUser, IUser, RegisteredUserInput, guestSchema, r
 import { UserRepository } from "./base";
 import { v4 as uuid4 } from "uuid"
 import { genSalt, hash } from "bcrypt"
+import { ServerError, Status } from "nice-grpc";
 
 type UserId = string
 
@@ -28,7 +29,7 @@ export class MemoryUserRepository implements UserRepository {
 
     async createUser(username: string, email: string, password: string) {
         const emailAvailable = !(await this.findUserByEmail(email))
-        if (!emailAvailable) throw new Error("email already taken")
+        if (!emailAvailable) throw new ServerError(Status.INVALID_ARGUMENT, "email already taken")
 
         const _id = uuid4()
         const hashSalt = await genSalt()

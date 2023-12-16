@@ -1,6 +1,7 @@
 import type { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceImplementation, UserSignupRequestMessage } from "protobufs/dist/user_svc"
 import { UserRepository } from "../repo";
 import { hash } from "bcrypt"
+import { ServerError, Status } from "nice-grpc";
 
 export class UserService implements UserServiceImplementation {
     repo: UserRepository
@@ -11,10 +12,10 @@ export class UserService implements UserServiceImplementation {
 
     async userLogin(request: UserLoginRequestMessage): Promise<AuthResponseMessage> {
         const user = await this.repo.findUserByEmail(request.email)
-        if (!user) throw new Error("user not found")
+        if (!user) throw new ServerError(Status.INVALID_ARGUMENT, "user not found")
 
         const passwordHash = await hash(request.password, user.passwordHash)
-        if (passwordHash !== user.passwordHash) throw new Error("incorrect password")
+        if (passwordHash !== user.passwordHash) throw new ServerError(Status.INVALID_ARGUMENT, "incorrect password")
 
         const res = {
             userId: user._id
@@ -46,7 +47,7 @@ export class UserService implements UserServiceImplementation {
 
     async getUser(request: GetUserMessage): Promise<UserRecordMessage> {
         const user = await this.repo.findUserById(request.userId)
-        if (!user) throw new Error("could not find user")
+        if (!user) throw new ServerError(Status.INVALID_ARGUMENT, "could not find user")
 
         const res: UserRecordMessage = {
             userId: user._id,

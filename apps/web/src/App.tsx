@@ -7,13 +7,15 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { UserContext } from './user-context';
-import { getCookie } from './cookies';
+import { Home } from './pages/Home';
+import { useCookies } from 'react-cookie';
 
 export function App() {
+  const [cookies, _, __] = useCookies(["microservichess-user-jwt"])
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <div>Home</div>,
+      element: <Home />,
     },
     {
       path: "/game",
@@ -32,9 +34,11 @@ export function App() {
         httpBatchLink({
           url: 'http://localhost:8080/trpc',
           async headers() {
-            return {
-              authorization: getCookie("microservichess-token"),
+            if (cookies["microservichess-user-jwt"]) return {
+              authorization: cookies['microservichess-user-jwt']
             }
+
+            return {}
           },
         }),
       ],
