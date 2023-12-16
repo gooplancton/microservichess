@@ -1,6 +1,6 @@
 import { CreateGameMessage, GameCreatedMessage, GameOutcome, GameRecordsMessage, GameServiceImplementation, GameStateMessage, GetGameStateMessage, GetGamesMessage, MakeMoveMessage, MoveValidatedMessage } from "protobufs/dist/game_svc";
 import type { GameRepository } from "../repo";
-import { IGame, gameSettingsSchema } from "types"
+import { GameSettingsInput, IGame, gameSettingsSchema } from "types"
 import { Chess } from "chess.js"
 
 export class GameService implements GameServiceImplementation {
@@ -11,7 +11,7 @@ export class GameService implements GameServiceImplementation {
     }
 
     async createGame(request: CreateGameMessage): Promise<GameCreatedMessage> {
-        const settings = gameSettingsSchema.parse(request.settings)
+        const settings = gameSettingsSchema.parse(request.settings as GameSettingsInput)
         const game = await this.repo.createGame(request.whitePlayerId, request.blackPlayerId, settings)
 
         const res: GameCreatedMessage = {

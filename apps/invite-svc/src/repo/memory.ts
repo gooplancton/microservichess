@@ -1,4 +1,4 @@
-import { IGameSettings, IInviteLink, inviteLinkSchema } from "types";
+import { IGameSettings, IInviteLink, InviteLinkInput, inviteLinkSchema } from "types";
 import { InviteLinkRepository } from "./base";
 
 type InviterId = string
@@ -14,7 +14,7 @@ export class MemoryInviteLinkRepository implements InviteLinkRepository {
         const inviteLink = inviteLinkSchema.parse({
             playerId: inviterId,
             settings
-        }) 
+        } as InviteLinkInput) 
 
         this.links.set(inviterId, inviteLink)
 

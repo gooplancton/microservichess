@@ -7,6 +7,7 @@ export const moveSchema = z.strictObject({
 })
 
 export type IMove = z.infer<typeof moveSchema>
+export type MoveInput = z.input<typeof moveSchema>
 
 enum PlayAs {
 	WHITE = 0,
@@ -21,6 +22,7 @@ export const gameSettingsSchema = z.strictObject({
 })
 
 export type IGameSettings = z.infer<typeof gameSettingsSchema>
+export type GameSettingsInput = z.input<typeof gameSettingsSchema>
 
 export const gameSchema = z.strictObject({
 	_id: z.string().default(uuidv4),
@@ -33,3 +35,4 @@ export const gameSchema = z.strictObject({
 })
 
 export type IGame = z.infer<typeof gameSchema>
+export type GameInput = z.input<typeof gameSchema>

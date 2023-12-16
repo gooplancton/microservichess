@@ -1,4 +1,4 @@
-import { IGame, IGameSettings, IMove, gameSchema } from "types";
+import { GameInput, IGame, IGameSettings, IMove, gameSchema } from "types";
 import { GameRepository } from "./base";
 
 export class MemoryGameRepository implements GameRepository {
@@ -23,7 +23,7 @@ export class MemoryGameRepository implements GameRepository {
     }
 
     createGame(whitePlayerId: string, blackPlayerId: string, settings: IGameSettings) {
-        const game = gameSchema.parse({ whitePlayerId, blackPlayerId, settings })
+        const game = gameSchema.parse({ whitePlayerId, blackPlayerId, settings } as GameInput)
         this.games.set(game._id, game)
 
         return Promise.resolve(game)

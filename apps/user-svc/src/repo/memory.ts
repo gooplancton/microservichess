@@ -1,4 +1,4 @@
-import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types";
+import { GuestInput, IRegisteredUser, IUser, RegisteredUserInput, guestSchema, registeredUserSchema } from "types";
 import { UserRepository } from "./base";
 import { v4 as uuid4 } from "uuid"
 import { genSalt, hash } from "bcrypt"
@@ -14,7 +14,7 @@ export class MemoryUserRepository implements UserRepository {
 
     async createGuest(username?: string | undefined) {
         const _id = uuid4()
-        const guest = guestSchema.parse({ _id, username })
+        const guest = guestSchema.parse({ _id, username } as GuestInput)
         this.users.set(_id, guest)
 
         return guest
@@ -33,7 +33,7 @@ export class MemoryUserRepository implements UserRepository {
         const _id = uuid4()
         const hashSalt = await genSalt()
         const passwordHash = await hash(password, hashSalt) 
-        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash })
+        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash } as RegisteredUserInput)
 
         this.users.set(_id, user)
 

@@ -8,3 +8,4 @@ export const inviteLinkSchema = z.object({
 })
 
 export type IInviteLink = z.infer<typeof inviteLinkSchema>
+export type InviteLinkInput = z.input<typeof inviteLinkSchema>

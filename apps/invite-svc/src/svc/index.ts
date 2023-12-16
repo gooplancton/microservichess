@@ -1,7 +1,7 @@
 import type { ConsumeInviteLinkMessage, CreateInviteLinkMessage, InvalidateLinkMessage, InviteServiceImplementation } from "protobufs/dist/invite_svc"
 import type { CreateGameMessage, GameServiceClient } from "protobufs/dist/game_svc";
 import { InviteLinkRepository } from "../repo"; 
-import { gameSettingsSchema } from "types"; 
+import { GameSettingsInput, gameSettingsSchema } from "types"; 
 
 export class InviteService implements InviteServiceImplementation {
     repo: InviteLinkRepository
@@ -13,7 +13,7 @@ export class InviteService implements InviteServiceImplementation {
     }
 
     async createInviteLink(request: CreateInviteLinkMessage) {
-        const settings = gameSettingsSchema.parse(request.settings)
+        const settings = gameSettingsSchema.parse(request.settings as GameSettingsInput)
         await this.repo.createInviteLink(request.userId, settings)
 
         return {}
