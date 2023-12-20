@@ -7,19 +7,25 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { UserContext } from './user-context';
-import { Home } from './pages/Home';
+import { HomePage } from './pages/Home';
+import { GamePage } from "./pages/Game"
 import { useCookies } from 'react-cookie';
+import { createTheme, MantineProvider } from '@mantine/core';
+
+const theme = createTheme({
+  /** Put your mantine theme override here */
+});
 
 export function App() {
   const [cookies, _, __] = useCookies(["microservichess-user-jwt"])
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <Home />,
+      element: <HomePage />,
     },
     {
       path: "/game",
-      element: <div>Game</div>,
+      element: <GamePage />,
     },
     {
       path: "/history",
@@ -49,7 +55,9 @@ export function App() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <UserContext.Provider value={null}>
-          <RouterProvider router={router} />
+          <MantineProvider theme={theme}>
+            <RouterProvider router={router} />
+          </MantineProvider>
         </UserContext.Provider>
       </QueryClientProvider>
     </trpc.Provider>
