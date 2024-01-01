@@ -7,10 +7,12 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { UserContext } from './user-context';
-import { HomePage } from './pages/Home';
+import { LoginPage } from "./pages/auth/login"
 import { GamePage } from "./pages/Game"
 import { useCookies } from 'react-cookie';
 import { createTheme, MantineProvider } from '@mantine/core';
+import { Notifications } from '@mantine/notifications';
+import { SignupPage } from './pages/auth/signup';
 
 const theme = createTheme({
   /** Put your mantine theme override here */
@@ -21,16 +23,20 @@ export function App() {
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <HomePage />,
+      element: <div>Home</div>
+    },
+    {
+      path: "/auth/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/auth/signup",
+      element: <SignupPage />,
     },
     {
       path: "/game",
       element: <GamePage />,
     },
-    {
-      path: "/history",
-      element: <div>History</div>
-    }
   ])
 
   const [queryClient] = React.useState(() => new QueryClient());
@@ -56,6 +62,7 @@ export function App() {
       <QueryClientProvider client={queryClient}>
         <UserContext.Provider value={null}>
           <MantineProvider theme={theme}>
+            <Notifications />
             <RouterProvider router={router} />
           </MantineProvider>
         </UserContext.Provider>
