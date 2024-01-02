@@ -1,4 +1,16 @@
-import { createContext } from "react";
-import type { IUser } from "types"
+import type { IUserInfo } from "types"
+import { create } from 'zustand'
 
-export const UserContext = createContext<IUser | null>(null)
+type UserContext = {
+  user?: IUserInfo | undefined,
+  setUser: (user: IUserInfo) => void,
+  logout: () => void
+}
+
+// TODO: persitance etc..
+export const useUserContext = create<UserContext>((set) => ({
+  user: undefined,
+  setUser: (user: IUserInfo) => set({ user }),
+  logout: () => set({ user: undefined })
+}))
+

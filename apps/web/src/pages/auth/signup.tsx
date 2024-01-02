@@ -12,7 +12,6 @@ import {
 } from '@mantine/core'
 import { trpc } from "../../trpc"
 import { useDisclosure } from '@mantine/hooks';
-import { useCookies } from "react-cookie"
 import { notifications } from '@mantine/notifications'
 import { useNavigate } from "react-router-dom";
 
@@ -21,7 +20,6 @@ export function SignupPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
   const [repeatedPw, setRepeatedPw] = useState("")
-  const [_, setCookie, __] = useCookies(["microservichess-user-jwt"])
   const [loading, { open: startLoading, close: stopLoading }] = useDisclosure(false)
   const navigate = useNavigate()
 
@@ -30,8 +28,8 @@ export function SignupPage() {
   const signupWithEmailAndPassword = useCallback(async () => {
     try {
       startLoading()
-      const authToken = await signupUserMutation.mutateAsync({ email, username, password })
-      setCookie("microservichess-user-jwt", authToken)
+      await signupUserMutation.mutateAsync({ email, username, password })
+      navigate("/auth/login")
     } catch (e) {
       notifications.show({
         autoClose: 2000,
@@ -45,7 +43,7 @@ export function SignupPage() {
     } finally {
       stopLoading()
     }
-  }, [email, password])
+  }, [email, username, password])
 
   return (
     <Container size={420} my={40} pos="relative">

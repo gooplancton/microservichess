@@ -22,6 +22,14 @@ export const guestSchema = z.strictObject({
 export type IGuest = z.infer<typeof guestSchema>
 export type GuestInput = z.input<typeof guestSchema>
 
+export const userInfoSchema = z.strictObject({
+	_id: z.string(),
+	username: z.string().optional(),
+	email: z.string().email().optional(),
+	isGuest: z.boolean()
+})
+export type IUserInfo = z.infer<typeof userInfoSchema>
+
 export const userSchema = z.discriminatedUnion("isGuest", [
 	registeredUserSchema,
 	guestSchema

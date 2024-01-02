@@ -6,24 +6,24 @@ import {
   createBrowserRouter,
   RouterProvider,
 } from "react-router-dom";
-import { UserContext } from './user-context';
 import { LoginPage } from "./pages/auth/login"
 import { GamePage } from "./pages/Game"
-import { useCookies } from 'react-cookie';
+import { CookiesProvider, useCookies } from 'react-cookie';
 import { createTheme, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { SignupPage } from './pages/auth/signup';
+import { HomePage } from './pages/home';
 
 const theme = createTheme({
   /** Put your mantine theme override here */
 });
 
 export function App() {
-  const [cookies, _, __] = useCookies(["microservichess-user-jwt"])
+  const [cookies, _, __, updateCookies] = useCookies(["microservichess-user-jwt"])
   const router = createBrowserRouter([
     {
       path: "/",
-      element: <div>Home</div>
+      element: <HomePage />
     },
     {
       path: "/auth/login",
@@ -46,6 +46,8 @@ export function App() {
         httpBatchLink({
           url: 'http://localhost:8080/trpc',
           async headers() {
+            updateCookies()
+            console.log(cookies)
             if (cookies["microservichess-user-jwt"]) return {
               authorization: cookies['microservichess-user-jwt']
             }
@@ -58,15 +60,15 @@ export function App() {
   )
 
   return (
-    <trpc.Provider client={trpcClient} queryClient={queryClient}>
-      <QueryClientProvider client={queryClient}>
-        <UserContext.Provider value={null}>
+    <CookiesProvider>
+      <trpc.Provider client={trpcClient} queryClient={queryClient}>
+        <QueryClientProvider client={queryClient}>
           <MantineProvider theme={theme}>
             <Notifications />
             <RouterProvider router={router} />
           </MantineProvider>
-        </UserContext.Provider>
-      </QueryClientProvider>
-    </trpc.Provider>
+        </QueryClientProvider>
+      </trpc.Provider>
+    </CookiesProvider>
   )
 }
