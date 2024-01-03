@@ -13,23 +13,23 @@ function getClaimsFromAuthHeader(authHeader: string): jwt.JwtPayload {
 	if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "BAD_REQUEST" })
 	const token = authHeader.split(" ")[1]!
 
-	try {
-		const claims = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
-		return claims
-	} catch (e) {}
-
-	throw new TRPCError({ code: "UNAUTHORIZED" })
+	const claims = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
+	return claims
 }
 
 export async function createContext({ req }: trpcExpress.CreateExpressContextOptions): Promise<Context> {
 	const authHeader = req.headers.authorization
 	if (!authHeader) return {}
 
-	const claims = getClaimsFromAuthHeader(authHeader)
-	const userId = claims.sub!
-	const isGuest = claims.isGuest!
+	try {
+		const claims = getClaimsFromAuthHeader(authHeader)
+		const userId = claims.sub!
+		const isGuest = claims.isGuest!
 
-	return { userId, isGuest }
+		return { userId, isGuest }
+	} catch (e) {
+		return {}
+	}
 }
 
 const t = initTRPC.context<Context>().create()
@@ -43,13 +43,13 @@ export const isAuthenticated = t.middleware(({ ctx, next }) => {
 export const isRegisteredUser = t.middleware(({ ctx, next }) => {
 	if (!ctx.userId || ctx.isGuest) throw new TRPCError({ code: "UNAUTHORIZED" })
 
-	return next({ ctx: ctx as { userId: string, isGuest: false }})
+	return next({ ctx: ctx as { userId: string, isGuest: false } })
 })
 
 export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 	if (!ctx.userId) {
 		const guest = await GrpcUserClient.instance.guestLogin({})
-		ctx.userId = guest.userId	
+		ctx.userId = guest.userId
 
 		ctx.isGuest = true
 	}

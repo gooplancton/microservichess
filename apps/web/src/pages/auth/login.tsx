@@ -12,33 +12,26 @@ import {
 } from '@mantine/core'
 import { trpc } from "../../trpc"
 import { useDisclosure } from '@mantine/hooks';
-import { useCookies } from "react-cookie"
 import { notifications } from '@mantine/notifications'
 import { useNavigate } from "react-router-dom";
-import { useUserContext } from "../../user-context";
+import Cookies from "js-cookie"
 
 export function LoginPage() {
   const [email, setEmail] = useState("")
   const [password, setPassword] = useState("")
-  const [_, setCookie, __] = useCookies(["microservichess-user-jwt"])
   const [loading, { open: startLoading, close: stopLoading }] = useDisclosure(false)
   const navigate = useNavigate()
-  const userContext = useUserContext()
 
   const loginUserMutation = trpc.user.loginUser.useMutation()
   const loginGuestMutation = trpc.user.loginGuest.useMutation()
-  const getCurrentUserQuery = trpc.user.getCurrentUser.useQuery(undefined, { enabled: false })
 
   const loginWithEmailAndPassword = useCallback(async () => {
     try {
       startLoading()
       const authToken = await loginUserMutation.mutateAsync({ email, password })
-      setCookie("microservichess-user-jwt", authToken, { path: "/" })
-      await getCurrentUserQuery.refetch()
-      if (!getCurrentUserQuery.data) throw new Error()
+      Cookies.set("microservichess-user-jwt", authToken, { path: "/" })
 
-      userContext.setUser({ ...getCurrentUserQuery.data, _id: getCurrentUserQuery.data.userId })
-      navigate("/home")
+      navigate("/")
     } catch (e) {
       notifications.show({
         autoClose: 2000,
@@ -56,12 +49,9 @@ export function LoginPage() {
 
   const loginAsGuest = useCallback(async () => {
     const authToken = await loginGuestMutation.mutateAsync()
-    setCookie("microservichess-user-jwt", authToken, { path: "/" })
-    await getCurrentUserQuery.refetch()
-    if (!getCurrentUserQuery.data) throw new Error()
+    Cookies.set("microservichess-user-jwt", authToken, { path: "/" })
 
-    userContext.setUser({ ...getCurrentUserQuery.data, _id: getCurrentUserQuery.data.userId })
-    navigate("/home")
+    navigate("/")
   }, [])
 
   return (
