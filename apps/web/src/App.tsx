@@ -7,11 +7,11 @@ import {
   RouterProvider,
 } from "react-router-dom";
 import { LoginPage } from "./pages/auth/login"
-import { GamePage } from "./pages/Game"
 import { createTheme, MantineProvider } from '@mantine/core';
 import { Notifications } from '@mantine/notifications';
 import { SignupPage } from './pages/auth/signup';
 import { HomePage } from './pages/home';
+import { GamePage } from './pages/game';
 import Cookies from 'js-cookie';
 
 const theme = createTheme({

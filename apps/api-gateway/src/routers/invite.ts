@@ -38,7 +38,7 @@ const wait = authenticatedProcedure
 
 			emitter.on('invite-consumed', onInviteLinkConsumed)
 
-			return () =>  emitter.off('invite-consumed', onInviteLinkConsumed)
+			return () => emitter.off('invite-consumed', onInviteLinkConsumed)
 		})
 	})
 
