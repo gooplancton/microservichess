@@ -56,9 +56,8 @@ export function HomePage() {
 
 	const consumeInviteLink = useCallback(async () => {
 		const inviterId = inviteLinkToConsume.split("=")[1]
-		console.log(inviterId)
-		const { gameId } = await consumeInviteMutation.mutateAsync(inviterId)
-		alert(gameId)
+		const { gameId } = await consumeInviteMutation.mutateAsync({ inviterId })
+		if (gameId) navigate("/game?gameId" + gameId)
 
 	}, [inviteLinkToConsume])
 

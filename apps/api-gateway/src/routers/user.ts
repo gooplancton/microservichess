@@ -1,13 +1,6 @@
 import { z } from "zod"
-import { authenticatedProcedure, router } from "../trpc"
-import { possiblyCreateGuest, publicProcedure } from "../trpc";
-import jwt from "jsonwebtoken"
-import { JWT_SECRET } from "../config";
+import { authenticatedProcedure, createUserJWT, router, possiblyCreateGuest, publicProcedure } from "../trpc"
 import { GrpcUserClient } from "../grpc-clients";
-
-function createUserJWT(userId: string, isGuest: boolean): string {
-	return jwt.sign({ sub: userId, isGuest }, JWT_SECRET)
-}
 
 const userLoginInputSchema = z.strictObject({
 	email: z.string().email(),

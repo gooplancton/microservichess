@@ -10,7 +10,8 @@ export function useWaitForOpponent() {
   trpc.invite.wait.useSubscription(
     undefined,
     {
-      enabled: isWaiting,
+      enabled: true,
+      onStarted: () => console.log("started waiting"),
       onData: (gameJoined) => navigate(`/game?gameId=${gameJoined.gameId}`)
     }
   )

@@ -21,7 +21,7 @@ const join = authenticatedProcedure
 
 			emitter.on('move', onMoveValidated)
 
-			return () => emitter.off('move', onMoveValidated)
+			return () => emitter.off('move', emit.next)
 		})
 	})
 

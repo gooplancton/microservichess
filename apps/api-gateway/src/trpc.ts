@@ -3,26 +3,36 @@ import * as trpcExpress from '@trpc/server/adapters/express';
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "./config";
 import { GrpcUserClient } from "./grpc-clients";
+import { CreateWSSContextFnOptions } from "@trpc/server/adapters/ws";
 
 type Context = {
 	userId?: string
 	isGuest?: boolean
+	jwt?: string
 }
 
-function getClaimsFromAuthHeader(authHeader: string): jwt.JwtPayload {
-	if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "BAD_REQUEST" })
-	const token = authHeader.split(" ")[1]!
-
-	const claims = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
-	return claims
+export function createUserJWT(userId: string, isGuest: boolean): string {
+	return jwt.sign({ sub: userId, isGuest }, JWT_SECRET)
 }
 
-export async function createContext({ req }: trpcExpress.CreateExpressContextOptions): Promise<Context> {
+export async function createContext({ req }: trpcExpress.CreateExpressContextOptions | CreateWSSContextFnOptions): Promise<Context> {
+	let token: string
+
 	const authHeader = req.headers.authorization
-	if (!authHeader) return {}
+	const cookie = req.headers.cookie
+
+	if (authHeader) {
+		if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "BAD_REQUEST" })
+		token = authHeader.split(" ")[1]!
+	} else if (cookie) {
+		// TODO: fix
+		token = cookie.split("microservichess-user-jwt=")[1]!
+	} else {
+		return {}
+	}
 
 	try {
-		const claims = getClaimsFromAuthHeader(authHeader)
+		const claims = jwt.verify(token, JWT_SECRET) as jwt.JwtPayload
 		const userId = claims.sub!
 		const isGuest = claims.isGuest!
 
@@ -52,6 +62,7 @@ export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 		ctx.userId = guest.userId
 
 		ctx.isGuest = true
+		ctx.jwt = createUserJWT(ctx.userId, true)
 	}
 
 	return next({ ctx: ctx as { userId: string, isGuest: boolean } })

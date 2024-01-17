@@ -1,11 +1,13 @@
-import express from "express"
 import * as trpcExpress from "@trpc/server/adapters/express"
-import { createContext, router } from "./trpc"
+import { applyWSSHandler } from "@trpc/server/adapters/ws"
+import cors from "cors"
+import express from "express"
+import { renderTrpcPanel } from "trpc-panel"
+import ws from "ws"
+import { gameRouter } from "./routers/game"
 import { inviteRouter } from "./routers/invite"
 import { userRouter } from "./routers/user"
-import { gameRouter } from "./routers/game"
-import { renderTrpcPanel } from "trpc-panel"
-import cors from "cors"
+import { createContext, router } from "./trpc"
 
 const app = express()
 const appRouter = router({
@@ -27,7 +29,27 @@ app.use("/panel", (_, res) => {
 	)
 })
 
-app.listen(8080)
+const server = app.listen(8080)
+
+const wss = new ws.Server({ server })
+const handler = applyWSSHandler({
+	wss,
+	router: appRouter,
+	createContext
+})
+
+wss.on('connection', function connection(ws) {
+	ws.on('error', console.error)
+
+	ws.on('message', function message(data) {
+		console.log('received: %s', data)
+	})
+})
 
 export type AppRouter = typeof appRouter
 
+process.on('SIGTERM', () => {
+	console.log('SIGTERM')
+	handler.broadcastReconnectNotification()
+	wss.close()
+})

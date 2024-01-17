@@ -20,13 +20,13 @@ const create = authenticatedProcedure
 
 const consume = publicProcedure
 	.use(possiblyCreateGuest)
-	.input(z.string())
-	.mutation(async ({ ctx, input: inviterId }) => {
-		const res = await GrpcInviteClient.instance.consumeInviteLink({ userId: ctx.userId, inviterId })
-		const inviteLinkComsumedInfo: InviteLinkConsumedInfo = { gameId: res.gameId, inviterId, joinerId: ctx.userId }
+	.input(z.object({ inviterId: z.string() }))
+	.mutation(async ({ ctx, input }) => {
+		const res = await GrpcInviteClient.instance.consumeInviteLink({ userId: ctx.userId, inviterId: input.inviterId })
+		const inviteLinkComsumedInfo: InviteLinkConsumedInfo = { gameId: res.gameId, inviterId: input.inviterId, joinerId: ctx.userId }
 		emitter.emit("invite-consumed", inviteLinkComsumedInfo)
 
-		return res
+		return { gameId: res.gameId, jwt: ctx.jwt }
 	})
 
 const wait = authenticatedProcedure
@@ -38,7 +38,7 @@ const wait = authenticatedProcedure
 
 			emitter.on('invite-consumed', onInviteLinkConsumed)
 
-			return () => emitter.off('invite-consumed', onInviteLinkConsumed)
+			return () => emitter.off('invite-consumed', emit.next)
 		})
 	})
 

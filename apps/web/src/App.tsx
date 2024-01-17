@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from '@tanstack/react-query';
-import { httpBatchLink } from '@trpc/client';
+import { createWSClient, httpBatchLink, splitLink, wsLink } from '@trpc/client';
 import * as React from 'react';
 import { trpc } from './trpc';
 import {
@@ -13,16 +13,25 @@ import { SignupPage } from './pages/auth/signup';
 import { HomePage } from './pages/home';
 import { GamePage } from './pages/game';
 import Cookies from 'js-cookie';
+import { JoinPage } from './pages/join';
 
 const theme = createTheme({
   /** Put your mantine theme override here */
 });
+
+const wsClient = createWSClient({
+  url: `ws://localhost:8080/trpc`,
+})
 
 export function App() {
   const router = createBrowserRouter([
     {
       path: "/",
       element: <HomePage />
+    },
+    {
+      path: "/join",
+      element: <JoinPage />
     },
     {
       path: "/auth/login",
@@ -42,15 +51,20 @@ export function App() {
   const [trpcClient] = React.useState(() =>
     trpc.createClient({
       links: [
-        httpBatchLink({
-          url: 'http://localhost:8080/trpc',
-          headers() {
-            const jwt = Cookies.get("microservichess-user-jwt")
-            if (jwt) return { authorization: `Bearer ${jwt}` }
+        splitLink({
+          condition: op => op.type === "subscription",
+          true: wsLink({ client: wsClient }),
+          false:
+            httpBatchLink({
+              url: 'http://localhost:8080/trpc',
+              headers() {
+                const jwt = Cookies.get("microservichess-user-jwt")
+                if (jwt) return { authorization: `Bearer ${jwt}` }
 
-            return {}
-          },
-        }),
+                return {}
+              },
+            }),
+        })
       ],
     }),
   )
