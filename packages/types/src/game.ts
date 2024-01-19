@@ -1,4 +1,4 @@
-import { z } from "zod" 
+import { z } from "zod"
 import { v4 as uuidv4 } from "uuid"
 
 export const moveSchema = z.strictObject({
@@ -9,10 +9,18 @@ export const moveSchema = z.strictObject({
 export type IMove = z.infer<typeof moveSchema>
 export type MoveInput = z.input<typeof moveSchema>
 
-enum PlayAs {
+export enum PlayAs {
 	WHITE = 0,
 	BLACK,
 	RANDOM
+}
+
+export enum GameOutcome {
+	WHITE_WINS = 0,
+	BLCK_WINS = 1,
+	TIE = 2,
+	KEEP_PLAYING = 3,
+	UNRECOGNIZED = -1
 }
 
 export const gameSettingsSchema = z.strictObject({

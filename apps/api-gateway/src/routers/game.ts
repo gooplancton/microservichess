@@ -3,7 +3,9 @@ import { observable } from '@trpc/server/observable';
 import { authenticatedProcedure, registeredUserProcedure, router } from "../trpc";
 import type { MoveValidatedMessage } from "protobufs/dist/game_svc";
 import { EventEmitter } from "events"
-import { GrpcGameClient } from "../grpc-clients";
+import { gameServiceClient } from "../grpc-clients";
+
+// TODO: handle grpc service errors as user errors
 
 const emitter = new EventEmitter()
 
@@ -33,16 +35,23 @@ const submitMoveInputSchema = z.strictObject({
 const makeMove = authenticatedProcedure
 	.input(submitMoveInputSchema)
 	.mutation(async ({ ctx, input }) => {
-		const res = await GrpcGameClient.instance.makeMove({ playerId: ctx.userId, ...input })
+		const res = await gameServiceClient.makeMove({ playerId: ctx.userId, ...input })
+
 		emitter.emit("move", res)
 		return res
 	})
 
 const list = registeredUserProcedure
-	.query(({ ctx }) => GrpcGameClient.instance.getGames({ playerId: ctx.userId }))
+	.query(({ ctx }) => gameServiceClient.getGames({ playerId: ctx.userId }))
+
+const info = authenticatedProcedure
+	.input(z.string())
+	.query(({ input: gameId }) => gameServiceClient.getGameState({ gameId }))
 
 export const gameRouter = router({
 	join,
 	makeMove,
-	list
+	list,
+	info
 })
+

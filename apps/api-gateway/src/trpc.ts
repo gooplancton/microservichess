@@ -2,8 +2,9 @@ import { TRPCError, initTRPC } from "@trpc/server"
 import * as trpcExpress from '@trpc/server/adapters/express';
 import jwt from "jsonwebtoken"
 import { JWT_SECRET } from "./config";
-import { GrpcUserClient } from "./grpc-clients";
 import { CreateWSSContextFnOptions } from "@trpc/server/adapters/ws";
+import cookie from "cookie"
+import { userServiceClient } from "./grpc-clients";
 
 type Context = {
 	userId?: string
@@ -19,14 +20,15 @@ export async function createContext({ req }: trpcExpress.CreateExpressContextOpt
 	let token: string
 
 	const authHeader = req.headers.authorization
-	const cookie = req.headers.cookie
+	const cookieHeader = req.headers.cookie
 
 	if (authHeader) {
 		if (!authHeader.startsWith("Bearer ")) throw new TRPCError({ code: "BAD_REQUEST" })
 		token = authHeader.split(" ")[1]!
-	} else if (cookie) {
-		// TODO: fix
-		token = cookie.split("microservichess-user-jwt=")[1]!
+	} else if (cookieHeader) {
+		const parsedToken = cookie.parse(cookieHeader)["microservichess-user-jwt"]
+		if (parsedToken) token = parsedToken
+		else return {}
 	} else {
 		return {}
 	}
@@ -58,7 +60,7 @@ export const isRegisteredUser = t.middleware(({ ctx, next }) => {
 
 export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
 	if (!ctx.userId) {
-		const guest = await GrpcUserClient.instance.guestLogin({})
+		const guest = await userServiceClient.guestLogin({})
 		ctx.userId = guest.userId
 
 		ctx.isGuest = true

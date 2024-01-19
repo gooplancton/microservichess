@@ -12,8 +12,8 @@ import { Notifications } from '@mantine/notifications';
 import { SignupPage } from './pages/auth/signup';
 import { HomePage } from './pages/home';
 import { GamePage } from './pages/game';
-import Cookies from 'js-cookie';
 import { JoinPage } from './pages/join';
+import Cookies from 'js-cookie';
 
 const theme = createTheme({
   /** Put your mantine theme override here */

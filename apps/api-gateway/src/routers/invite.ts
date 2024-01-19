@@ -1,9 +1,9 @@
 import { z } from "zod"
 import { gameSettingsSchema } from "types"
 import { authenticatedProcedure, possiblyCreateGuest, publicProcedure, router } from "../trpc";
-import { GrpcInviteClient } from "../grpc-clients";
 import { EventEmitter } from "events"
 import { observable } from "@trpc/server/observable";
+import { inviteServiceClient } from "../grpc-clients";
 
 const emitter = new EventEmitter()
 
@@ -16,13 +16,13 @@ type InviteLinkConsumedInfo = z.infer<typeof inviteLinkConsumedSchema>
 
 const create = authenticatedProcedure
 	.input(gameSettingsSchema.partial())
-	.mutation(({ ctx, input: settings }) => GrpcInviteClient.instance.createInviteLink({ userId: ctx.userId, settings }))
+	.mutation(({ ctx, input: settings }) => inviteServiceClient.createInviteLink({ userId: ctx.userId, settings }))
 
 const consume = publicProcedure
 	.use(possiblyCreateGuest)
 	.input(z.object({ inviterId: z.string() }))
 	.mutation(async ({ ctx, input }) => {
-		const res = await GrpcInviteClient.instance.consumeInviteLink({ userId: ctx.userId, inviterId: input.inviterId })
+		const res = await inviteServiceClient.consumeInviteLink({ userId: ctx.userId, inviterId: input.inviterId })
 		const inviteLinkComsumedInfo: InviteLinkConsumedInfo = { gameId: res.gameId, inviterId: input.inviterId, joinerId: ctx.userId }
 		emitter.emit("invite-consumed", inviteLinkComsumedInfo)
 
