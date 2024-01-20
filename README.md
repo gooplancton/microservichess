@@ -1,81 +1,54 @@
-# Turborepo starter
+# microservichess
+### (Big thanks to ChatGPT for typing this all out)
 
-This is an official starter Turborepo.
+Microservichess is a chess service that demonstrates the power of a microservices architecture, residing in a monorepo structured and built using turborepo. This project showcases end-to-end type safety across multiple services, each written in TypeScript and communicating with one another through gRPC. The frontend is built with React, communicating with an API Gateway via tRPC, emphasizing the seamless interaction between gRPC and tRPC.
 
-## Using this example
+# Repository Structure
+## Apps
+1. api-gateway
+The API Gateway serves as the entry point for external requests, orchestrating communication between various microservices.
 
-Run the following command:
+2. game-svc
+The Game Service manages game-related logic and interactions, ensuring the integrity and consistency of chess games.
 
-```sh
-npx create-turbo@latest
-```
+3. invite-svc
+The Invite Service handles the invitation process, allowing users to challenge each other to a game.
 
-## What's inside?
+4. user-svc
+The User Service manages user-related operations, such as authentication, registration, and user profiles.
 
-This Turborepo includes the following packages/apps:
+5. web
+The Web application serves as the frontend, providing users with a dynamic and interactive chess-playing experience.
 
-### Apps and Packages
+## Packages
+1. protobufs
+The Protobufs package contains the Protocol Buffers definitions for communication between microservices, ensuring a standardized contract.
 
-- `docs`: a [Next.js](https://nextjs.org/) app
-- `web`: another [Next.js](https://nextjs.org/) app
-- `@repo/ui`: a stub React component library shared by both `web` and `docs` applications
-- `@repo/eslint-config`: `eslint` configurations (includes `eslint-config-next` and `eslint-config-prettier`)
-- `@repo/typescript-config`: `tsconfig.json`s used throughout the monorepo
+2. types
+The Types package holds shared type definitions and zod validators used across various microservices, maintaining consistency and type safety.
 
-Each package/app is 100% [TypeScript](https://www.typescriptlang.org/).
+3. typescript-config
+The TypeScript Config package provides a standardized TypeScript configuration for the entire monorepo, ensuring consistency in development practices.
 
-### Utilities
+# Tech stack
+TypeScript: All microservices are written in TypeScript, enhancing code readability, maintainability, and type safety.
 
-This Turborepo has some additional tools already setup for you:
+gRPC: Communication between microservices is facilitated through gRPC, ensuring efficient and language-agnostic interaction.
 
-- [TypeScript](https://www.typescriptlang.org/) for static type checking
-- [ESLint](https://eslint.org/) for code linting
-- [Prettier](https://prettier.io) for code formatting
+tRPC: The frontend communicates with the API Gateway using tRPC, showcasing the compatibility and versatility of different communication protocols.
 
-### Build
+React: The Web application is built with React, providing a modern and responsive user interface for an enhanced chess-playing experience.
 
-To build all apps and packages, run the following command:
+TurboRepo: TurboRepo is employed as the build tool, streamlining the development, testing, and deployment processes within the monorepo.
 
-```
-cd my-turborepo
-pnpm build
-```
+# Purpose
+microservichess serves as a comprehensive example of how a monorepo with end-to-end type safety across multiple services, possibly written in different languages, can be achieved. Additionally, it acts as a demonstration of the seamless interaction between gRPC and tRPC, highlighting their interoperability in a real-world application.
 
-### Develop
+# Getting Started
+TODO
 
-To develop all apps and packages, run the following command:
+# Contributing
+Contributions to microservichess are welcome! Feel free to open issues for bug reports, feature requests, or general improvements. If you're interested in contributing code, please follow the contribution guidelines outlined in the repository.
 
-```
-cd my-turborepo
-pnpm dev
-```
-
-### Remote Caching
-
-Turborepo can use a technique known as [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching) to share cache artifacts across machines, enabling you to share build caches with your team and CI/CD pipelines.
-
-By default, Turborepo will cache locally. To enable Remote Caching you will need an account with Vercel. If you don't have an account you can [create one](https://vercel.com/signup), then enter the following commands:
-
-```
-cd my-turborepo
-npx turbo login
-```
-
-This will authenticate the Turborepo CLI with your [Vercel account](https://vercel.com/docs/concepts/personal-accounts/overview).
-
-Next, you can link your Turborepo to your Remote Cache by running the following command from the root of your Turborepo:
-
-```
-npx turbo link
-```
-
-## Useful Links
-
-Learn more about the power of Turborepo:
-
-- [Tasks](https://turbo.build/repo/docs/core-concepts/monorepos/running-tasks)
-- [Caching](https://turbo.build/repo/docs/core-concepts/caching)
-- [Remote Caching](https://turbo.build/repo/docs/core-concepts/remote-caching)
-- [Filtering](https://turbo.build/repo/docs/core-concepts/monorepos/filtering)
-- [Configuration Options](https://turbo.build/repo/docs/reference/configuration)
-- [CLI Usage](https://turbo.build/repo/docs/reference/command-line-reference)
+# License
+This project is licensed under the MIT License, granting you the freedom to use and modify the code within the terms specified in the license.
