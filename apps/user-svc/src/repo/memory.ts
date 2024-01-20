@@ -1,8 +1,7 @@
-import { GuestInput, IRegisteredUser, IUser, RegisteredUserInput, guestSchema, registeredUserSchema } from "types";
+import { GuestInput, IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types";
 import { UserRepository } from "./base";
 import { v4 as uuid4 } from "uuid"
-import { genSalt, hash } from "bcrypt"
-import { ServerError, Status } from "nice-grpc";
+
 
 type UserId = string
 

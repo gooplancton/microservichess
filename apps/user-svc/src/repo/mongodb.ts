@@ -1,6 +1,6 @@
 import { UserRepository } from "./base"
 import { MongoClient, Collection, ObjectId } from "mongodb"
-import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "../../../../packages/types/src"
+import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types"
 import { ServerError, Status } from "nice-grpc"
 
 export class MongoDBUserRepository implements UserRepository {
