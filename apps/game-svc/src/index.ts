@@ -1,11 +1,12 @@
 import { GameServiceDefinition } from "protobufs/dist/game_svc"
-import { MemoryGameRepository } from "./repo"
+import { MongoDBGameRepository } from "./repo"
 import { GameService } from "./svc"
 import { createServer } from "nice-grpc"
 
 const SERVER_PORT = 50051
+const MONGODB_URI = "mongodb+srv://0.0.0.0:27017/microservichess"
 
-const repo = new MemoryGameRepository()
+const repo = new MongoDBGameRepository(MONGODB_URI)
 const svc = new GameService(repo)
 const server = createServer()
 server.add(GameServiceDefinition, svc)

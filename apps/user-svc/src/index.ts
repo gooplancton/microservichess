@@ -1,11 +1,12 @@
 import { UserService } from "./svc"
-import { MemoryUserRepository } from "./repo/memory"
 import { createServer } from "nice-grpc"
 import { UserServiceDefinition } from "protobufs/dist/user_svc"
+import { MongoDBUserRepository } from "./repo"
 
 const SERVER_PORT = 50050
+const MONGODB_URI = "mongodb+srv://0.0.0.0:27017/microservichess"
 
-const repo = new MemoryUserRepository()
+const repo = new MongoDBUserRepository(MONGODB_URI)
 const svc = new UserService(repo)
 const server = createServer()
 server.add(UserServiceDefinition, svc)

@@ -4,7 +4,7 @@ import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types
 import { ServerError, Status } from "nice-grpc"
 
 export class MongoDBUserRepository implements UserRepository {
-    connected: boolean
+    connected: boolean = false
     users: Collection<IUser>
 
     constructor(url: string) {

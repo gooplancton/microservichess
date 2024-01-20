@@ -4,7 +4,7 @@ import { GameRepository } from "./base"
 import { ServerError, Status } from "nice-grpc"
 
 export class MongoDBGameRepository implements GameRepository {
-    connected: boolean
+    connected: boolean = false
     games: Collection<IGame>
 
     constructor(url: string) {
