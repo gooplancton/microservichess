@@ -7,8 +7,9 @@
     "build": "tsc"
   },
   "dependencies": {
-    "nice-grpc": "^2.1.7",
     "bcrypt": "^5.1.1",
+    "mongodb": "^6.3.0",
+    "nice-grpc": "^2.1.7",
     "protobufs": "workspace:*",
     "types": "workspace:*",
     "uuid": "^9.0.1"

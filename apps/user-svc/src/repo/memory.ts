@@ -27,14 +27,9 @@ export class MemoryUserRepository implements UserRepository {
         return user
     }
 
-    async createUser(username: string, email: string, password: string) {
-        const emailAvailable = !(await this.findUserByEmail(email))
-        if (!emailAvailable) throw new ServerError(Status.INVALID_ARGUMENT, "email already taken")
-
+    async createUser(username: string, email: string, passwordHash: string, hashSalt: string) {
         const _id = uuid4()
-        const hashSalt = await genSalt()
-        const passwordHash = await hash(password, hashSalt) 
-        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash } as RegisteredUserInput)
+        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash })
 
         this.users.set(_id, user)
 

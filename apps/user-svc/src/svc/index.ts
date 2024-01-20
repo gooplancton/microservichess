@@ -1,6 +1,6 @@
 import type { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceImplementation, UserSignupRequestMessage } from "protobufs/dist/user_svc"
 import { UserRepository } from "../repo";
-import { hash } from "bcrypt"
+import { genSalt, hash } from "bcrypt"
 import { ServerError, Status } from "nice-grpc";
 
 export class UserService implements UserServiceImplementation {
@@ -36,7 +36,13 @@ export class UserService implements UserServiceImplementation {
     }
 
     async userSignup(request: UserSignupRequestMessage): Promise<AuthResponseMessage> {
-        const user = await this.repo.createUser(request.username, request.email, request.password)
+
+        const emailAvailable = !(await this.repo.findUserByEmail(request.email))
+        if (!emailAvailable) throw new ServerError(Status.INVALID_ARGUMENT, "email already taken")
+
+        const hashSalt = await genSalt()
+        const passwordHash = await hash(request.password, hashSalt)
+        const user = await this.repo.createUser(request.username, request.email, passwordHash, hashSalt)
 
         const res = {
             userId: user._id

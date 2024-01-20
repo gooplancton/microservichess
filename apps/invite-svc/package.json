@@ -9,6 +9,7 @@
   "dependencies": {
     "nice-grpc": "^2.1.7",
     "protobufs": "workspace:*",
+    "redis": "^4.6.12",
     "types": "workspace:*",
     "uuid": "^9.0.1"
   },

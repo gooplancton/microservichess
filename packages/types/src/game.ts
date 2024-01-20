@@ -33,7 +33,7 @@ export type IGameSettings = z.infer<typeof gameSettingsSchema>
 export type GameSettingsInput = z.input<typeof gameSettingsSchema>
 
 export const gameSchema = z.strictObject({
-	_id: z.string().default(uuidv4),
+	_id: z.any().default(uuidv4),
 	whitePlayerId: z.string(),
 	blackPlayerId: z.string(),
 	createdAt: z.date().default(new Date()),

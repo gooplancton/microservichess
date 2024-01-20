@@ -7,11 +7,12 @@
     "build": "tsc"
   },
   "dependencies": {
-    "nice-grpc": "^2.1.7",
     "chess.js": "1.0.0-beta.6",
     "mongodb": "^6.3.0",
+    "nice-grpc": "^2.1.7",
     "protobufs": "workspace:*",
-    "types": "workspace:*"
+    "types": "workspace:*",
+    "user-svc": "workspace:^0.0.0"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",
