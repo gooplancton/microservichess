@@ -27,14 +27,15 @@ export class GameService implements GameServiceImplementation {
 
         let timeRemainingWhiteSec = game.settings.maxTimeForPlayerSec ?? Infinity
         let timeRemainingBlackSec = game.settings.maxTimeForPlayerSec ?? Infinity
-        let lastMoveTime = game.createdAt.getTime()
+        let lastMoveTime = game.createdAt
 
         let isWhiteTurn = true
         for (const { move, createdAt } of game.moves) {
-            const elapsedSeconds = Math.floor((createdAt.getTime() - lastMoveTime) / 1000)
+            const elapsedSeconds = Math.floor((createdAt - lastMoveTime) / 1000)
+            const recovery = game.settings.timeGainedOnMoveSec ?? 0
 
-            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + (game.settings.timeGainedOnMoveSec ?? 0)
-            else timeRemainingBlackSec -= elapsedSeconds + (game.settings.timeGainedOnMoveSec ?? 0)
+            if (isWhiteTurn) timeRemainingWhiteSec -= elapsedSeconds + recovery
+            else timeRemainingBlackSec -= elapsedSeconds + recovery
 
             client.move(move)
 
@@ -62,7 +63,6 @@ export class GameService implements GameServiceImplementation {
     }
 
     async makeMove({ playerId, gameId, move }: MakeMoveMessage): Promise<MoveValidatedMessage> {
-        const now = new Date()
         const game = await this.repo.getGame(gameId)
         if (!game) throw new Error("game not found")
 
@@ -71,8 +71,8 @@ export class GameService implements GameServiceImplementation {
         if (colorToMove === "b" && playerId !== game.blackPlayerId) throw new ServerError(Status.INVALID_ARGUMENT, "invalid move")
 
         const { client, timeRemainingBlackSec, timeRemainingWhiteSec } = this.getGameClientAndTimeLeft(game)
-        const lastMoveTime = game.moves.at(-1)?.createdAt.getTime() ?? game.createdAt.getTime()
-        const elapsedSeconds = Math.floor((now.getTime() - lastMoveTime) / 1000)
+        const lastMoveTime = game.moves.at(-1)?.createdAt ?? game.createdAt
+        const elapsedSeconds = Math.floor((Date.now() - lastMoveTime) / 1000)
 
         if (timeRemainingWhiteSec <= elapsedSeconds && playerId === game.whitePlayerId) {
             return { gameId: game._id, resultingFen: client.fen(), outcome: GameOutcome.BLACK_WINS, timeRemainingWhiteSec: 0, timeRemainingBlackSec }
@@ -100,7 +100,7 @@ export class GameService implements GameServiceImplementation {
             outcome = GameOutcome.KEEP_PLAYING
         }
 
-        this.repo.submitMove(gameId, { createdAt: now, move }, isGameEndingMove)
+        this.repo.submitMove(gameId, { createdAt: Date.now(), move }, isGameEndingMove)
 
         return { gameId: game._id, resultingFen: client.fen(), outcome, timeRemainingWhiteSec, timeRemainingBlackSec }
     }

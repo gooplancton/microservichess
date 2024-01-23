@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/timestamp.proto";
-
 enum GameOutcome {
     WHITE_WINS = 0;
     BLACK_WINS = 1;
@@ -58,8 +56,8 @@ message GameStateMessage {
 
 message GetGamesMessage {
     string playerId = 1;
-    optional google.protobuf.Timestamp fromTime = 2;
-    optional google.protobuf.Timestamp toTime = 3;
+    optional uint64 fromTime = 2;
+    optional uint64 toTime = 3;
 }
 
 message GameRecordsMessage {
@@ -68,7 +66,7 @@ message GameRecordsMessage {
         string whitePlayerId = 2;
         string blackPlayerId = 3;
         repeated string moves = 4;
-        google.protobuf.Timestamp createdAt = 5;
+        uint64 createdAt = 5;
     }
 
     repeated GameRecordMessage games = 1;

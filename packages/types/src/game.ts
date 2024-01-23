@@ -2,7 +2,7 @@ import { z } from "zod"
 import { v4 as uuidv4 } from "uuid"
 
 export const moveSchema = z.strictObject({
-	createdAt: z.date().default(new Date()),
+	createdAt: z.number().default(Date.now),
 	move: z.string()
 })
 
@@ -33,10 +33,10 @@ export type IGameSettings = z.infer<typeof gameSettingsSchema>
 export type GameSettingsInput = z.input<typeof gameSettingsSchema>
 
 export const gameSchema = z.strictObject({
-	_id: z.any().default(uuidv4),
+	_id: z.string().default(uuidv4),
 	whitePlayerId: z.string(),
 	blackPlayerId: z.string(),
-	createdAt: z.date().default(new Date()),
+	createdAt: z.number().default(Date.now),
 	settings: gameSettingsSchema,
 	moves: z.array(moveSchema).default([]),
 	hasFinished: z.boolean().default(false),

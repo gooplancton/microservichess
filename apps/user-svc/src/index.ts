@@ -4,7 +4,7 @@ import { UserServiceDefinition } from "protobufs/dist/user_svc"
 import { MongoDBUserRepository } from "./repo"
 
 const SERVER_PORT = 50050
-const MONGODB_URI = "mongodb+srv://0.0.0.0:27017/microservichess"
+const MONGODB_URI = "mongodb://0.0.0.0:27017/microservichess"
 
 const repo = new MongoDBUserRepository(MONGODB_URI)
 const svc = new UserService(repo)

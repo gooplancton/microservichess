@@ -1,4 +1,4 @@
-import { Collection, MongoClient, ObjectId } from "mongodb"
+import { Collection, MongoClient } from "mongodb"
 import { IGameSettings, gameSchema, IGame, IMove } from "types";
 import { GameRepository } from "./base"
 import { ServerError, Status } from "nice-grpc"
@@ -11,14 +11,13 @@ export class MongoDBGameRepository implements GameRepository {
         const client = new MongoClient(url)
         client.connect().then(() => this.connected = true)
 
-        this.games = client.db().collection("games")
+        this.games = client.db().collection<IGame>("games")
     }
 
     async createGame(whitePlayerId: string, blackPlayerId: string, settings: IGameSettings) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const gameId = new ObjectId()
-        const game = gameSchema.parse({ whitePlayerId, blackPlayerId, settings, _id: gameId })
+        const game = gameSchema.parse({ whitePlayerId, blackPlayerId, settings })
         await this.games.insertOne(game)
 
         return game
@@ -27,7 +26,7 @@ export class MongoDBGameRepository implements GameRepository {
     async getGame(gameId: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = await this.games.findOne({ _id: new ObjectId(gameId) })
+        const game = await this.games.findOne({ _id: gameId })
 
         return game ?? undefined
     }
@@ -46,11 +45,11 @@ export class MongoDBGameRepository implements GameRepository {
     async submitMove(gameId: string, move: IMove, isGameEndingMove: boolean) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = await this.games.findOne({ _id: new ObjectId(gameId) })
+        const game = await this.games.findOne({ _id: gameId })
         if (!game) throw new Error("no games found with id " + gameId)
 
         await this.games.updateOne(
-            { _id: new ObjectId(gameId) },
+            { _id: gameId },
             {
                 $push: { moves: move },
                 $set: { hasFinished: isGameEndingMove }

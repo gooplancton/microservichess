@@ -4,7 +4,7 @@ import { GameService } from "./svc"
 import { createServer } from "nice-grpc"
 
 const SERVER_PORT = 50051
-const MONGODB_URI = "mongodb+srv://0.0.0.0:27017/microservichess"
+const MONGODB_URI = "mongodb://0.0.0.0:27017/microservichess"
 
 const repo = new MongoDBGameRepository(MONGODB_URI)
 const svc = new GameService(repo)

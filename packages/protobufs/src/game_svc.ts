@@ -1,7 +1,7 @@
 /* eslint-disable */
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
-import { Timestamp } from "./google/protobuf/timestamp";
+import Long = require("long");
 
 export const protobufPackage = "";
 
@@ -132,8 +132,8 @@ export interface GameStateMessage {
 
 export interface GetGamesMessage {
   playerId: string;
-  fromTime?: Date | undefined;
-  toTime?: Date | undefined;
+  fromTime?: number | undefined;
+  toTime?: number | undefined;
 }
 
 export interface GameRecordsMessage {
@@ -145,7 +145,7 @@ export interface GameRecordsMessage_GameRecordMessage {
   whitePlayerId: string;
   blackPlayerId: string;
   moves: string[];
-  createdAt: Date | undefined;
+  createdAt: number;
 }
 
 function createBaseGameSettingsMessage(): GameSettingsMessage {
@@ -768,10 +768,10 @@ export const GetGamesMessage = {
       writer.uint32(10).string(message.playerId);
     }
     if (message.fromTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.fromTime), writer.uint32(18).fork()).ldelim();
+      writer.uint32(16).uint64(message.fromTime);
     }
     if (message.toTime !== undefined) {
-      Timestamp.encode(toTimestamp(message.toTime), writer.uint32(26).fork()).ldelim();
+      writer.uint32(24).uint64(message.toTime);
     }
     return writer;
   },
@@ -791,18 +791,18 @@ export const GetGamesMessage = {
           message.playerId = reader.string();
           continue;
         case 2:
-          if (tag !== 18) {
+          if (tag !== 16) {
             break;
           }
 
-          message.fromTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.fromTime = longToNumber(reader.uint64() as Long);
           continue;
         case 3:
-          if (tag !== 26) {
+          if (tag !== 24) {
             break;
           }
 
-          message.toTime = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.toTime = longToNumber(reader.uint64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -816,8 +816,8 @@ export const GetGamesMessage = {
   fromJSON(object: any): GetGamesMessage {
     return {
       playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
-      fromTime: isSet(object.fromTime) ? fromJsonTimestamp(object.fromTime) : undefined,
-      toTime: isSet(object.toTime) ? fromJsonTimestamp(object.toTime) : undefined,
+      fromTime: isSet(object.fromTime) ? globalThis.Number(object.fromTime) : undefined,
+      toTime: isSet(object.toTime) ? globalThis.Number(object.toTime) : undefined,
     };
   },
 
@@ -827,10 +827,10 @@ export const GetGamesMessage = {
       obj.playerId = message.playerId;
     }
     if (message.fromTime !== undefined) {
-      obj.fromTime = message.fromTime.toISOString();
+      obj.fromTime = Math.round(message.fromTime);
     }
     if (message.toTime !== undefined) {
-      obj.toTime = message.toTime.toISOString();
+      obj.toTime = Math.round(message.toTime);
     }
     return obj;
   },
@@ -909,7 +909,7 @@ export const GameRecordsMessage = {
 };
 
 function createBaseGameRecordsMessage_GameRecordMessage(): GameRecordsMessage_GameRecordMessage {
-  return { gameId: "", whitePlayerId: "", blackPlayerId: "", moves: [], createdAt: undefined };
+  return { gameId: "", whitePlayerId: "", blackPlayerId: "", moves: [], createdAt: 0 };
 }
 
 export const GameRecordsMessage_GameRecordMessage = {
@@ -926,8 +926,8 @@ export const GameRecordsMessage_GameRecordMessage = {
     for (const v of message.moves) {
       writer.uint32(34).string(v!);
     }
-    if (message.createdAt !== undefined) {
-      Timestamp.encode(toTimestamp(message.createdAt), writer.uint32(42).fork()).ldelim();
+    if (message.createdAt !== 0) {
+      writer.uint32(40).uint64(message.createdAt);
     }
     return writer;
   },
@@ -968,11 +968,11 @@ export const GameRecordsMessage_GameRecordMessage = {
           message.moves.push(reader.string());
           continue;
         case 5:
-          if (tag !== 42) {
+          if (tag !== 40) {
             break;
           }
 
-          message.createdAt = fromTimestamp(Timestamp.decode(reader, reader.uint32()));
+          message.createdAt = longToNumber(reader.uint64() as Long);
           continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
@@ -989,7 +989,7 @@ export const GameRecordsMessage_GameRecordMessage = {
       whitePlayerId: isSet(object.whitePlayerId) ? globalThis.String(object.whitePlayerId) : "",
       blackPlayerId: isSet(object.blackPlayerId) ? globalThis.String(object.blackPlayerId) : "",
       moves: globalThis.Array.isArray(object?.moves) ? object.moves.map((e: any) => globalThis.String(e)) : [],
-      createdAt: isSet(object.createdAt) ? fromJsonTimestamp(object.createdAt) : undefined,
+      createdAt: isSet(object.createdAt) ? globalThis.Number(object.createdAt) : 0,
     };
   },
 
@@ -1007,8 +1007,8 @@ export const GameRecordsMessage_GameRecordMessage = {
     if (message.moves?.length) {
       obj.moves = message.moves;
     }
-    if (message.createdAt !== undefined) {
-      obj.createdAt = message.createdAt.toISOString();
+    if (message.createdAt !== 0) {
+      obj.createdAt = Math.round(message.createdAt);
     }
     return obj;
   },
@@ -1022,7 +1022,7 @@ export const GameRecordsMessage_GameRecordMessage = {
     message.whitePlayerId = object.whitePlayerId ?? "";
     message.blackPlayerId = object.blackPlayerId ?? "";
     message.moves = object.moves?.map((e) => e) || [];
-    message.createdAt = object.createdAt ?? undefined;
+    message.createdAt = object.createdAt ?? 0;
     return message;
   },
 };
@@ -1104,26 +1104,16 @@ export type DeepPartial<T> = T extends Builtin ? T
   : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
   : Partial<T>;
 
-function toTimestamp(date: Date): Timestamp {
-  const seconds = date.getTime() / 1_000;
-  const nanos = (date.getTime() % 1_000) * 1_000_000;
-  return { seconds, nanos };
-}
-
-function fromTimestamp(t: Timestamp): Date {
-  let millis = (t.seconds || 0) * 1_000;
-  millis += (t.nanos || 0) / 1_000_000;
-  return new globalThis.Date(millis);
-}
-
-function fromJsonTimestamp(o: any): Date {
-  if (o instanceof globalThis.Date) {
-    return o;
-  } else if (typeof o === "string") {
-    return new globalThis.Date(o);
-  } else {
-    return fromTimestamp(Timestamp.fromJSON(o));
+function longToNumber(long: Long): number {
+  if (long.gt(globalThis.Number.MAX_SAFE_INTEGER)) {
+    throw new globalThis.Error("Value is larger than Number.MAX_SAFE_INTEGER");
   }
+  return long.toNumber();
+}
+
+if (_m0.util.Long !== Long) {
+  _m0.util.Long = Long as any;
+  _m0.configure();
 }
 
 function isSet(value: any): boolean {

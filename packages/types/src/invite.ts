@@ -3,7 +3,7 @@ import { gameSettingsSchema } from "./game";
 
 export const inviteLinkSchema = z.object({
     playerId: z.string(),
-    createdAt: z.date().default(new Date()),
+    createdAt: z.number().default(Date.now),
     settings: gameSettingsSchema
 })
 

@@ -1,6 +1,6 @@
 import { UserRepository } from "./base"
-import { MongoClient, Collection, ObjectId } from "mongodb"
-import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types"
+import { MongoClient, Collection } from "mongodb"
+import { IRegisteredUser, IUser, guestSchema, registeredUserSchema, userSchema } from "types"
 import { ServerError, Status } from "nice-grpc"
 
 export class MongoDBUserRepository implements UserRepository {
@@ -11,14 +11,13 @@ export class MongoDBUserRepository implements UserRepository {
         const client = new MongoClient(url)
         client.connect().then(() => this.connected = true)
 
-        this.users = client.db().collection("users")
+        this.users = client.db().collection<IUser>("users")
     }
 
     async createUser(username: string, email: string, passwordHash: string, hashSalt: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const _id = new ObjectId()
-        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash })
+        const user = registeredUserSchema.parse({ username, email, hashSalt, passwordHash })
 
         await this.users.insertOne(user)
 
@@ -28,12 +27,11 @@ export class MongoDBUserRepository implements UserRepository {
     async createGuest(username?: string | undefined) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const _id = new ObjectId()
-        const guest = guestSchema.parse({ _id, username })
+        const guest = guestSchema.parse({ username })
 
         await this.users.insertOne(guest)
 
-        return guest
+        return guestSchema.parse(guest)
     }
 
     async findUserByEmail(email: string) {
@@ -41,14 +39,14 @@ export class MongoDBUserRepository implements UserRepository {
 
         const user = await this.users.findOne({ email, isGuest: false }) as IRegisteredUser
 
-        return user ?? undefined
+        return registeredUserSchema.parse(user) ?? undefined
     }
 
     async findUserById(userId: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
         
-        const user = await this.users.findOne({ _id: new ObjectId(userId), isGuest: false })
+        const user = await this.users.findOne({ _id: userId })
 
-        return user ?? undefined
+        return userSchema.parse(user) ?? undefined
     }
 }
