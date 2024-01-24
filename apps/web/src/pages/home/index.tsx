@@ -17,7 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../../trpc";
 import { useForm } from '@mantine/form';
-import { useWaitForOpponent } from "../../lib/wait-for-opponent";
+import { useWaitForOpponent } from "../../lib";
 
 function getInviteLink(inviterId: string) {
 	return `${window.location.origin}/join?inviterId=${inviterId}`

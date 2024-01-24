@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { trpc } from "../trpc";
+import { trpc } from "../../trpc";
 import { useNavigate } from "react-router-dom";
 
 export function useWaitForOpponent() {

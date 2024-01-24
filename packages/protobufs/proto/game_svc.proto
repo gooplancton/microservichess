@@ -52,6 +52,8 @@ message GameStateMessage {
     uint32 timeRemainingWhiteSec = 2;
     uint32 timeRemainingBlackSec = 3;
     repeated string moves = 4;
+    string whitePlayerId = 5;
+    string blackPlayerId = 6;
 }
 
 message GetGamesMessage {

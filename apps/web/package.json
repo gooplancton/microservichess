@@ -27,7 +27,8 @@
     "react-router-dom": "^6.20.1",
     "sort-by": "^1.2.0",
     "types": "workspace:*",
-    "zustand": "^4.4.7"
+    "zustand": "^4.4.7",
+    "chess.js": "1.0.0-beta.6"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

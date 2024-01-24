@@ -56,7 +56,9 @@ export class GameService implements GameServiceImplementation {
             fen: client.fen(),
             timeRemainingBlackSec,
             timeRemainingWhiteSec,
-            moves: game.moves.map(m => m.move)
+            moves: game.moves.map(m => m.move),
+            whitePlayerId: game.whitePlayerId,
+            blackPlayerId: game.blackPlayerId
         }
 
         return res

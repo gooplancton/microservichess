@@ -128,6 +128,8 @@ export interface GameStateMessage {
   timeRemainingWhiteSec: number;
   timeRemainingBlackSec: number;
   moves: string[];
+  whitePlayerId: string;
+  blackPlayerId: string;
 }
 
 export interface GetGamesMessage {
@@ -655,7 +657,14 @@ export const GetGameStateMessage = {
 };
 
 function createBaseGameStateMessage(): GameStateMessage {
-  return { fen: "", timeRemainingWhiteSec: 0, timeRemainingBlackSec: 0, moves: [] };
+  return {
+    fen: "",
+    timeRemainingWhiteSec: 0,
+    timeRemainingBlackSec: 0,
+    moves: [],
+    whitePlayerId: "",
+    blackPlayerId: "",
+  };
 }
 
 export const GameStateMessage = {
@@ -671,6 +680,12 @@ export const GameStateMessage = {
     }
     for (const v of message.moves) {
       writer.uint32(34).string(v!);
+    }
+    if (message.whitePlayerId !== "") {
+      writer.uint32(42).string(message.whitePlayerId);
+    }
+    if (message.blackPlayerId !== "") {
+      writer.uint32(50).string(message.blackPlayerId);
     }
     return writer;
   },
@@ -710,6 +725,20 @@ export const GameStateMessage = {
 
           message.moves.push(reader.string());
           continue;
+        case 5:
+          if (tag !== 42) {
+            break;
+          }
+
+          message.whitePlayerId = reader.string();
+          continue;
+        case 6:
+          if (tag !== 50) {
+            break;
+          }
+
+          message.blackPlayerId = reader.string();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -725,6 +754,8 @@ export const GameStateMessage = {
       timeRemainingWhiteSec: isSet(object.timeRemainingWhiteSec) ? globalThis.Number(object.timeRemainingWhiteSec) : 0,
       timeRemainingBlackSec: isSet(object.timeRemainingBlackSec) ? globalThis.Number(object.timeRemainingBlackSec) : 0,
       moves: globalThis.Array.isArray(object?.moves) ? object.moves.map((e: any) => globalThis.String(e)) : [],
+      whitePlayerId: isSet(object.whitePlayerId) ? globalThis.String(object.whitePlayerId) : "",
+      blackPlayerId: isSet(object.blackPlayerId) ? globalThis.String(object.blackPlayerId) : "",
     };
   },
 
@@ -742,6 +773,12 @@ export const GameStateMessage = {
     if (message.moves?.length) {
       obj.moves = message.moves;
     }
+    if (message.whitePlayerId !== "") {
+      obj.whitePlayerId = message.whitePlayerId;
+    }
+    if (message.blackPlayerId !== "") {
+      obj.blackPlayerId = message.blackPlayerId;
+    }
     return obj;
   },
 
@@ -754,6 +791,8 @@ export const GameStateMessage = {
     message.timeRemainingWhiteSec = object.timeRemainingWhiteSec ?? 0;
     message.timeRemainingBlackSec = object.timeRemainingBlackSec ?? 0;
     message.moves = object.moves?.map((e) => e) || [];
+    message.whitePlayerId = object.whitePlayerId ?? "";
+    message.blackPlayerId = object.blackPlayerId ?? "";
     return message;
   },
 };
