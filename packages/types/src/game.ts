@@ -17,7 +17,7 @@ export enum PlayAs {
 
 export enum GameOutcome {
 	WHITE_WINS = 0,
-	BLCK_WINS = 1,
+	BLACK_WINS = 1,
 	TIE = 2,
 	KEEP_PLAYING = 3,
 	UNRECOGNIZED = -1
@@ -40,6 +40,8 @@ export const gameSchema = z.strictObject({
 	settings: gameSettingsSchema,
 	moves: z.array(moveSchema).default([]),
 	hasFinished: z.boolean().default(false),
+	drawProposedBy: z.string().optional(),
+	outcome: z.nativeEnum(GameOutcome).default(GameOutcome.KEEP_PLAYING)
 })
 
 export type IGame = z.infer<typeof gameSchema>

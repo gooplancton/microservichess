@@ -1,82 +1,92 @@
 syntax = "proto3";
 
 enum GameOutcome {
-    WHITE_WINS = 0;
-    BLACK_WINS = 1;
-    TIE = 2;
-    KEEP_PLAYING = 3;
+  WHITE_WINS = 0;
+  BLACK_WINS = 1;
+  TIE = 2;
+  KEEP_PLAYING = 3;
 }
 
 enum PlayAs {
-    WHITE = 0;
-    BLACK = 1;
-    RANDOM = 2;
+  WHITE = 0;
+  BLACK = 1;
+  RANDOM = 2;
 }
 
 message GameSettingsMessage {
-    optional uint32 maxTimeForPlayerSec = 1; 
-    optional uint32 timeGainedOnMoveSec = 2;
-    optional PlayAs playAs = 3;
+  optional uint32 maxTimeForPlayerSec = 1;
+  optional uint32 timeGainedOnMoveSec = 2;
+  optional PlayAs playAs = 3;
 }
 
 message CreateGameMessage {
-    string whitePlayerId = 1;
-    string blackPlayerId = 2;
-    GameSettingsMessage settings = 3;
+  string whitePlayerId = 1;
+  string blackPlayerId = 2;
+  GameSettingsMessage settings = 3;
 }
 
-message GameCreatedMessage {
-    string gameId = 1;
-}
+message GameCreatedMessage { string gameId = 1; }
 
 message MakeMoveMessage {
-    string gameId = 1;
-    string playerId = 2;
-    string move = 3;
+  string gameId = 1;
+  string playerId = 2;
+  string move = 3;
 }
 
 message MoveValidatedMessage {
-    string gameId = 1;
-    string resultingFen = 2;
-    GameOutcome outcome = 3;
-    uint32 timeRemainingWhiteSec = 4;
-    uint32 timeRemainingBlackSec = 5;
+  string gameId = 1;
+  string resultingFen = 2;
+  GameOutcome outcome = 3;
+  uint32 timeRemainingWhiteSec = 4;
+  uint32 timeRemainingBlackSec = 5;
 }
 
-message GetGameStateMessage {
-    string gameId = 1;
-}
+message GetGameStateMessage { string gameId = 1; }
 
 message GameStateMessage {
-    string fen = 1;
-    uint32 timeRemainingWhiteSec = 2;
-    uint32 timeRemainingBlackSec = 3;
-    repeated string moves = 4;
-    string whitePlayerId = 5;
-    string blackPlayerId = 6;
+  string fen = 1;
+  uint32 timeRemainingWhiteSec = 2;
+  uint32 timeRemainingBlackSec = 3;
+  repeated string moves = 4;
+  string whitePlayerId = 5;
+  string blackPlayerId = 6;
 }
 
 message GetGamesMessage {
-    string playerId = 1;
-    optional uint64 fromTime = 2;
-    optional uint64 toTime = 3;
+  string playerId = 1;
+  optional uint64 fromTime = 2;
+  optional uint64 toTime = 3;
 }
 
 message GameRecordsMessage {
-    message GameRecordMessage {
-        string gameId = 1;
-        string whitePlayerId = 2;
-        string blackPlayerId = 3;
-        repeated string moves = 4;
-        uint64 createdAt = 5;
-    }
+  message GameRecordMessage {
+    string gameId = 1;
+    string whitePlayerId = 2;
+    string blackPlayerId = 3;
+    repeated string moves = 4;
+    uint64 createdAt = 5;
+  }
 
-    repeated GameRecordMessage games = 1;
+  repeated GameRecordMessage games = 1;
 }
 
+message ProposeDrawMessage {
+  string playerId = 1;
+  string gameId = 2;
+}
+
+message AcceptDrawMessage {
+  string playerId = 1;
+  string gameId = 2;
+}
+
+message GameSvcEmptyMessage {}
+
 service GameService {
-    rpc CreateGame(CreateGameMessage) returns (GameCreatedMessage) {}
-    rpc MakeMove(MakeMoveMessage) returns (MoveValidatedMessage) {}
-    rpc GetGameState(GetGameStateMessage) returns (GameStateMessage) {}
-    rpc GetGames(GetGamesMessage) returns (GameRecordsMessage) {}
+  rpc CreateGame(CreateGameMessage) returns (GameCreatedMessage) {}
+  rpc MakeMove(MakeMoveMessage) returns (MoveValidatedMessage) {}
+  rpc GetGameState(GetGameStateMessage) returns (GameStateMessage) {}
+  rpc GetGames(GetGamesMessage) returns (GameRecordsMessage) {}
+  rpc ProposeDraw(ProposeDrawMessage) returns (GameSvcEmptyMessage) {}
+  rpc AcceptDraw(AcceptDrawMessage) returns (GameSvcEmptyMessage) {}
 }

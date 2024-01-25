@@ -5,7 +5,7 @@ import { GameCreatedMessage, GameSettingsMessage } from "./game_svc";
 
 export const protobufPackage = "";
 
-export interface EmptyMessage {
+export interface InviteSvcEmptyMessage {
 }
 
 export interface CreateInviteLinkMessage {
@@ -30,19 +30,19 @@ export interface InvalidateLinkMessage {
   userId: string;
 }
 
-function createBaseEmptyMessage(): EmptyMessage {
+function createBaseInviteSvcEmptyMessage(): InviteSvcEmptyMessage {
   return {};
 }
 
-export const EmptyMessage = {
-  encode(_: EmptyMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const InviteSvcEmptyMessage = {
+  encode(_: InviteSvcEmptyMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): EmptyMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): InviteSvcEmptyMessage {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseEmptyMessage();
+    const message = createBaseInviteSvcEmptyMessage();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -55,20 +55,20 @@ export const EmptyMessage = {
     return message;
   },
 
-  fromJSON(_: any): EmptyMessage {
+  fromJSON(_: any): InviteSvcEmptyMessage {
     return {};
   },
 
-  toJSON(_: EmptyMessage): unknown {
+  toJSON(_: InviteSvcEmptyMessage): unknown {
     const obj: any = {};
     return obj;
   },
 
-  create(base?: DeepPartial<EmptyMessage>): EmptyMessage {
-    return EmptyMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<InviteSvcEmptyMessage>): InviteSvcEmptyMessage {
+    return InviteSvcEmptyMessage.fromPartial(base ?? {});
   },
-  fromPartial(_: DeepPartial<EmptyMessage>): EmptyMessage {
-    const message = createBaseEmptyMessage();
+  fromPartial(_: DeepPartial<InviteSvcEmptyMessage>): InviteSvcEmptyMessage {
+    const message = createBaseInviteSvcEmptyMessage();
     return message;
   },
 };
@@ -419,7 +419,7 @@ export const InviteServiceDefinition = {
       name: "invalidateInviteLink",
       requestType: InvalidateLinkMessage,
       requestStream: false,
-      responseType: EmptyMessage,
+      responseType: InviteSvcEmptyMessage,
       responseStream: false,
       options: {},
     },
@@ -438,7 +438,7 @@ export interface InviteServiceImplementation<CallContextExt = {}> {
   invalidateInviteLink(
     request: InvalidateLinkMessage,
     context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<EmptyMessage>>;
+  ): Promise<DeepPartial<InviteSvcEmptyMessage>>;
 }
 
 export interface InviteServiceClient<CallOptionsExt = {}> {
@@ -453,7 +453,7 @@ export interface InviteServiceClient<CallOptionsExt = {}> {
   invalidateInviteLink(
     request: DeepPartial<InvalidateLinkMessage>,
     options?: CallOptions & CallOptionsExt,
-  ): Promise<EmptyMessage>;
+  ): Promise<InviteSvcEmptyMessage>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

@@ -150,6 +150,19 @@ export interface GameRecordsMessage_GameRecordMessage {
   createdAt: number;
 }
 
+export interface ProposeDrawMessage {
+  playerId: string;
+  gameId: string;
+}
+
+export interface AcceptDrawMessage {
+  playerId: string;
+  gameId: string;
+}
+
+export interface GameSvcEmptyMessage {
+}
+
 function createBaseGameSettingsMessage(): GameSettingsMessage {
   return { maxTimeForPlayerSec: undefined, timeGainedOnMoveSec: undefined, playAs: undefined };
 }
@@ -1066,6 +1079,197 @@ export const GameRecordsMessage_GameRecordMessage = {
   },
 };
 
+function createBaseProposeDrawMessage(): ProposeDrawMessage {
+  return { playerId: "", gameId: "" };
+}
+
+export const ProposeDrawMessage = {
+  encode(message: ProposeDrawMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.playerId !== "") {
+      writer.uint32(10).string(message.playerId);
+    }
+    if (message.gameId !== "") {
+      writer.uint32(18).string(message.gameId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): ProposeDrawMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseProposeDrawMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.playerId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.gameId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): ProposeDrawMessage {
+    return {
+      playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
+      gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
+    };
+  },
+
+  toJSON(message: ProposeDrawMessage): unknown {
+    const obj: any = {};
+    if (message.playerId !== "") {
+      obj.playerId = message.playerId;
+    }
+    if (message.gameId !== "") {
+      obj.gameId = message.gameId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<ProposeDrawMessage>): ProposeDrawMessage {
+    return ProposeDrawMessage.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<ProposeDrawMessage>): ProposeDrawMessage {
+    const message = createBaseProposeDrawMessage();
+    message.playerId = object.playerId ?? "";
+    message.gameId = object.gameId ?? "";
+    return message;
+  },
+};
+
+function createBaseAcceptDrawMessage(): AcceptDrawMessage {
+  return { playerId: "", gameId: "" };
+}
+
+export const AcceptDrawMessage = {
+  encode(message: AcceptDrawMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.playerId !== "") {
+      writer.uint32(10).string(message.playerId);
+    }
+    if (message.gameId !== "") {
+      writer.uint32(18).string(message.gameId);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): AcceptDrawMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseAcceptDrawMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.playerId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.gameId = reader.string();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): AcceptDrawMessage {
+    return {
+      playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
+      gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
+    };
+  },
+
+  toJSON(message: AcceptDrawMessage): unknown {
+    const obj: any = {};
+    if (message.playerId !== "") {
+      obj.playerId = message.playerId;
+    }
+    if (message.gameId !== "") {
+      obj.gameId = message.gameId;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<AcceptDrawMessage>): AcceptDrawMessage {
+    return AcceptDrawMessage.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<AcceptDrawMessage>): AcceptDrawMessage {
+    const message = createBaseAcceptDrawMessage();
+    message.playerId = object.playerId ?? "";
+    message.gameId = object.gameId ?? "";
+    return message;
+  },
+};
+
+function createBaseGameSvcEmptyMessage(): GameSvcEmptyMessage {
+  return {};
+}
+
+export const GameSvcEmptyMessage = {
+  encode(_: GameSvcEmptyMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): GameSvcEmptyMessage {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseGameSvcEmptyMessage();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(_: any): GameSvcEmptyMessage {
+    return {};
+  },
+
+  toJSON(_: GameSvcEmptyMessage): unknown {
+    const obj: any = {};
+    return obj;
+  },
+
+  create(base?: DeepPartial<GameSvcEmptyMessage>): GameSvcEmptyMessage {
+    return GameSvcEmptyMessage.fromPartial(base ?? {});
+  },
+  fromPartial(_: DeepPartial<GameSvcEmptyMessage>): GameSvcEmptyMessage {
+    const message = createBaseGameSvcEmptyMessage();
+    return message;
+  },
+};
+
 export type GameServiceDefinition = typeof GameServiceDefinition;
 export const GameServiceDefinition = {
   name: "GameService",
@@ -1103,6 +1307,22 @@ export const GameServiceDefinition = {
       responseStream: false,
       options: {},
     },
+    proposeDraw: {
+      name: "ProposeDraw",
+      requestType: ProposeDrawMessage,
+      requestStream: false,
+      responseType: GameSvcEmptyMessage,
+      responseStream: false,
+      options: {},
+    },
+    acceptDraw: {
+      name: "AcceptDraw",
+      requestType: AcceptDrawMessage,
+      requestStream: false,
+      responseType: GameSvcEmptyMessage,
+      responseStream: false,
+      options: {},
+    },
   },
 } as const;
 
@@ -1117,6 +1337,14 @@ export interface GameServiceImplementation<CallContextExt = {}> {
     context: CallContext & CallContextExt,
   ): Promise<DeepPartial<GameStateMessage>>;
   getGames(request: GetGamesMessage, context: CallContext & CallContextExt): Promise<DeepPartial<GameRecordsMessage>>;
+  proposeDraw(
+    request: ProposeDrawMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<GameSvcEmptyMessage>>;
+  acceptDraw(
+    request: AcceptDrawMessage,
+    context: CallContext & CallContextExt,
+  ): Promise<DeepPartial<GameSvcEmptyMessage>>;
 }
 
 export interface GameServiceClient<CallOptionsExt = {}> {
@@ -1133,6 +1361,14 @@ export interface GameServiceClient<CallOptionsExt = {}> {
     options?: CallOptions & CallOptionsExt,
   ): Promise<GameStateMessage>;
   getGames(request: DeepPartial<GetGamesMessage>, options?: CallOptions & CallOptionsExt): Promise<GameRecordsMessage>;
+  proposeDraw(
+    request: DeepPartial<ProposeDrawMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<GameSvcEmptyMessage>;
+  acceptDraw(
+    request: DeepPartial<AcceptDrawMessage>,
+    options?: CallOptions & CallOptionsExt,
+  ): Promise<GameSvcEmptyMessage>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

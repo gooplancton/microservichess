@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "mongodb"
-import { IGameSettings, gameSchema, IGame, IMove } from "types";
+import { IGameSettings, gameSchema, IGame, IMove, PlayAs, GameOutcome } from "types";
 import { GameRepository } from "./base"
 import { ServerError, Status } from "nice-grpc"
 
@@ -34,32 +34,47 @@ export class MongoDBGameRepository implements GameRepository {
     async getGames(playerId: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const games = await this.games.find({ $or: [
-            { whitePlayerId: playerId },
-            { blackPlayerId: playerId }
-        ]}).toArray()
+        const games = await this.games.find({
+            $or: [
+                { whitePlayerId: playerId },
+                { blackPlayerId: playerId }
+            ]
+        }).toArray()
 
         return games
     }
 
-    async submitMove(gameId: string, move: IMove, isGameEndingMove: boolean) {
+    async submitMove(gameId: string, move: IMove, outcome: GameOutcome) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = await this.games.findOne({ _id: gameId })
-        if (!game) throw new Error("no games found with id " + gameId)
-
-        await this.games.updateOne(
+        const game = await this.games.findOneAndUpdate(
             { _id: gameId },
             {
                 $push: { moves: move },
-                $set: { hasFinished: isGameEndingMove }
+                $set: { hasFinished: outcome !== GameOutcome.KEEP_PLAYING },
+                $unset: { drawProposedBy: true }
+            },
+        )
+
+        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
+
+        return game
+    }
+
+    async updateDrawOffer(gameId: string, proposingPlayerId?: string | undefined) {
+        if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
+
+        const game = await this.games.findOneAndUpdate(
+            { _id: gameId },
+            {
+                $set: {
+                    drawProposedBy: proposingPlayerId
+                },
             }
         )
 
-        return {
-            ...game,
-            moves: [...game.moves, move],
-            hasFinished: isGameEndingMove
-        }
+        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
+
+        return game
     }
 }

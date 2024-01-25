@@ -48,10 +48,25 @@ const info = authenticatedProcedure
 	.input(z.string())
 	.query(({ input: gameId }) => gameServiceClient.getGameState({ gameId }))
 
+const proposeDraw = authenticatedProcedure
+	.input(z.string())
+	.mutation(({ input: gameId, ctx }) => gameServiceClient.proposeDraw({ gameId, playerId: ctx.userId }))
+
+const acceptDraw = authenticatedProcedure
+	.input(z.string())
+	.mutation(({ input: gameId, ctx }) => gameServiceClient.acceptDraw({ gameId, playerId: ctx.userId }))
+
+const forfeit = authenticatedProcedure
+	.input(z.string())
+	.mutation(({ input: gameId, ctx }) => gameServiceClient.makeMove({ gameId, playerId: ctx.userId, move: "[FORFEIT]" }))
+
 export const gameRouter = router({
 	join,
 	makeMove,
 	list,
-	info
+	info,
+	proposeDraw,
+	acceptDraw,
+	forfeit
 })
 

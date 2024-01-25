@@ -1,5 +1,6 @@
-import { GameInput, IGame, IGameSettings, IMove, gameSchema } from "types";
+import { GameInput, GameOutcome, IGame, IGameSettings, IMove, PlayAs, gameSchema } from "types";
 import { GameRepository } from "./base";
+import { ServerError, Status } from "nice-grpc";
 
 export class MemoryGameRepository implements GameRepository {
     games: Map<string, IGame>
@@ -29,12 +30,22 @@ export class MemoryGameRepository implements GameRepository {
         return Promise.resolve(game)
     }
 
-    submitMove(gameId: string, move: IMove, isGameEndingMove: boolean) {
+    submitMove(gameId: string, move: IMove, outcome: GameOutcome) {
         const game = this.games.get(gameId)
-        if (!game) return Promise.reject("no games found with id " + gameId)
+        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
 
         game.moves.push(move)
-        if (isGameEndingMove) game.hasFinished = true
+        game.drawProposedBy = undefined
+        if (outcome !== GameOutcome.KEEP_PLAYING) game.hasFinished = true
+
+        return Promise.resolve(game)
+    }
+
+    updateDrawOffer(gameId: string, proposingPlayerId: string) {
+        const game = this.games.get(gameId)
+        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
+
+        game.drawProposedBy = proposingPlayerId
 
         return Promise.resolve(game)
     }

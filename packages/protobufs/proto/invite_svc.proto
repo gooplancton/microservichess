@@ -2,7 +2,7 @@ syntax = "proto3";
 
 import "game_svc.proto";
 
-message EmptyMessage {}
+message InviteSvcEmptyMessage {}
 
 message CreateInviteLinkMessage {
     string userId = 1;
@@ -29,5 +29,5 @@ message InvalidateLinkMessage {
 service InviteService {
     rpc createInviteLink(CreateInviteLinkMessage) returns (InviteLinkCreatedMessage) {}
     rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (GameCreatedMessage) {}
-    rpc invalidateInviteLink(InvalidateLinkMessage) returns (EmptyMessage) {}
+    rpc invalidateInviteLink(InvalidateLinkMessage) returns (InviteSvcEmptyMessage) {}
 }
