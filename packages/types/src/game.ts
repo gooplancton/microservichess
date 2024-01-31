@@ -1,48 +1,42 @@
 import { z } from "zod"
 import { v4 as uuidv4 } from "uuid"
+import { gameProtos } from "protobufs"
+
+export const INITIAL_FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1"
 
 export const moveSchema = z.strictObject({
 	createdAt: z.number().default(Date.now),
-	move: z.string()
+	san: z.string()
 })
 
 export type IMove = z.infer<typeof moveSchema>
-export type MoveInput = z.input<typeof moveSchema>
-
-export enum PlayAs {
-	WHITE = 0,
-	BLACK,
-	RANDOM
-}
-
-export enum GameOutcome {
-	WHITE_WINS = 0,
-	BLACK_WINS = 1,
-	TIE = 2,
-	KEEP_PLAYING = 3,
-	UNRECOGNIZED = -1
-}
 
 export const gameSettingsSchema = z.strictObject({
-	playAs: z.nativeEnum(PlayAs).default(PlayAs.RANDOM),
-	maxTimeForPlayerSec: z.number().min(0).optional(),
-	timeGainedOnMoveSec: z.number().min(0).optional(),
+	time: z.number().min(0).optional(),
+	increment: z.number().min(0).optional(),
 })
 
-export type IGameSettings = z.infer<typeof gameSettingsSchema>
-export type GameSettingsInput = z.input<typeof gameSettingsSchema>
-
-export const gameSchema = z.strictObject({
-	_id: z.string().default(uuidv4),
-	whitePlayerId: z.string(),
-	blackPlayerId: z.string(),
-	createdAt: z.number().default(Date.now),
-	settings: gameSettingsSchema,
+const gameOutcomeSchema = z.nativeEnum(gameProtos.GameOutcome)
+export const gameStateSchema = z.object({
+	fen: z.string().default(INITIAL_FEN),
 	moves: z.array(moveSchema).default([]),
-	hasFinished: z.boolean().default(false),
-	drawProposedBy: z.string().optional(),
-	outcome: z.nativeEnum(GameOutcome).default(GameOutcome.KEEP_PLAYING)
+	outcome: gameOutcomeSchema.default(gameProtos.GameOutcome.KEEP_PLAYING),
+	timeLeftWhite: z.number().optional(),
+	timeLeftBlack: z.number().optional(),
+	drawAskedBy: z.string().optional(),
 })
 
+export type IGameState = z.infer<typeof gameStateSchema>
+export const gameSchema = z.object({
+	_id: z.string().default(uuidv4),
+	createdAt: z.number().default(Date.now),
+	whitePlayerId: z.string(),
+	whitePlayerUsername: z.string().optional(),
+	blackPlayerId: z.string(),
+	blackPlayerUsername: z.string().optional(),
+	settings: gameSettingsSchema,
+	state: gameStateSchema,
+	updatedAt: z.number().default(Date.now)
+})
 export type IGame = z.infer<typeof gameSchema>
-export type GameInput = z.input<typeof gameSchema>
+

@@ -1,17 +1,17 @@
 syntax = "proto3";
 
-message UserLoginRequestMessage {
+message UserLoginRequest {
     string email = 1;
     string password = 2;
 }
 
-message UserSignupRequestMessage {
+message UserSignupRequest {
     string username = 1;
     string password = 2;
     string email = 3;
 }
 
-message GuestAuthRequestMessage {
+message GuestUsernameMsg {
     optional string username = 1;
 }
 
@@ -19,20 +19,19 @@ message GetUserMessage {
     string userId = 1;
 }
 
-message AuthResponseMessage {
+message UserIdMsg {
     string userId = 1;
 }
 
-message UserRecordMessage {
-    string userId = 1;
+message GetUserInfoResponse {
     bool isGuest = 2;
     optional string username = 3;
     optional string email = 4;
 }
 
 service UserService {
-    rpc UserLogin(UserLoginRequestMessage) returns (AuthResponseMessage) {}
-    rpc GuestLogin(GuestAuthRequestMessage) returns (AuthResponseMessage) {}
-    rpc UserSignup(UserSignupRequestMessage) returns (AuthResponseMessage) {}
-    rpc GetUser(GetUserMessage) returns (UserRecordMessage) {}
+    rpc UserLogin(UserLoginRequest) returns (UserIdMsg) {}
+    rpc GuestLogin(GuestUsernameMsg) returns (UserIdMsg) {}
+    rpc UserSignup(UserSignupRequest) returns (UserIdMsg) {}
+    rpc GetUserInfo(UserIdMsg) returns (GetUserInfoResponse) {}
 }

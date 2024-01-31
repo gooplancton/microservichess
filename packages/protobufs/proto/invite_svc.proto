@@ -1,24 +1,28 @@
 syntax = "proto3";
 
-import "game_svc.proto";
-
-message InviteSvcEmptyMessage {}
-
-message CreateInviteLinkMessage {
-    string userId = 1;
-    GameSettingsMessage settings = 2;
+enum PlayAs {
+    WHITE = 0;
+    BLACK = 1;
+    RANDOM = 2;
 }
 
-message ConsumeInviteLinkMessage {
-    string userId = 1;
-    string inviterId = 2;
+message InviteLinkIdMsg {
+    string inviteLinkId = 1;
 }
 
-message InviteLinkCreatedMessage {
+message CreateInviteLinkRequest {
     string userId = 1;
+    optional uint32 time = 2;
+    optional uint32 increment = 3;    
+    optional PlayAs playAs = 4;
 }
 
-message InviteLinkConsumedMessage {
+message ConsumeInviteLinkRequest {
+    string inviteLinkId = 1;
+    string userId = 2;
+}
+
+message ConsumeInviteLinkResponse {
     string gameId = 1;
 }
 
@@ -27,7 +31,7 @@ message InvalidateLinkMessage {
 }
 
 service InviteService {
-    rpc createInviteLink(CreateInviteLinkMessage) returns (InviteLinkCreatedMessage) {}
-    rpc consumeInviteLink(ConsumeInviteLinkMessage) returns (GameCreatedMessage) {}
-    rpc invalidateInviteLink(InvalidateLinkMessage) returns (InviteSvcEmptyMessage) {}
+    rpc CreateInviteLink(CreateInviteLinkRequest) returns (InviteLinkIdMsg) {}
+    rpc ConsumeInviteLink(ConsumeInviteLinkRequest) returns (ConsumeInviteLinkResponse) {}
+    // rpc invalidateInviteLink(InvalidateLinkMessage) returns (InviteSvcEmptyMessage) {}
 }

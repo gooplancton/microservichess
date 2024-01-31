@@ -1,17 +1,28 @@
 import { create } from 'zustand'
 import { INITIAL_FEN } from "../../constants"
 
-type GameContext = {
+type GameState = {
     side: "white" | "black"
-    setSide: (side: "white" | "black") => void
+    isWhiteTurn: boolean
+    moves: string[]
     fen: string
-    setFen: (fen: string) => void
 }
 
-export const useGameContext = create<GameContext>((set) => ({
+type GameContext = GameState & {
+    setInitialState: (state: GameState) => void
+    addMove: (move: string, newFen: string) => void
+}
+
+export const useGameContext = create<GameContext>((set, get) => ({
     side: "white",
-    setSide: (side) => set({ side }),
+    isWhiteTurn: true,
+    moves: [],
     fen: INITIAL_FEN,
-    setFen: (fen) => set({ fen })
+    setInitialState: (state) => set(state),
+    addMove: (move, newFen) => set({
+        isWhiteTurn: get().isWhiteTurn!,
+        moves: [...get().moves, move],
+        fen: newFen
+    })
 }))
 

@@ -4,9 +4,7 @@ import cors from "cors"
 import express from "express"
 import { renderTrpcPanel } from "trpc-panel"
 import ws from "ws"
-import { gameRouter } from "./routers/game"
-import { inviteRouter } from "./routers/invite"
-import { userRouter } from "./routers/user"
+import { inviteRouter, userRouter, gameRouter } from "./routers"
 import { createContext, router } from "./trpc"
 
 const app = express()
@@ -53,3 +51,4 @@ process.on('SIGTERM', () => {
 	handler.broadcastReconnectNotification()
 	wss.close()
 })
+

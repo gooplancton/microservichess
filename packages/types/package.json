@@ -9,7 +9,8 @@
   },
   "dependencies": {
     "zod": "^3.22.4",
-    "uuid": "^9.0.1"
+    "uuid": "^9.0.1",
+    "protobufs": "workspace:*"
   },
   "devDependencies": {
     "@repo/typescript-config": "workspace:*",

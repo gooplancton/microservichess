@@ -5,6 +5,7 @@ import { JWT_SECRET } from "./config";
 import { CreateWSSContextFnOptions } from "@trpc/server/adapters/ws";
 import cookie from "cookie"
 import { userServiceClient } from "./grpc-clients";
+import { EventEmitter } from "events";
 
 type Context = {
 	userId?: string
@@ -74,3 +75,4 @@ export const router = t.router
 export const publicProcedure = t.procedure
 export const authenticatedProcedure = t.procedure.use(isAuthenticated)
 export const registeredUserProcedure = t.procedure.use(isRegisteredUser)
+export const emitter = new EventEmitter()

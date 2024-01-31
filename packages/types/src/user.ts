@@ -11,7 +11,6 @@ export const registeredUserSchema = z.strictObject({
 })
 
 export type IRegisteredUser = z.infer<typeof registeredUserSchema>
-export type RegisteredUserInput = z.input<typeof registeredUserSchema>
 
 export const guestSchema = z.strictObject({
 	_id: z.string().default(uuidv4),
@@ -20,7 +19,6 @@ export const guestSchema = z.strictObject({
 })
 
 export type IGuest = z.infer<typeof guestSchema>
-export type GuestInput = z.input<typeof guestSchema>
 
 export const userInfoSchema = z.strictObject({
 	_id: z.string(),
@@ -36,4 +34,3 @@ export const userSchema = z.discriminatedUnion("isGuest", [
 ])
 
 export type IUser = IRegisteredUser | IGuest
-export type UserInput = RegisteredUserInput | GuestInput

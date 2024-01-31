@@ -4,18 +4,18 @@ import * as _m0 from "protobufjs/minimal";
 
 export const protobufPackage = "";
 
-export interface UserLoginRequestMessage {
+export interface UserLoginRequest {
   email: string;
   password: string;
 }
 
-export interface UserSignupRequestMessage {
+export interface UserSignupRequest {
   username: string;
   password: string;
   email: string;
 }
 
-export interface GuestAuthRequestMessage {
+export interface GuestUsernameMsg {
   username?: string | undefined;
 }
 
@@ -23,23 +23,22 @@ export interface GetUserMessage {
   userId: string;
 }
 
-export interface AuthResponseMessage {
+export interface UserIdMsg {
   userId: string;
 }
 
-export interface UserRecordMessage {
-  userId: string;
+export interface GetUserInfoResponse {
   isGuest: boolean;
   username?: string | undefined;
   email?: string | undefined;
 }
 
-function createBaseUserLoginRequestMessage(): UserLoginRequestMessage {
+function createBaseUserLoginRequest(): UserLoginRequest {
   return { email: "", password: "" };
 }
 
-export const UserLoginRequestMessage = {
-  encode(message: UserLoginRequestMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const UserLoginRequest = {
+  encode(message: UserLoginRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.email !== "") {
       writer.uint32(10).string(message.email);
     }
@@ -49,10 +48,10 @@ export const UserLoginRequestMessage = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UserLoginRequestMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserLoginRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserLoginRequestMessage();
+    const message = createBaseUserLoginRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -79,14 +78,14 @@ export const UserLoginRequestMessage = {
     return message;
   },
 
-  fromJSON(object: any): UserLoginRequestMessage {
+  fromJSON(object: any): UserLoginRequest {
     return {
       email: isSet(object.email) ? globalThis.String(object.email) : "",
       password: isSet(object.password) ? globalThis.String(object.password) : "",
     };
   },
 
-  toJSON(message: UserLoginRequestMessage): unknown {
+  toJSON(message: UserLoginRequest): unknown {
     const obj: any = {};
     if (message.email !== "") {
       obj.email = message.email;
@@ -97,23 +96,23 @@ export const UserLoginRequestMessage = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserLoginRequestMessage>): UserLoginRequestMessage {
-    return UserLoginRequestMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<UserLoginRequest>): UserLoginRequest {
+    return UserLoginRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserLoginRequestMessage>): UserLoginRequestMessage {
-    const message = createBaseUserLoginRequestMessage();
+  fromPartial(object: DeepPartial<UserLoginRequest>): UserLoginRequest {
+    const message = createBaseUserLoginRequest();
     message.email = object.email ?? "";
     message.password = object.password ?? "";
     return message;
   },
 };
 
-function createBaseUserSignupRequestMessage(): UserSignupRequestMessage {
+function createBaseUserSignupRequest(): UserSignupRequest {
   return { username: "", password: "", email: "" };
 }
 
-export const UserSignupRequestMessage = {
-  encode(message: UserSignupRequestMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const UserSignupRequest = {
+  encode(message: UserSignupRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.username !== "") {
       writer.uint32(10).string(message.username);
     }
@@ -126,10 +125,10 @@ export const UserSignupRequestMessage = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UserSignupRequestMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserSignupRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserSignupRequestMessage();
+    const message = createBaseUserSignupRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -163,7 +162,7 @@ export const UserSignupRequestMessage = {
     return message;
   },
 
-  fromJSON(object: any): UserSignupRequestMessage {
+  fromJSON(object: any): UserSignupRequest {
     return {
       username: isSet(object.username) ? globalThis.String(object.username) : "",
       password: isSet(object.password) ? globalThis.String(object.password) : "",
@@ -171,7 +170,7 @@ export const UserSignupRequestMessage = {
     };
   },
 
-  toJSON(message: UserSignupRequestMessage): unknown {
+  toJSON(message: UserSignupRequest): unknown {
     const obj: any = {};
     if (message.username !== "") {
       obj.username = message.username;
@@ -185,11 +184,11 @@ export const UserSignupRequestMessage = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserSignupRequestMessage>): UserSignupRequestMessage {
-    return UserSignupRequestMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<UserSignupRequest>): UserSignupRequest {
+    return UserSignupRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserSignupRequestMessage>): UserSignupRequestMessage {
-    const message = createBaseUserSignupRequestMessage();
+  fromPartial(object: DeepPartial<UserSignupRequest>): UserSignupRequest {
+    const message = createBaseUserSignupRequest();
     message.username = object.username ?? "";
     message.password = object.password ?? "";
     message.email = object.email ?? "";
@@ -197,22 +196,22 @@ export const UserSignupRequestMessage = {
   },
 };
 
-function createBaseGuestAuthRequestMessage(): GuestAuthRequestMessage {
+function createBaseGuestUsernameMsg(): GuestUsernameMsg {
   return { username: undefined };
 }
 
-export const GuestAuthRequestMessage = {
-  encode(message: GuestAuthRequestMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const GuestUsernameMsg = {
+  encode(message: GuestUsernameMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.username !== undefined) {
       writer.uint32(10).string(message.username);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): GuestAuthRequestMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): GuestUsernameMsg {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseGuestAuthRequestMessage();
+    const message = createBaseGuestUsernameMsg();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -232,11 +231,11 @@ export const GuestAuthRequestMessage = {
     return message;
   },
 
-  fromJSON(object: any): GuestAuthRequestMessage {
+  fromJSON(object: any): GuestUsernameMsg {
     return { username: isSet(object.username) ? globalThis.String(object.username) : undefined };
   },
 
-  toJSON(message: GuestAuthRequestMessage): unknown {
+  toJSON(message: GuestUsernameMsg): unknown {
     const obj: any = {};
     if (message.username !== undefined) {
       obj.username = message.username;
@@ -244,11 +243,11 @@ export const GuestAuthRequestMessage = {
     return obj;
   },
 
-  create(base?: DeepPartial<GuestAuthRequestMessage>): GuestAuthRequestMessage {
-    return GuestAuthRequestMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<GuestUsernameMsg>): GuestUsernameMsg {
+    return GuestUsernameMsg.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<GuestAuthRequestMessage>): GuestAuthRequestMessage {
-    const message = createBaseGuestAuthRequestMessage();
+  fromPartial(object: DeepPartial<GuestUsernameMsg>): GuestUsernameMsg {
+    const message = createBaseGuestUsernameMsg();
     message.username = object.username ?? undefined;
     return message;
   },
@@ -311,22 +310,22 @@ export const GetUserMessage = {
   },
 };
 
-function createBaseAuthResponseMessage(): AuthResponseMessage {
+function createBaseUserIdMsg(): UserIdMsg {
   return { userId: "" };
 }
 
-export const AuthResponseMessage = {
-  encode(message: AuthResponseMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const UserIdMsg = {
+  encode(message: UserIdMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AuthResponseMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): UserIdMsg {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAuthResponseMessage();
+    const message = createBaseUserIdMsg();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -346,11 +345,11 @@ export const AuthResponseMessage = {
     return message;
   },
 
-  fromJSON(object: any): AuthResponseMessage {
+  fromJSON(object: any): UserIdMsg {
     return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
   },
 
-  toJSON(message: AuthResponseMessage): unknown {
+  toJSON(message: UserIdMsg): unknown {
     const obj: any = {};
     if (message.userId !== "") {
       obj.userId = message.userId;
@@ -358,25 +357,22 @@ export const AuthResponseMessage = {
     return obj;
   },
 
-  create(base?: DeepPartial<AuthResponseMessage>): AuthResponseMessage {
-    return AuthResponseMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<UserIdMsg>): UserIdMsg {
+    return UserIdMsg.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<AuthResponseMessage>): AuthResponseMessage {
-    const message = createBaseAuthResponseMessage();
+  fromPartial(object: DeepPartial<UserIdMsg>): UserIdMsg {
+    const message = createBaseUserIdMsg();
     message.userId = object.userId ?? "";
     return message;
   },
 };
 
-function createBaseUserRecordMessage(): UserRecordMessage {
-  return { userId: "", isGuest: false, username: undefined, email: undefined };
+function createBaseGetUserInfoResponse(): GetUserInfoResponse {
+  return { isGuest: false, username: undefined, email: undefined };
 }
 
-export const UserRecordMessage = {
-  encode(message: UserRecordMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
-    if (message.userId !== "") {
-      writer.uint32(10).string(message.userId);
-    }
+export const GetUserInfoResponse = {
+  encode(message: GetUserInfoResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.isGuest === true) {
       writer.uint32(16).bool(message.isGuest);
     }
@@ -389,20 +385,13 @@ export const UserRecordMessage = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): UserRecordMessage {
+  decode(input: _m0.Reader | Uint8Array, length?: number): GetUserInfoResponse {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseUserRecordMessage();
+    const message = createBaseGetUserInfoResponse();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
-        case 1:
-          if (tag !== 10) {
-            break;
-          }
-
-          message.userId = reader.string();
-          continue;
         case 2:
           if (tag !== 16) {
             break;
@@ -433,20 +422,16 @@ export const UserRecordMessage = {
     return message;
   },
 
-  fromJSON(object: any): UserRecordMessage {
+  fromJSON(object: any): GetUserInfoResponse {
     return {
-      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       isGuest: isSet(object.isGuest) ? globalThis.Boolean(object.isGuest) : false,
       username: isSet(object.username) ? globalThis.String(object.username) : undefined,
       email: isSet(object.email) ? globalThis.String(object.email) : undefined,
     };
   },
 
-  toJSON(message: UserRecordMessage): unknown {
+  toJSON(message: GetUserInfoResponse): unknown {
     const obj: any = {};
-    if (message.userId !== "") {
-      obj.userId = message.userId;
-    }
     if (message.isGuest === true) {
       obj.isGuest = message.isGuest;
     }
@@ -459,12 +444,11 @@ export const UserRecordMessage = {
     return obj;
   },
 
-  create(base?: DeepPartial<UserRecordMessage>): UserRecordMessage {
-    return UserRecordMessage.fromPartial(base ?? {});
+  create(base?: DeepPartial<GetUserInfoResponse>): GetUserInfoResponse {
+    return GetUserInfoResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<UserRecordMessage>): UserRecordMessage {
-    const message = createBaseUserRecordMessage();
-    message.userId = object.userId ?? "";
+  fromPartial(object: DeepPartial<GetUserInfoResponse>): GetUserInfoResponse {
+    const message = createBaseGetUserInfoResponse();
     message.isGuest = object.isGuest ?? false;
     message.username = object.username ?? undefined;
     message.email = object.email ?? undefined;
@@ -479,33 +463,33 @@ export const UserServiceDefinition = {
   methods: {
     userLogin: {
       name: "UserLogin",
-      requestType: UserLoginRequestMessage,
+      requestType: UserLoginRequest,
       requestStream: false,
-      responseType: AuthResponseMessage,
+      responseType: UserIdMsg,
       responseStream: false,
       options: {},
     },
     guestLogin: {
       name: "GuestLogin",
-      requestType: GuestAuthRequestMessage,
+      requestType: GuestUsernameMsg,
       requestStream: false,
-      responseType: AuthResponseMessage,
+      responseType: UserIdMsg,
       responseStream: false,
       options: {},
     },
     userSignup: {
       name: "UserSignup",
-      requestType: UserSignupRequestMessage,
+      requestType: UserSignupRequest,
       requestStream: false,
-      responseType: AuthResponseMessage,
+      responseType: UserIdMsg,
       responseStream: false,
       options: {},
     },
-    getUser: {
-      name: "GetUser",
-      requestType: GetUserMessage,
+    getUserInfo: {
+      name: "GetUserInfo",
+      requestType: UserIdMsg,
       requestStream: false,
-      responseType: UserRecordMessage,
+      responseType: GetUserInfoResponse,
       responseStream: false,
       options: {},
     },
@@ -513,35 +497,17 @@ export const UserServiceDefinition = {
 } as const;
 
 export interface UserServiceImplementation<CallContextExt = {}> {
-  userLogin(
-    request: UserLoginRequestMessage,
-    context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<AuthResponseMessage>>;
-  guestLogin(
-    request: GuestAuthRequestMessage,
-    context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<AuthResponseMessage>>;
-  userSignup(
-    request: UserSignupRequestMessage,
-    context: CallContext & CallContextExt,
-  ): Promise<DeepPartial<AuthResponseMessage>>;
-  getUser(request: GetUserMessage, context: CallContext & CallContextExt): Promise<DeepPartial<UserRecordMessage>>;
+  userLogin(request: UserLoginRequest, context: CallContext & CallContextExt): Promise<DeepPartial<UserIdMsg>>;
+  guestLogin(request: GuestUsernameMsg, context: CallContext & CallContextExt): Promise<DeepPartial<UserIdMsg>>;
+  userSignup(request: UserSignupRequest, context: CallContext & CallContextExt): Promise<DeepPartial<UserIdMsg>>;
+  getUserInfo(request: UserIdMsg, context: CallContext & CallContextExt): Promise<DeepPartial<GetUserInfoResponse>>;
 }
 
 export interface UserServiceClient<CallOptionsExt = {}> {
-  userLogin(
-    request: DeepPartial<UserLoginRequestMessage>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<AuthResponseMessage>;
-  guestLogin(
-    request: DeepPartial<GuestAuthRequestMessage>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<AuthResponseMessage>;
-  userSignup(
-    request: DeepPartial<UserSignupRequestMessage>,
-    options?: CallOptions & CallOptionsExt,
-  ): Promise<AuthResponseMessage>;
-  getUser(request: DeepPartial<GetUserMessage>, options?: CallOptions & CallOptionsExt): Promise<UserRecordMessage>;
+  userLogin(request: DeepPartial<UserLoginRequest>, options?: CallOptions & CallOptionsExt): Promise<UserIdMsg>;
+  guestLogin(request: DeepPartial<GuestUsernameMsg>, options?: CallOptions & CallOptionsExt): Promise<UserIdMsg>;
+  userSignup(request: DeepPartial<UserSignupRequest>, options?: CallOptions & CallOptionsExt): Promise<UserIdMsg>;
+  getUserInfo(request: DeepPartial<UserIdMsg>, options?: CallOptions & CallOptionsExt): Promise<GetUserInfoResponse>;
 }
 
 type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;

@@ -6,7 +6,7 @@ import { useGameContext } from "../context/game-context"
 
 export function useGame(gameId: string) {
   const userId = getUserId()
-  const [isConnected, setIsConnected] = useState<boolean>(false)
+  const [isConnected, setIsConnected] = useState(false)
   const { data } = trpc.game.info.useQuery(gameId, { enabled: !isConnected })
   const navigate = useNavigate()
   const gameContext = useGameContext()
@@ -14,8 +14,13 @@ export function useGame(gameId: string) {
   useEffect(() => {
     if (!data) return
 
-    gameContext.setFen(data.fen)
-    gameContext.setSide(userId === data.whitePlayerId ? "white" : "black")
+    const side = userId === data.whitePlayerId ? "white" : "black"
+    gameContext.setInitialState({
+      side,
+      isWhiteTurn: data.moves.length % 2 === 0,
+      fen: data.fen,
+      moves: data.moves
+    })
 
     setIsConnected(true)
   }, [data])
@@ -23,14 +28,14 @@ export function useGame(gameId: string) {
   trpc.game.join.useSubscription({ gameId }, {
     enabled: isConnected,
     onData: (res) => {
-      gameContext.setFen(res.resultingFen)
+      gameContext.addMove("TODO", res.resultingFen)
     }
   })
 
   const makeMoveMutation = trpc.game.makeMove.useMutation()
   const makeMove = async (move: string) => {
     const res = await makeMoveMutation.mutateAsync({ gameId, move })
-    gameContext.setFen(res.resultingFen)
+    gameContext.addMove(move, res.resultingFen)
   }
 
   const leave = () => {
