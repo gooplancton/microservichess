@@ -73,7 +73,7 @@ export class InviteService implements inviteProtos.InviteServiceImplementation {
 
     return {
       gameId,
-      inviterId: inviteLink.inviterId
+      inviterId: inviteLink.inviterId,
     };
   }
 

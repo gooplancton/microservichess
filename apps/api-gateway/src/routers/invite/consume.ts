@@ -18,10 +18,12 @@ export const consume = publicProcedure
   .use(possiblyCreateGuest)
   .input(inputSchema)
   .mutation(async ({ ctx, input }) => {
-    const res = await inviteServiceClient.consumeInviteLink({
-      userId: ctx.userId,
-      inviteLinkId: input.inviteLinkId
-    }).catch(handleGrpcCallError);
+    const res = await inviteServiceClient
+      .consumeInviteLink({
+        userId: ctx.userId,
+        inviteLinkId: input.inviteLinkId,
+      })
+      .catch(handleGrpcCallError);
 
     const inviteLinkComsumedInfo: InviteLinkConsumedInfo = {
       gameId: res.gameId,

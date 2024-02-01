@@ -134,19 +134,20 @@ export class GameService implements gameProtos.GameServiceImplementation {
       (timeLeft ?? Infinity) <= elapsedSeconds || san === "[FORFEIT]";
 
     if (isGameAlreadyOver) {
-      const updatedOutcome = colorToMove === "w"
-        ? gameProtos.GameOutcome.BLACK_WINS
-        : gameProtos.GameOutcome.WHITE_WINS
+      const updatedOutcome =
+        colorToMove === "w"
+          ? gameProtos.GameOutcome.BLACK_WINS
+          : gameProtos.GameOutcome.WHITE_WINS;
 
-      await this.repo.updateGameState(
-        game._id,
-        { ...game.state, outcome: updatedOutcome }
-      )
+      await this.repo.updateGameState(game._id, {
+        ...game.state,
+        outcome: updatedOutcome,
+      });
 
       return {
         gameId: game._id,
         updatedFen: game.state.fen,
-        updatedOutcome
+        updatedOutcome,
       };
     }
 

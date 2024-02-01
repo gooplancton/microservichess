@@ -2,9 +2,11 @@ import { gameSettingsSchema, playAsSchema } from "types";
 import { handleGrpcCallError, inviteServiceClient } from "../../grpc-clients";
 import { authenticatedProcedure } from "../../trpc";
 
-const inputSchema = gameSettingsSchema.extend({
-  playAs: playAsSchema
-}).partial();
+const inputSchema = gameSettingsSchema
+  .extend({
+    playAs: playAsSchema,
+  })
+  .partial();
 
 export const create = authenticatedProcedure
   .input(inputSchema)

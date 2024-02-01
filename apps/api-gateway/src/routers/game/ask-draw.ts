@@ -9,8 +9,10 @@ const inputSchema = z.strictObject({
 export const askDraw = authenticatedProcedure
   .input(inputSchema)
   .mutation(({ input, ctx }) =>
-    gameServiceClient.askDraw({
-      gameId: input.gameId,
-      playerId: ctx.userId,
-    }).catch(handleGrpcCallError),
+    gameServiceClient
+      .askDraw({
+        gameId: input.gameId,
+        playerId: ctx.userId,
+      })
+      .catch(handleGrpcCallError),
   );

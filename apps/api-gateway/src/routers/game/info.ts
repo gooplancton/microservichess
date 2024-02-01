@@ -4,7 +4,6 @@ import { authenticatedProcedure } from "../../trpc";
 
 export const info = authenticatedProcedure
   .input(z.string())
-  .query(({ input: gameId }) => gameServiceClient
-    .getGameInfo({ gameId })
-    .catch(handleGrpcCallError)
+  .query(({ input: gameId }) =>
+    gameServiceClient.getGameInfo({ gameId }).catch(handleGrpcCallError),
   );

@@ -10,4 +10,6 @@ const inputSchema = z.strictObject({
 
 export const signupUser = publicProcedure
   .input(inputSchema)
-  .mutation(({ input }) => userServiceClient.userSignup(input).catch(handleGrpcCallError));
+  .mutation(({ input }) =>
+    userServiceClient.userSignup(input).catch(handleGrpcCallError),
+  );
