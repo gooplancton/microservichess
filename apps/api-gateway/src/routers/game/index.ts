@@ -1,4 +1,4 @@
-import { router } from "../../trpc"
+import { router } from "../../trpc";
 import { join } from "./join";
 import { makeMove } from "./make-move";
 import { list } from "./list";
@@ -8,12 +8,11 @@ import { acceptDraw } from "./accept-draw";
 import { forfeit } from "./forfeit";
 
 export const gameRouter = router({
-	join,
-	makeMove,
-	list,
-	info,
-	askDraw,
-	acceptDraw,
-	forfeit
-})
-
+  join,
+  makeMove,
+  list,
+  info,
+  askDraw,
+  acceptDraw,
+  forfeit,
+});

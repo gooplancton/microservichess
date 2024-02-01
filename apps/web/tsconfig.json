@@ -5,13 +5,9 @@
     "outDir": "./dist",
     "baseUrl": ".",
     "paths": {
-      "@/*": [
-        "./src/*"
-      ]
+      "@/*": ["./src/*"]
     }
   },
-  "include": [
-    "./src/*.ts"
-, "src/lib/context/user-context.ts"  ],
+  "include": ["./src/*.ts", "src/lib/context/user-context.ts"],
   "exclude": ["node_modules"]
 }

@@ -27,8 +27,6 @@ message CreateGameRequest {
   string whitePlayerId = 1;
   string blackPlayerId = 2;
   GameSettingsMsg settings = 3;
-  optional string whitePlayerUsername = 4;
-  optional string blackPlayerUsername = 5;
 }
 
 message GameIdMsg {

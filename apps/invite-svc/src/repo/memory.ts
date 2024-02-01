@@ -2,29 +2,29 @@ import { IInviteLink } from "types";
 import { InviteLinkRepository } from "./base";
 
 export class MemoryInviteLinkRepository implements InviteLinkRepository {
-    links: Map<string, IInviteLink>
+  links: Map<string, IInviteLink>;
 
-    constructor() {
-        this.links = new Map()
-    }
+  constructor() {
+    this.links = new Map();
+  }
 
-    async getInviteLink(inviteLinkId: string): Promise<IInviteLink | null> {
-        const inviteLink = this.links.get(inviteLinkId)
-        if (!inviteLink) return null
+  async getInviteLink(inviteLinkId: string): Promise<IInviteLink | null> {
+    const inviteLink = this.links.get(inviteLinkId);
+    if (!inviteLink) return null;
 
-        return inviteLink
-    }
-    
-    async createInviteLink(inviteLink: IInviteLink): Promise<void> {
-        this.links.set(inviteLink._id, inviteLink)
-    }
+    return inviteLink;
+  }
 
-    async deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null> {
-        const inviteLink = this.links.get(inviteLinkId)
-        if (!inviteLink) return null
+  async createInviteLink(inviteLink: IInviteLink): Promise<void> {
+    this.links.set(inviteLink._id, inviteLink);
+  }
 
-        this.links.delete(inviteLinkId)
+  async deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null> {
+    const inviteLink = this.links.get(inviteLinkId);
+    if (!inviteLink) return null;
 
-        return inviteLink
-    }
+    this.links.delete(inviteLinkId);
+
+    return inviteLink;
+  }
 }

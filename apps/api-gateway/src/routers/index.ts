@@ -1,3 +1,3 @@
-export * from "./game"
-export * from "./invite"
-export * from "./user"
+export * from "./game";
+export * from "./invite";
+export * from "./user";

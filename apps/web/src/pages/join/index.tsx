@@ -5,21 +5,20 @@ import { trpc } from "../../trpc";
 import Cookies from "js-cookie";
 
 export function JoinPage() {
-    const navigate = useNavigate()
-    const [params] = useSearchParams()
-    const consumeLinkMutation = trpc.invite.consume.useMutation()
+  const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const consumeLinkMutation = trpc.invite.consume.useMutation();
 
-    useEffect(() => {
-        const inviterId = params.get("inviterId")
-        if (!inviterId) return navigate("/")
+  useEffect(() => {
+    const inviterId = params.get("inviterId");
+    if (!inviterId) return navigate("/");
 
-        consumeLinkMutation.mutateAsync({ inviterId })
-            .then(({ gameId, jwt }) => {
-                if (jwt) Cookies.set("microservichess-user-jwt", jwt, { path: "/" })
+    consumeLinkMutation.mutateAsync({ inviterId }).then(({ gameId, jwt }) => {
+      if (jwt) Cookies.set("microservichess-user-jwt", jwt, { path: "/" });
 
-                navigate("/game?gameId=" + gameId)
-            })
-    }, [])
+      navigate("/game?gameId=" + gameId);
+    });
+  }, []);
 
-    return <></>
+  return <></>;
 }

@@ -1,7 +1,7 @@
-import { IInviteLink } from "types"
+import { IInviteLink } from "types";
 
 export interface InviteLinkRepository {
-    getInviteLink(inviteLinkId: string): Promise<IInviteLink | null>
-    createInviteLink(inviteLink: IInviteLink): Promise<void>
-    deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null>
+  getInviteLink(inviteLinkId: string): Promise<IInviteLink | null>;
+  createInviteLink(inviteLink: IInviteLink): Promise<void>;
+  deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null>;
 }
