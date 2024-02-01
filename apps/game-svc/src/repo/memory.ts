@@ -1,34 +1,41 @@
 import { IGame, IGameState } from "types";
 import { GameRepository } from "./base";
-
+import { ServerError, Status } from "nice-grpc";
 
 export class MemoryGameRepository implements GameRepository {
-    games: Map<string, IGame>
+  games: Map<string, IGame>;
 
-    constructor() {
-        this.games = new Map()
-    }
+  constructor() {
+    this.games = new Map();
+  }
 
-    async updateGameState(gameId: string, updatedState: IGameState): Promise<IGame> {
-        throw new Error("Method not implemented.");
-    }
+  async updateGameState(gameId: string, updatedState: IGameState) {
+    const game = this.games.get(gameId);
+    if (!game) throw new ServerError(Status.INTERNAL, "unexpected");
 
-    async getGame(gameId: string) {
-        const game = this.games.get(gameId)
-        if (!game) return null
+    game.state = updatedState;
+    game.updatedAt = Date.now();
+  }
 
-        return game
-    }
+  async getGame(gameId: string) {
+    const game = this.games.get(gameId);
+    if (!game) return null;
 
-    async getGames(playerId: string) {
-        const games = Array.from(this.games.entries())
-            .filter(([_, game]) => game.whitePlayerId === playerId || game.blackPlayerId === playerId)
-            .map(([gameId, game]) => ({ gameId, ...game }))
+    return game;
+  }
 
-        return games
-    }
+  async getGames(playerId: string) {
+    const games = Array.from(this.games.entries())
+      .filter(
+        ([_, game]) =>
+          game.whitePlayerId === playerId || game.blackPlayerId === playerId,
+      )
+      .map(([gameId, game]) => ({ gameId, ...game }));
 
-    async createGame(game: IGame) {
-        this.games.set(game._id, game)
-    }
+    return games;
+  }
+
+  async createGame(game: IGame) {
+    this.games.set(game._id, game);
+  }
 }
