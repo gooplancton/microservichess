@@ -12,6 +12,6 @@ export const forfeit = authenticatedProcedure
     gameServiceClient.makeMove({
       gameId: input.gameId,
       playerId: ctx.userId,
-      move: "[FORFEIT]",
+      san: "[FORFEIT]",
     }),
   );

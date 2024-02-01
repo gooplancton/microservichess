@@ -49,9 +49,10 @@ message MakeMoveRequest {
 }
 
 message MakeMoveResponse {
-  string updatedFen = 1;
-  GameOutcome updatedOutcome = 2;
-  optional uint32 updatedTimeLeft = 3;
+  string gameId = 1;
+  string updatedFen = 2;
+  GameOutcome updatedOutcome = 3;
+  optional uint32 updatedTimeLeft = 4;
 }
 
 message AskOrAcceptDrawRequest {

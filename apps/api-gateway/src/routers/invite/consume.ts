@@ -1,16 +1,17 @@
 import { z } from "zod";
 import { publicProcedure, possiblyCreateGuest, emitter } from "../../trpc";
-import { inviteServiceClient } from "../../grpc-clients";
+import { handleGrpcCallError, inviteServiceClient } from "../../grpc-clients";
 
 const inviteLinkConsumedSchema = z.strictObject({
+  inviteLinkId: z.string(),
   inviterId: z.string(),
   joinerId: z.string(),
   gameId: z.string(),
 });
-type InviteLinkConsumedInfo = z.infer<typeof inviteLinkConsumedSchema>;
+export type InviteLinkConsumedInfo = z.infer<typeof inviteLinkConsumedSchema>;
 
 const inputSchema = z.strictObject({
-  inviterId: z.string(),
+  inviteLinkId: z.string(),
 });
 
 export const consume = publicProcedure
@@ -19,13 +20,16 @@ export const consume = publicProcedure
   .mutation(async ({ ctx, input }) => {
     const res = await inviteServiceClient.consumeInviteLink({
       userId: ctx.userId,
-      inviterId: input.inviterId,
-    });
+      inviteLinkId: input.inviteLinkId
+    }).catch(handleGrpcCallError);
+
     const inviteLinkComsumedInfo: InviteLinkConsumedInfo = {
       gameId: res.gameId,
-      inviterId: input.inviterId,
+      inviterId: res.inviterId,
+      inviteLinkId: input.inviteLinkId,
       joinerId: ctx.userId,
     };
+
     emitter.emit("invite-consumed", inviteLinkComsumedInfo);
 
     return { gameId: res.gameId, jwt: ctx.jwt };

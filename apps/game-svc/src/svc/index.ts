@@ -129,17 +129,26 @@ export class GameService implements gameProtos.GameServiceImplementation {
       playerId === game.whitePlayerId
         ? game.state.timeLeftWhite
         : game.state.timeLeftBlack;
+
     const isGameAlreadyOver =
       (timeLeft ?? Infinity) <= elapsedSeconds || san === "[FORFEIT]";
 
-    if (isGameAlreadyOver)
+    if (isGameAlreadyOver) {
+      const updatedOutcome = colorToMove === "w"
+        ? gameProtos.GameOutcome.BLACK_WINS
+        : gameProtos.GameOutcome.WHITE_WINS
+
+      await this.repo.updateGameState(
+        game._id,
+        { ...game.state, outcome: updatedOutcome }
+      )
+
       return {
+        gameId: game._id,
         updatedFen: game.state.fen,
-        updatedOutcome:
-          colorToMove === "w"
-            ? gameProtos.GameOutcome.BLACK_WINS
-            : gameProtos.GameOutcome.WHITE_WINS,
+        updatedOutcome
       };
+    }
 
     game.state.moves.push({ san, createdAt: Date.now() });
     const updatedTimeLeft = timeLeft ? timeLeft - elapsedSeconds : undefined;
@@ -165,6 +174,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
     await this.repo.updateGameState(game._id, game.state);
 
     const res = {
+      gameId: game._id,
       updatedFen: game.state.fen,
       updatedOutcome: game.state.outcome,
       updatedTimeLeft,

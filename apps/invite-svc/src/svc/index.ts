@@ -69,9 +69,12 @@ export class InviteService implements inviteProtos.InviteServiceImplementation {
       settings: inviteLink.gameSettings,
     };
 
-    const gameIdRes = await this.gameClient.createGame(gameCreationRequest);
+    const { gameId } = await this.gameClient.createGame(gameCreationRequest);
 
-    return gameIdRes;
+    return {
+      gameId,
+      inviterId: inviteLink.inviterId
+    };
   }
 
   // async invalidateInviteLink(request: InvalidateLinkMessage) {

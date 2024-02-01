@@ -1,10 +1,10 @@
 import { z } from "zod";
-import { gameServiceClient } from "../../grpc-clients";
+import { gameServiceClient, handleGrpcCallError } from "../../grpc-clients";
 import { authenticatedProcedure, emitter } from "../../trpc";
 
 const inputSchema = z.strictObject({
   gameId: z.string(),
-  move: z.string(),
+  san: z.string(),
 });
 
 export const makeMove = authenticatedProcedure
@@ -12,8 +12,9 @@ export const makeMove = authenticatedProcedure
   .mutation(async ({ ctx, input }) => {
     const res = await gameServiceClient.makeMove({
       playerId: ctx.userId,
-      ...input,
-    });
+      gameId: input.gameId,
+      san: input.san
+    }).catch(handleGrpcCallError);
 
     emitter.emit("move", res);
     return res;

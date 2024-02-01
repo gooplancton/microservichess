@@ -1,9 +1,15 @@
-import { gameSettingsSchema } from "types";
-import { inviteServiceClient } from "../../grpc-clients";
+import { gameSettingsSchema, playAsSchema } from "types";
+import { handleGrpcCallError, inviteServiceClient } from "../../grpc-clients";
 import { authenticatedProcedure } from "../../trpc";
 
+const inputSchema = gameSettingsSchema.extend({
+  playAs: playAsSchema
+}).partial();
+
 export const create = authenticatedProcedure
-  .input(gameSettingsSchema.partial())
-  .mutation(({ ctx, input: settings }) =>
-    inviteServiceClient.createInviteLink({ userId: ctx.userId, settings }),
+  .input(inputSchema)
+  .mutation(({ ctx, input: gameSettings }) =>
+    inviteServiceClient
+      .createInviteLink({ userId: ctx.userId, gameSettings })
+      .catch(handleGrpcCallError),
   );

@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { gameServiceClient } from "../../grpc-clients";
+import { gameServiceClient, handleGrpcCallError } from "../../grpc-clients";
 import { authenticatedProcedure } from "../../trpc";
 
 const inputSchema = z.strictObject({
@@ -9,8 +9,8 @@ const inputSchema = z.strictObject({
 export const askDraw = authenticatedProcedure
   .input(inputSchema)
   .mutation(({ input, ctx }) =>
-    gameServiceClient.proposeDraw({
+    gameServiceClient.askDraw({
       gameId: input.gameId,
       playerId: ctx.userId,
-    }),
+    }).catch(handleGrpcCallError),
   );

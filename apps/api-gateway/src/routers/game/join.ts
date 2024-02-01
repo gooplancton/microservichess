@@ -1,5 +1,5 @@
 import { authenticatedProcedure, emitter } from "../../trpc";
-import type { MoveValidatedMessage } from "protobufs/dist/game_svc";
+import type { gameProtos } from "protobufs";
 import { z } from "zod";
 import { observable } from "@trpc/server/observable";
 
@@ -10,8 +10,8 @@ const inputSchema = z.strictObject({
 export const join = authenticatedProcedure
   .input(inputSchema)
   .subscription(({ input }) => {
-    return observable<MoveValidatedMessage>((emit) => {
-      const onMoveValidated = (msg: MoveValidatedMessage) => {
+    return observable<gameProtos.MakeMoveResponse>((emit) => {
+      const onMoveValidated = (msg: gameProtos.MakeMoveResponse) => {
         if (msg.gameId === input.gameId) emit.next(msg);
       };
 

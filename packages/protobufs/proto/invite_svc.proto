@@ -25,6 +25,7 @@ message ConsumeInviteLinkRequest {
 
 message ConsumeInviteLinkResponse {
     string gameId = 1;
+    string inviterId = 2;
 }
 
 message InvalidateLinkMessage {

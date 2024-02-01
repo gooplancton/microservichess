@@ -1,5 +1,5 @@
 import { z } from "zod";
-import { userServiceClient } from "../../grpc-clients";
+import { handleGrpcCallError, userServiceClient } from "../../grpc-clients";
 import { publicProcedure } from "../../trpc";
 
 const inputSchema = z.strictObject({
@@ -10,4 +10,4 @@ const inputSchema = z.strictObject({
 
 export const signupUser = publicProcedure
   .input(inputSchema)
-  .mutation(({ input }) => userServiceClient.userSignup(input));
+  .mutation(({ input }) => userServiceClient.userSignup(input).catch(handleGrpcCallError));
