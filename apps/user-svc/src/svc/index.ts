@@ -2,6 +2,7 @@ import type { userProtos } from "protobufs"
 import { UserRepository } from "../repo";
 import { genSalt, hash } from "bcrypt"
 import { ServerError, Status } from "nice-grpc";
+import { guestSchema, registeredUserSchema } from "types";
 
 export class UserService implements userProtos.UserServiceImplementation {
     repo: UserRepository
@@ -26,7 +27,8 @@ export class UserService implements userProtos.UserServiceImplementation {
 
 
     async guestLogin(request: userProtos.GuestUsernameMsg): Promise<userProtos.UserIdMsg> {
-        const guest = await this.repo.createGuest(request.username)
+        const guest = guestSchema.parse({ username: request.username })
+        await this.repo.createGuest(guest)
 
         const res = {
             userId: guest._id
@@ -42,7 +44,14 @@ export class UserService implements userProtos.UserServiceImplementation {
 
         const hashSalt = await genSalt()
         const passwordHash = await hash(request.password, hashSalt)
-        const user = await this.repo.createUser(request.username, request.email, passwordHash, hashSalt)
+        const user = registeredUserSchema.parse({
+            username: request.username,
+            email: request.email,
+            hashSalt,
+            passwordHash
+        })
+
+        await this.repo.createUser(user)
 
         const res = {
             userId: user._id

@@ -1,19 +1,11 @@
-import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types";
+import { IGuest, IRegisteredUser, IUser } from "types";
 import { UserRepository } from "./base";
-import { v4 as uuid4 } from "uuid"
 
 export class MemoryUserRepository implements UserRepository {
     users: Map<string, IUser>
 
     constructor() {
         this.users = new Map()
-    }
-
-    async createGuest(username?: string) {
-        const guest = guestSchema.parse({ username })
-        this.users.set(guest._id, guest)
-
-        return guest
     }
 
     async findUserByEmail(email: string): Promise<IRegisteredUser | null> {
@@ -23,13 +15,13 @@ export class MemoryUserRepository implements UserRepository {
         return user as IRegisteredUser
     }
 
-    async createUser(username: string, email: string, passwordHash: string, hashSalt: string) {
-        const _id = uuid4()
-        const user = registeredUserSchema.parse({ _id, username, email, hashSalt, passwordHash })
+    async createUser(user: IRegisteredUser) {
+        // 
+        this.users.set(user._id, user)
+    }
 
-        this.users.set(_id, user)
-
-        return user
+    async createGuest(guest: IGuest) {
+        this.users.set(guest._id, guest)
     }
 
     async findUserById(userId: string): Promise<IUser | null> {

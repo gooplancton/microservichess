@@ -1,7 +1,7 @@
 import { inviteProtos, gameProtos } from "protobufs";
 import { InviteLinkRepository } from "../repo";
 import { ServerError, Status } from "nice-grpc";
-import { gameSettingsSchema } from "types";
+import { gameSettingsSchema, inviteLinkSchema } from "types";
 
 export class InviteService implements inviteProtos.InviteServiceImplementation {
     repo: InviteLinkRepository
@@ -19,7 +19,12 @@ export class InviteService implements inviteProtos.InviteServiceImplementation {
             throw new ServerError(Status.INVALID_ARGUMENT, "invalid game settings")
 
         const gameSettings = gameSettingsParse.data
-        const inviteLink = await this.repo.createInviteLink(userId, gameSettings, playAs)
+        const inviteLink = inviteLinkSchema.parse({
+            inviterId: userId,
+            gameSettings,
+            playAs
+        })
+        await this.repo.createInviteLink(inviteLink)
 
         return { inviteLinkId: inviteLink._id }
     }

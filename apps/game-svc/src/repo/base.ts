@@ -1,9 +1,9 @@
-import { GameOutcome, IGame, IGameSettings, IMove } from "types"
+import { gameProtos } from "protobufs"
+import { IGame, IGameState, IMove } from "types"
 
 export interface GameRepository {
-    createGame(whitePlayerId: string, blackPlayerId: string, settings: IGameSettings): Promise<IGame>
-    getGame(gameId: string): Promise<IGame | undefined>
+    createGame(game: IGame): Promise<void>
+    getGame(gameId: string): Promise<IGame | null>
     getGames(playerId: string): Promise<IGame[]>
-    submitMove(gameId: string, move: IMove, outcome: GameOutcome): Promise<IGame>
-    updateDrawOffer(gameId: string, proposingPlayerId: string): Promise<IGame>
+    updateGameState(gameId: string, updatedState: IGameState): Promise<IGame>
 }

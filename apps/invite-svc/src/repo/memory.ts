@@ -1,6 +1,5 @@
-import { IInviteLink, inviteLinkSchema } from "types";
+import { IInviteLink } from "types";
 import { InviteLinkRepository } from "./base";
-import type { gameProtos, inviteProtos } from "protobufs";
 
 export class MemoryInviteLinkRepository implements InviteLinkRepository {
     links: Map<string, IInviteLink>
@@ -16,16 +15,8 @@ export class MemoryInviteLinkRepository implements InviteLinkRepository {
         return inviteLink
     }
     
-    async createInviteLink(userId: string, gameSettings: gameProtos.GameSettingsMsg, playAs?: inviteProtos.PlayAs): Promise<IInviteLink> {
-        const inviteLink = inviteLinkSchema.parse({
-            inviterId: userId,
-            gameSettings,
-            playAs
-        }) 
-
+    async createInviteLink(inviteLink: IInviteLink): Promise<void> {
         this.links.set(inviteLink._id, inviteLink)
-
-        return inviteLink
     }
 
     async deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null> {

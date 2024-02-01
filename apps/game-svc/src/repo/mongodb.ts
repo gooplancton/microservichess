@@ -1,5 +1,5 @@
 import { Collection, MongoClient } from "mongodb"
-import { IGameSettings, gameSchema, IGame, IMove, PlayAs, GameOutcome } from "types";
+import { IGame, IGameState } from "types";
 import { GameRepository } from "./base"
 import { ServerError, Status } from "nice-grpc"
 
@@ -14,13 +14,14 @@ export class MongoDBGameRepository implements GameRepository {
         this.games = client.db().collection<IGame>("games")
     }
 
-    async createGame(whitePlayerId: string, blackPlayerId: string, settings: IGameSettings) {
+    async updateGameState(gameId: string, updatedState: IGameState): Promise<IGame> {
+        throw new Error("Method not implemented.");
+    }
+
+    async createGame(game: IGame) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = gameSchema.parse({ whitePlayerId, blackPlayerId, settings })
         await this.games.insertOne(game)
-
-        return game
     }
 
     async getGame(gameId: string) {
@@ -28,7 +29,7 @@ export class MongoDBGameRepository implements GameRepository {
 
         const game = await this.games.findOne({ _id: gameId })
 
-        return game ?? undefined
+        return game
     }
 
     async getGames(playerId: string) {
@@ -44,37 +45,36 @@ export class MongoDBGameRepository implements GameRepository {
         return games
     }
 
-    async submitMove(gameId: string, move: IMove, outcome: GameOutcome) {
-        if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
+    // async submitMove(gameId: string, move: IMove, outcome: gameProtos.GameOutcome) {
+    //     if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = await this.games.findOneAndUpdate(
-            { _id: gameId },
-            {
-                $push: { moves: move },
-                $set: { hasFinished: outcome !== GameOutcome.KEEP_PLAYING },
-                $unset: { drawProposedBy: true }
-            },
-        )
+    //     const game = await this.games.findOneAndUpdate(
+    //         { _id: gameId },
+    //         {
+    //             $push: { moves: move },
+    //             $unset: { drawProposedBy: true }
+    //         },
+    //     )
 
-        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
+    //     if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
 
-        return game
-    }
+    //     return game
+    // }
 
-    async updateDrawOffer(gameId: string, proposingPlayerId?: string | undefined) {
-        if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
+    // async updateDrawOffer(gameId: string, proposingPlayerId?: string | undefined) {
+    //     if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const game = await this.games.findOneAndUpdate(
-            { _id: gameId },
-            {
-                $set: {
-                    drawProposedBy: proposingPlayerId
-                },
-            }
-        )
+    //     const game = await this.games.findOneAndUpdate(
+    //         { _id: gameId },
+    //         {
+    //             $set: {
+    //                 drawProposedBy: proposingPlayerId
+    //             },
+    //         }
+    //     )
 
-        if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
+    //     if (!game) throw new ServerError(Status.INTERNAL, "unexpected")
 
-        return game
-    }
+    //     return game
+    // }
 }
