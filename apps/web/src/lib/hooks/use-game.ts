@@ -12,14 +12,14 @@ export function useGame(gameId: string) {
   const gameContext = useGameContext();
 
   useEffect(() => {
-    if (!data) return;
+    if (!data || !data.state) return;
 
     const side = userId === data.whitePlayerId ? "white" : "black";
     gameContext.setInitialState({
       side,
-      isWhiteTurn: data.moves.length % 2 === 0,
-      fen: data.fen,
-      moves: data.moves,
+      isWhiteTurn: data.state.moveSans.length % 2 === 0,
+      fen: data.state.fen,
+      moves: data.state.moveSans,
     });
 
     setIsConnected(true);
@@ -30,15 +30,15 @@ export function useGame(gameId: string) {
     {
       enabled: isConnected,
       onData: (res) => {
-        gameContext.addMove("TODO", res.resultingFen);
+        gameContext.addMove(res.san, res.updatedFen);
       },
     },
   );
 
   const makeMoveMutation = trpc.game.makeMove.useMutation();
-  const makeMove = async (move: string) => {
-    const res = await makeMoveMutation.mutateAsync({ gameId, move });
-    gameContext.addMove(move, res.resultingFen);
+  const makeMove = async (san: string) => {
+    const res = await makeMoveMutation.mutateAsync({ gameId, san });
+    gameContext.addMove(san, res.updatedFen);
   };
 
   const leave = () => {

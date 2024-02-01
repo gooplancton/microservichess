@@ -146,6 +146,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
       return {
         gameId: game._id,
+        san: request.san,
         updatedFen: game.state.fen,
         updatedOutcome,
       };
@@ -176,6 +177,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
     const res = {
       gameId: game._id,
+      san: request.san,
       updatedFen: game.state.fen,
       updatedOutcome: game.state.outcome,
       updatedTimeLeft,
