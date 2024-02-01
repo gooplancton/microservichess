@@ -31,22 +31,24 @@ export class MongoDBUserRepository implements UserRepository {
 
         await this.users.insertOne(guest)
 
-        return guestSchema.parse(guest)
+        return guest
     }
 
     async findUserByEmail(email: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
 
-        const user = await this.users.findOne({ email, isGuest: false }) as IRegisteredUser
+        const user = await this.users.findOne({ email, isGuest: false })
+        if (!user) return null
 
-        return registeredUserSchema.parse(user) ?? undefined
+        return user as IRegisteredUser
     }
 
     async findUserById(userId: string) {
         if (!this.connected) throw new ServerError(Status.UNAVAILABLE, "not connected")
         
         const user = await this.users.findOne({ _id: userId })
+        if (!user) return null
 
-        return userSchema.parse(user) ?? undefined
+        return user
     }
 }

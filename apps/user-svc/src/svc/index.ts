@@ -1,16 +1,16 @@
-import type { AuthResponseMessage, GetUserMessage, GuestAuthRequestMessage, UserLoginRequestMessage, UserRecordMessage, UserServiceImplementation, UserSignupRequestMessage } from "protobufs/dist/user_svc"
+import type { userProtos } from "protobufs"
 import { UserRepository } from "../repo";
 import { genSalt, hash } from "bcrypt"
 import { ServerError, Status } from "nice-grpc";
 
-export class UserService implements UserServiceImplementation {
+export class UserService implements userProtos.UserServiceImplementation {
     repo: UserRepository
 
     constructor(repo: UserRepository) {
         this.repo = repo
     }
 
-    async userLogin(request: UserLoginRequestMessage): Promise<AuthResponseMessage> {
+    async userLogin(request: userProtos.UserLoginRequest): Promise<userProtos.UserIdMsg> {
         const user = await this.repo.findUserByEmail(request.email)
         if (!user) throw new ServerError(Status.INVALID_ARGUMENT, "user not found")
 
@@ -25,7 +25,7 @@ export class UserService implements UserServiceImplementation {
     }
 
 
-    async guestLogin(request: GuestAuthRequestMessage): Promise<AuthResponseMessage> {
+    async guestLogin(request: userProtos.GuestUsernameMsg): Promise<userProtos.UserIdMsg> {
         const guest = await this.repo.createGuest(request.username)
 
         const res = {
@@ -35,7 +35,7 @@ export class UserService implements UserServiceImplementation {
         return res
     }
 
-    async userSignup(request: UserSignupRequestMessage): Promise<AuthResponseMessage> {
+    async userSignup(request: userProtos.UserSignupRequest): Promise<userProtos.UserIdMsg> {
 
         const emailAvailable = !(await this.repo.findUserByEmail(request.email))
         if (!emailAvailable) throw new ServerError(Status.INVALID_ARGUMENT, "email already taken")
@@ -51,12 +51,11 @@ export class UserService implements UserServiceImplementation {
         return res
     }
 
-    async getUser(request: GetUserMessage): Promise<UserRecordMessage> {
+    async getUserInfo(request: userProtos.UserIdMsg): Promise<userProtos.GetUserInfoResponse> {
         const user = await this.repo.findUserById(request.userId)
         if (!user) throw new ServerError(Status.INVALID_ARGUMENT, "could not find user")
 
-        const res: UserRecordMessage = {
-            userId: user._id,
+        const res: userProtos.GetUserInfoResponse = {
             isGuest: user.isGuest,
             username: user.username,
             email: user.isGuest ? undefined : user.email

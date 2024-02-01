@@ -1,6 +1,7 @@
 /* eslint-disable */
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
+import { GameSettingsMsg } from "./game_svc";
 
 export const protobufPackage = "";
 
@@ -49,8 +50,7 @@ export interface InviteLinkIdMsg {
 
 export interface CreateInviteLinkRequest {
   userId: string;
-  time?: number | undefined;
-  increment?: number | undefined;
+  gameSettings: GameSettingsMsg | undefined;
   playAs?: PlayAs | undefined;
 }
 
@@ -125,7 +125,7 @@ export const InviteLinkIdMsg = {
 };
 
 function createBaseCreateInviteLinkRequest(): CreateInviteLinkRequest {
-  return { userId: "", time: undefined, increment: undefined, playAs: undefined };
+  return { userId: "", gameSettings: undefined, playAs: undefined };
 }
 
 export const CreateInviteLinkRequest = {
@@ -133,14 +133,11 @@ export const CreateInviteLinkRequest = {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
-    if (message.time !== undefined) {
-      writer.uint32(16).uint32(message.time);
-    }
-    if (message.increment !== undefined) {
-      writer.uint32(24).uint32(message.increment);
+    if (message.gameSettings !== undefined) {
+      GameSettingsMsg.encode(message.gameSettings, writer.uint32(18).fork()).ldelim();
     }
     if (message.playAs !== undefined) {
-      writer.uint32(32).int32(message.playAs);
+      writer.uint32(24).int32(message.playAs);
     }
     return writer;
   },
@@ -160,21 +157,14 @@ export const CreateInviteLinkRequest = {
           message.userId = reader.string();
           continue;
         case 2:
-          if (tag !== 16) {
+          if (tag !== 18) {
             break;
           }
 
-          message.time = reader.uint32();
+          message.gameSettings = GameSettingsMsg.decode(reader, reader.uint32());
           continue;
         case 3:
           if (tag !== 24) {
-            break;
-          }
-
-          message.increment = reader.uint32();
-          continue;
-        case 4:
-          if (tag !== 32) {
             break;
           }
 
@@ -192,8 +182,7 @@ export const CreateInviteLinkRequest = {
   fromJSON(object: any): CreateInviteLinkRequest {
     return {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      time: isSet(object.time) ? globalThis.Number(object.time) : undefined,
-      increment: isSet(object.increment) ? globalThis.Number(object.increment) : undefined,
+      gameSettings: isSet(object.gameSettings) ? GameSettingsMsg.fromJSON(object.gameSettings) : undefined,
       playAs: isSet(object.playAs) ? playAsFromJSON(object.playAs) : undefined,
     };
   },
@@ -203,11 +192,8 @@ export const CreateInviteLinkRequest = {
     if (message.userId !== "") {
       obj.userId = message.userId;
     }
-    if (message.time !== undefined) {
-      obj.time = Math.round(message.time);
-    }
-    if (message.increment !== undefined) {
-      obj.increment = Math.round(message.increment);
+    if (message.gameSettings !== undefined) {
+      obj.gameSettings = GameSettingsMsg.toJSON(message.gameSettings);
     }
     if (message.playAs !== undefined) {
       obj.playAs = playAsToJSON(message.playAs);
@@ -221,8 +207,9 @@ export const CreateInviteLinkRequest = {
   fromPartial(object: DeepPartial<CreateInviteLinkRequest>): CreateInviteLinkRequest {
     const message = createBaseCreateInviteLinkRequest();
     message.userId = object.userId ?? "";
-    message.time = object.time ?? undefined;
-    message.increment = object.increment ?? undefined;
+    message.gameSettings = (object.gameSettings !== undefined && object.gameSettings !== null)
+      ? GameSettingsMsg.fromPartial(object.gameSettings)
+      : undefined;
     message.playAs = object.playAs ?? undefined;
     return message;
   },

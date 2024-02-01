@@ -1,29 +1,26 @@
-import { GuestInput, IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types";
+import { IRegisteredUser, IUser, guestSchema, registeredUserSchema } from "types";
 import { UserRepository } from "./base";
 import { v4 as uuid4 } from "uuid"
 
-
-type UserId = string
-
 export class MemoryUserRepository implements UserRepository {
-    users: Map<UserId, IUser>
+    users: Map<string, IUser>
 
     constructor() {
         this.users = new Map()
     }
 
-    async createGuest(username?: string | undefined) {
-        const _id = uuid4()
-        const guest = guestSchema.parse({ _id, username } as GuestInput)
-        this.users.set(_id, guest)
+    async createGuest(username?: string) {
+        const guest = guestSchema.parse({ username })
+        this.users.set(guest._id, guest)
 
         return guest
     }
 
-    async findUserByEmail(username: string) {
-        const user = Array.from(this.users.values()).find(u => !u.isGuest && u.email === username) as IRegisteredUser
+    async findUserByEmail(email: string): Promise<IRegisteredUser | null> {
+        const user = Array.from(this.users.values()).find(u => !u.isGuest && u.email === email)
+        if (!user) return null
 
-        return user
+        return user as IRegisteredUser
     }
 
     async createUser(username: string, email: string, passwordHash: string, hashSalt: string) {
@@ -35,8 +32,10 @@ export class MemoryUserRepository implements UserRepository {
         return user
     }
 
-    async findUserById(userId: string): Promise<IUser | undefined> {
+    async findUserById(userId: string): Promise<IUser | null> {
         const user = this.users.get(userId)
+        if (!user) return null
+
         return user
     }
 }

@@ -1,5 +1,7 @@
 syntax = "proto3";
 
+import "game_svc.proto";
+
 enum PlayAs {
     WHITE = 0;
     BLACK = 1;
@@ -12,9 +14,8 @@ message InviteLinkIdMsg {
 
 message CreateInviteLinkRequest {
     string userId = 1;
-    optional uint32 time = 2;
-    optional uint32 increment = 3;    
-    optional PlayAs playAs = 4;
+    GameSettingsMsg gameSettings = 2;
+    optional PlayAs playAs = 3;
 }
 
 message ConsumeInviteLinkRequest {

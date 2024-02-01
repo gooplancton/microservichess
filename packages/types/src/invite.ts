@@ -7,11 +7,9 @@ const playAsSchema = z.nativeEnum(inviteProtos.PlayAs)
 
 export const inviteLinkSchema = z.object({
 		_id: z.string().default(uuidv4),
-    inviterId: z.string(),
     createdAt: z.number().default(Date.now),
-    settings: gameSettingsSchema.extend({
-				playAs: playAsSchema.default(inviteProtos.PlayAs.RANDOM)
-		})
+    inviterId: z.string(),
+    gameSettings: gameSettingsSchema,
+		playAs: playAsSchema.default(inviteProtos.PlayAs.RANDOM)
 })
-
 export type IInviteLink = z.infer<typeof inviteLinkSchema>

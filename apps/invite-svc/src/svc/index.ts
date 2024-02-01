@@ -1,46 +1,63 @@
-import type { ConsumeInviteLinkMessage, CreateInviteLinkMessage, InvalidateLinkMessage, InviteServiceImplementation } from "protobufs/dist/invite_svc"
-import type { CreateGameMessage, GameServiceClient } from "protobufs/dist/game_svc";
-import { InviteLinkRepository } from "../repo"; 
-import { GameSettingsInput, gameSettingsSchema } from "types"; 
+import { inviteProtos, gameProtos } from "protobufs";
+import { InviteLinkRepository } from "../repo";
 import { ServerError, Status } from "nice-grpc";
+import { gameSettingsSchema } from "types";
 
-export class InviteService implements InviteServiceImplementation {
+export class InviteService implements inviteProtos.InviteServiceImplementation {
     repo: InviteLinkRepository
-    gameClient: GameServiceClient
+    gameClient: gameProtos.GameServiceClient
 
-    constructor(repo: InviteLinkRepository, gameClient: GameServiceClient) {
+    constructor(repo: InviteLinkRepository, gameClient: gameProtos.GameServiceClient) {
         this.repo = repo
         this.gameClient = gameClient
     }
 
-    async createInviteLink(request: CreateInviteLinkMessage) {
-        const settings = gameSettingsSchema.parse(request.settings as GameSettingsInput)
-        await this.repo.createInviteLink(request.userId, settings)
+    async createInviteLink(request: inviteProtos.CreateInviteLinkRequest) {
+        const { userId, playAs } = request
+        const gameSettingsParse = gameSettingsSchema.safeParse(request.gameSettings)
+        if (!gameSettingsParse.success)
+            throw new ServerError(Status.INVALID_ARGUMENT, "invalid game settings")
 
-        return { userId: request.userId }
+        const gameSettings = gameSettingsParse.data
+        const inviteLink = await this.repo.createInviteLink(userId, gameSettings, playAs)
+
+        return { inviteLinkId: inviteLink._id }
     }
 
-    async consumeInviteLink(request: ConsumeInviteLinkMessage) {
-        if (request.inviterId === request.userId) throw new ServerError(Status.INVALID_ARGUMENT, "cannot consume your own invite links")
+    async consumeInviteLink(request: inviteProtos.ConsumeInviteLinkRequest) {
+        const inviteLink = await this.repo.getInviteLink(request.inviteLinkId)
 
-        const inviteLink = await this.repo.deleteInviteLink(request.inviterId)
         if (!inviteLink) throw new ServerError(Status.INVALID_ARGUMENT, "no such invite link found")
+        if (inviteLink.inviterId === request.userId)
+            throw new ServerError(Status.INVALID_ARGUMENT, "cannot consume your own invite links")
 
-        const gameCreationRequest: CreateGameMessage = {
-            whitePlayerId: request.inviterId,
-            blackPlayerId: request.userId,
-            settings: inviteLink.settings
+        await this.repo.deleteInviteLink(inviteLink._id)
+
+        const playAs = inviteLink.playAs ?? inviteProtos.PlayAs.RANDOM
+        const playAsWhiteAssignment = [inviteLink.inviterId, request.userId]
+        const playAsBlackAsssignment = [request.userId, inviteLink.inviterId]
+        const randomAssignment = Math.random() > 0.5 ? playAsWhiteAssignment : playAsBlackAsssignment
+
+        const [whitePlayerId, blackPlayerId] =
+            playAs === inviteProtos.PlayAs.WHITE ? playAsWhiteAssignment
+            : playAs === inviteProtos.PlayAs.BLACK ? playAsBlackAsssignment
+            : randomAssignment
+
+        const gameCreationRequest: gameProtos.CreateGameRequest = {
+            whitePlayerId: whitePlayerId!,
+            blackPlayerId: blackPlayerId!,
+            settings: inviteLink.gameSettings
         }
 
-        const gameCreatedResponse = await this.gameClient.createGame(gameCreationRequest)
+        const gameIdRes = await this.gameClient.createGame(gameCreationRequest)
 
-        return gameCreatedResponse
+        return gameIdRes
     }
 
-    async invalidateInviteLink(request: InvalidateLinkMessage) {
-        const inviteLink = await this.repo.deleteInviteLink(request.userId)
-        if (!inviteLink) throw new ServerError(Status.INVALID_ARGUMENT, "no such invite link found")
+    // async invalidateInviteLink(request: InvalidateLinkMessage) {
+    //     const inviteLink = await this.repo.deleteInviteLink(request.userId)
+    //     if (!inviteLink) throw new ServerError(Status.INVALID_ARGUMENT, "no such invite link found")
 
-        return {}
-    }
+    //     return {}
+    // }
 }

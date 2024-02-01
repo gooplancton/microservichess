@@ -1,6 +1,8 @@
-import { IGameSettings, IInviteLink } from "types"
+import type { gameProtos, inviteProtos } from "protobufs"
+import { IInviteLink } from "types"
 
 export interface InviteLinkRepository {
-    createInviteLink(userId: string, settings: IGameSettings): Promise<IInviteLink>
-    deleteInviteLink(userId: string): Promise<IInviteLink | undefined>
+    getInviteLink(inviteLinkId: string): Promise<IInviteLink | null>
+    createInviteLink(userId: string, settings: gameProtos.GameSettingsMsg, playAs?: inviteProtos.PlayAs): Promise<IInviteLink>
+    deleteInviteLink(inviteLinkId: string): Promise<IInviteLink | null>
 }
