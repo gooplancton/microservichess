@@ -10,14 +10,16 @@ export function JoinPage() {
   const consumeLinkMutation = trpc.invite.consume.useMutation();
 
   useEffect(() => {
-    const inviterId = params.get("inviterId");
-    if (!inviterId) return navigate("/");
+    const inviteLinkId = params.get("invite");
+    if (!inviteLinkId) return navigate("/");
 
-    consumeLinkMutation.mutateAsync({ inviterId }).then(({ gameId, jwt }) => {
-      if (jwt) Cookies.set("microservichess-user-jwt", jwt, { path: "/" });
+    consumeLinkMutation
+      .mutateAsync({ inviteLinkId })
+      .then(({ gameId, jwt }) => {
+        if (jwt) Cookies.set("microservichess-user-jwt", jwt, { path: "/" });
 
-      navigate("/game?gameId=" + gameId);
-    });
+        navigate("/game?gameId=" + gameId);
+      });
   }, []);
 
   return <></>;

@@ -13,3 +13,8 @@ server.add(UserServiceDefinition, svc);
 server.listen(`0.0.0.0:${SERVER_PORT}`).then(() => {
   console.log("User Server runnning on port: ", SERVER_PORT);
 });
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM");
+  server.forceShutdown();
+});

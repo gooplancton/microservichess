@@ -19,17 +19,17 @@ import { trpc } from "../../trpc";
 import { useForm } from "@mantine/form";
 import { useWaitForOpponent } from "../../lib";
 
-function getInviteLink(inviterId: string) {
-  return `${window.location.origin}/join?inviterId=${inviterId}`;
+function getInviteLink(inviteLinkId: string) {
+  return `${window.location.origin}/join?invite=${inviteLinkId}`;
 }
 
 export function HomePage() {
   const navigate = useNavigate();
   const form = useForm({
     initialValues: {
-      time: 5,
+      timeMins: 5,
       increment: 2,
-      playAs: "random",
+      playAs: "Random",
     },
   });
 
@@ -42,15 +42,17 @@ export function HomePage() {
   const createInviteLink = useCallback(
     async (e: FormEvent) => {
       e.preventDefault();
-      const { time, increment, playAs } = form.values;
+      const { timeMins, increment, playAs } = form.values;
 
-      const { userId } = await createInviteMutation.mutateAsync({
-        playAs: ["white", "black", "random"].indexOf(playAs),
-        maxTimeForPlayerSec: time * 60,
-        timeGainedOnMoveSec: increment,
+      const { inviteLinkId } = await createInviteMutation.mutateAsync({
+        playAs: ["White", "Black", "Random"].indexOf(playAs),
+        gameSettings: {
+          time: timeMins * 60,
+          increment,
+        },
       });
 
-      setInviteLink(getInviteLink(userId));
+      setInviteLink(getInviteLink(inviteLinkId));
 
       startWaiting();
     },
@@ -58,8 +60,10 @@ export function HomePage() {
   );
 
   const consumeInviteLink = useCallback(async () => {
-    const inviterId = inviteLinkToConsume.split("=")[1];
-    const { gameId } = await consumeInviteMutation.mutateAsync({ inviterId });
+    const inviteLinkId = inviteLinkToConsume.split("=")[1];
+    const { gameId } = await consumeInviteMutation.mutateAsync({
+      inviteLinkId,
+    });
     if (gameId) navigate("/game?gameId" + gameId);
   }, [inviteLinkToConsume]);
 
@@ -78,7 +82,7 @@ export function HomePage() {
               <Text>
                 Time:{" "}
                 <b>
-                  {form.values.time}' + {form.values.increment}"
+                  {form.values.timeMins}' + {form.values.increment}"
                 </b>
               </Text>
               <Text>
@@ -122,7 +126,7 @@ export function HomePage() {
               suffix=" minutes"
               allowNegative={false}
               allowDecimal={false}
-              {...form.getInputProps("time", { type: "input" })}
+              {...form.getInputProps("timeMins", { type: "input" })}
             />
             <NumberInput
               label="Increment"
@@ -138,9 +142,9 @@ export function HomePage() {
           <SegmentedControl
             fullWidth
             data={[
-              { value: "white", label: "White" },
-              { value: "random", label: "Random" },
-              { value: "black", label: "Black" },
+              { value: "White", label: "White" },
+              { value: "Random", label: "Random" },
+              { value: "Black", label: "Black" },
             ]}
             {...form.getInputProps("playAs")}
           />

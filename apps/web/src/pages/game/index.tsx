@@ -11,12 +11,12 @@ export function GamePage() {
   const gameId = params.get("gameId")!;
   const game = useGame(gameId);
   const forfeitMutation = trpc.game.forfeit.useMutation();
-  const proposeDrawMutation = trpc.game.proposeDraw.useMutation();
+  const askDrawMutation = trpc.game.askDraw.useMutation();
   const acceptDrawMuation = trpc.game.acceptDraw.useMutation();
 
   const handleForfeit = async () => {
     try {
-      await forfeitMutation.mutateAsync(gameId);
+      await forfeitMutation.mutateAsync({ gameId });
       game.leave();
     } catch {
       alert("could not forfeit game");

@@ -16,7 +16,7 @@ export function Chessboard(props: ChessboardProps) {
       const move = game.move({ from, to });
       if (!move) return false;
       props.submitMove(move.san);
-      gameContext.setFen(game.fen()); // NOTE: optimistic update
+      gameContext.addMove(move.san, game.fen());
 
       return true;
     } catch {

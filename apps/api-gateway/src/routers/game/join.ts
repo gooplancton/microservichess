@@ -10,8 +10,8 @@ const inputSchema = z.strictObject({
 export const join = authenticatedProcedure
   .input(inputSchema)
   .subscription(({ input }) => {
-    return observable<gameProtos.MakeMoveResponse>((emit) => {
-      const onMoveValidated = (msg: gameProtos.MakeMoveResponse) => {
+    return observable<gameProtos.GameUpdateMsg>((emit) => {
+      const onMoveValidated = (msg: gameProtos.GameUpdateMsg) => {
         if (msg.gameId === input.gameId) emit.next(msg);
       };
 

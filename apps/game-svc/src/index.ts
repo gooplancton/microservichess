@@ -19,3 +19,8 @@ server.add(gameProtos.GameServiceDefinition, svc);
 server.listen(`0.0.0.0:${SERVER_PORT}`).then(() => {
   console.log("Game Server runnning on port: ", SERVER_PORT);
 });
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM");
+  server.forceShutdown();
+});

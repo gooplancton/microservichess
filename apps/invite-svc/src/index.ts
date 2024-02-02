@@ -18,3 +18,8 @@ server.add(InviteServiceDefinition, svc);
 server.listen(`0.0.0.0:${SERVER_PORT}`).then(() => {
   console.log("Invite Server runnning on port: ", SERVER_PORT);
 });
+
+process.on("SIGTERM", () => {
+  console.log("SIGTERM");
+  server.forceShutdown();
+});

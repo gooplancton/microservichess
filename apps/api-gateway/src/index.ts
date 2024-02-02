@@ -39,14 +39,6 @@ const handler = applyWSSHandler({
   createContext,
 });
 
-wss.on("connection", function connection(ws) {
-  ws.on("error", console.error);
-
-  ws.on("message", function message(data) {
-    console.log("received: %s", data);
-  });
-});
-
 export type AppRouter = typeof appRouter;
 
 process.on("SIGTERM", () => {

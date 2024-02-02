@@ -1,17 +1,17 @@
 import { gameSettingsSchema, playAsSchema } from "types";
 import { handleGrpcCallError, inviteServiceClient } from "../../grpc-clients";
 import { authenticatedProcedure } from "../../trpc";
+import z from "zod";
 
-const inputSchema = gameSettingsSchema
-  .extend({
-    playAs: playAsSchema,
-  })
-  .partial();
+const inputSchema = z.object({
+  gameSettings: gameSettingsSchema,
+  playAs: playAsSchema,
+});
 
 export const create = authenticatedProcedure
   .input(inputSchema)
-  .mutation(({ ctx, input: gameSettings }) =>
+  .mutation(({ ctx, input }) =>
     inviteServiceClient
-      .createInviteLink({ userId: ctx.userId, gameSettings })
+      .createInviteLink({ userId: ctx.userId, ...input })
       .catch(handleGrpcCallError),
   );

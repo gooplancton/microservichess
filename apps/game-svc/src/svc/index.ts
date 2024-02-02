@@ -28,9 +28,9 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
   async acceptDraw(request: gameProtos.AskOrAcceptDrawRequest) {
     const game = await this.repo.getGame(request.gameId);
-    if (!game) throw new Error("game not found");
+    if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
     if (game.state.outcome !== gameProtos.GameOutcome.KEEP_PLAYING)
-      throw new Error("game already over");
+      throw new ServerError(Status.INVALID_ARGUMENT, "game already over");
     if (game.state.drawAskedBy && game.state.drawAskedBy !== request.playerId)
       throw new ServerError(Status.INVALID_ARGUMENT, "invalid draw acceptance");
 
@@ -38,6 +38,29 @@ export class GameService implements gameProtos.GameServiceImplementation {
     await this.repo.updateGameState(game._id, game.state);
 
     return {};
+  }
+
+  async forfeit(request: gameProtos.ForfeitRequest) {
+    const game = await this.repo.getGame(request.gameId);
+    if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
+    if (game.state.outcome !== gameProtos.GameOutcome.KEEP_PLAYING)
+      throw new ServerError(Status.INVALID_ARGUMENT, "game already over");
+
+    if (
+      request.playerId !== game.whitePlayerId &&
+      request.playerId !== game.blackPlayerId
+    )
+      throw new ServerError(Status.INVALID_ARGUMENT, "not a player");
+
+    return {
+      gameId: game._id,
+      san: "[FORFEIT]",
+      updatedFen: game.state.fen,
+      updatedOutcome:
+        request.playerId === game.whitePlayerId
+          ? gameProtos.GameOutcome.BLACK_WINS
+          : gameProtos.GameOutcome.WHITE_WINS,
+    };
   }
 
   async _getUsername(userId: string): Promise<string | undefined> {
@@ -108,13 +131,13 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
   async makeMove(
     request: gameProtos.MakeMoveRequest,
-  ): Promise<gameProtos.MakeMoveResponse> {
+  ): Promise<gameProtos.GameUpdateMsg> {
     const { gameId, playerId, san } = request;
 
     const game = await this.repo.getGame(gameId);
-    if (!game) throw new Error("game not found");
+    if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
     if (game.state.outcome !== gameProtos.GameOutcome.KEEP_PLAYING)
-      throw new Error("game already over");
+      throw new ServerError(Status.INVALID_ARGUMENT, "game already over");
 
     const colorToMove = game.state.moves.length % 2 === 0 ? "w" : "b";
     if (colorToMove === "w" && playerId !== game.whitePlayerId)
@@ -130,10 +153,8 @@ export class GameService implements gameProtos.GameServiceImplementation {
         ? game.state.timeLeftWhite
         : game.state.timeLeftBlack;
 
-    const isGameAlreadyOver =
-      (timeLeft ?? Infinity) <= elapsedSeconds || san === "[FORFEIT]";
-
-    if (isGameAlreadyOver) {
+    const isTimeOver = (timeLeft ?? Infinity) <= elapsedSeconds;
+    if (isTimeOver) {
       const updatedOutcome =
         colorToMove === "w"
           ? gameProtos.GameOutcome.BLACK_WINS
@@ -146,14 +167,16 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
       return {
         gameId: game._id,
-        san: request.san,
+        san: "[TIME]",
         updatedFen: game.state.fen,
         updatedOutcome,
       };
     }
 
     game.state.moves.push({ san, createdAt: Date.now() });
-    const updatedTimeLeft = timeLeft ? timeLeft - elapsedSeconds : undefined;
+    const updatedTimeLeft = timeLeft
+      ? timeLeft - elapsedSeconds + game.settings.increment
+      : undefined;
     if (colorToMove === "w") game.state.timeLeftWhite = updatedTimeLeft;
     else if (colorToMove === "b") game.state.timeLeftBlack = elapsedSeconds;
 

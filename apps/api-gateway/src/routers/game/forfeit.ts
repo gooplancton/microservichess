@@ -1,6 +1,6 @@
 import { z } from "zod";
 import { gameServiceClient } from "../../grpc-clients";
-import { authenticatedProcedure } from "../../trpc";
+import { authenticatedProcedure, emitter } from "../../trpc";
 
 const inputSchema = z.strictObject({
   gameId: z.string(),
@@ -8,10 +8,12 @@ const inputSchema = z.strictObject({
 
 export const forfeit = authenticatedProcedure
   .input(inputSchema)
-  .mutation(({ input, ctx }) =>
-    gameServiceClient.makeMove({
+  .mutation(async ({ input, ctx }) => {
+    const res = await gameServiceClient.forfeit({
       gameId: input.gameId,
       playerId: ctx.userId,
-      san: "[FORFEIT]",
-    }),
-  );
+    });
+
+    emitter.emit("move", res);
+    return res;
+  });
