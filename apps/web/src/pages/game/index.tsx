@@ -1,7 +1,7 @@
 import React from "react";
 import { useGame } from "../../lib/hooks/use-game";
 import { useSearchParams } from "react-router-dom";
-import { Paper, Center, Button } from "@mantine/core";
+import { Paper, Center, Button, Flex, List, Pill } from "@mantine/core";
 import { Chessboard } from "../../components/Chessboard";
 import { Timer } from "../../components/Timer";
 import { trpc } from "../../trpc";
@@ -9,7 +9,7 @@ import { trpc } from "../../trpc";
 export function GamePage() {
   const [params] = useSearchParams();
   const gameId = params.get("gameId")!;
-  const { makeMove, isConnected, leave, game } = useGame(gameId);
+  const { game, makeMove, isConnected, leave } = useGame(gameId);
   const forfeitMutation = trpc.game.forfeit.useMutation();
   const askDrawMutation = trpc.game.askDraw.useMutation();
   const acceptDrawMuation = trpc.game.acceptDraw.useMutation();
@@ -23,6 +23,16 @@ export function GamePage() {
     }
   };
 
+  if (!isConnected) return <></>
+
+  const playerUsername = game.side === "white" ? game.gameInfo!.whitePlayerUsername : game.gameInfo!.blackPlayerUsername
+  const playerTime = game.side === "white" ? game.gameState!.timeLeftWhite : game.gameState!.timeLeftBlack
+
+  const opponentUsername = game.side === "white" ? game.gameInfo?.blackPlayerUsername : game.gameInfo?.whitePlayerUsername
+  const opponentTime = game.side === "white" ? game.gameState!.timeLeftBlack : game.gameState!.timeLeftWhite
+
+  const isPlayerTurn = game.side.startsWith(game.gameState!.fen.split(" ")[1])
+
   const handleDraw = () => {
     // Implement draw logic here
   };
@@ -30,34 +40,24 @@ export function GamePage() {
   return (
     <>
       <Center w={"100vw"} pt={50}>
-        <Paper w={900} shadow="lg" withBorder>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div style={{ width: "70%" }}>
-              {isConnected && <Chessboard submitMove={makeMove} />}
-            </div>
-            <div style={{ width: "28%", padding: "20px" }}>
-              <Timer
-                username={"[WHITE] " + game.gameInfo?.whitePlayerUsername}
-                isPlayersTurn={game.gameState?.fen.split(" ")[1] === "w"}
-                timeLeftAtLastUpdate={game.gameState?.timeLeftWhite}
-              />
-              <ul>
-                {game.gameState?.moveSans.map(moveSan => <li>{moveSan}</li>)}
-              </ul>
-              <Timer
-                username={"[BLACK] " + game.gameInfo?.blackPlayerUsername}
-                isPlayersTurn={game.gameState?.fen.split(" ")[1] === "b"}
-                timeLeftAtLastUpdate={game.gameState?.timeLeftBlack}
-              />
-              <Button onClick={handleForfeit} fullWidth>
-                Forfeit
-              </Button>
-              <Button onClick={handleDraw} fullWidth>
-                Offer Draw
-              </Button>
-            </div>
-          </div>
-        </Paper>
+        <Flex direction={"column"} align={"center"}>
+          <Timer username={opponentUsername ?? "Guest"} timeLeftAtLastUpdate={opponentTime} isPlayersTurn={!isPlayerTurn} />
+          <Paper w={800} shadow="md" withBorder>
+            <Flex>
+              <div style={{ width: "80%" }}>
+                <Chessboard submitMove={makeMove} fen={game.gameState!.fen} side={game.side} />
+              </div>
+              <div style={{ width: "20%", padding: "2rem", height: 600, overflow: "auto" }}>
+                <List type="ordered">
+                  {game.gameState?.moveSans.map((moveSan, idx) => <List.Item key={idx} pb={5}>
+                    <Pill size="lg">{moveSan}</Pill>
+                  </List.Item>)}
+                </List>
+              </div>
+            </Flex>
+          </Paper>
+          <Timer username={playerUsername ?? "Guest"} timeLeftAtLastUpdate={playerTime} isPlayersTurn={isPlayerTurn} />
+        </Flex>
       </Center>
     </>
   );

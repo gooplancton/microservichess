@@ -7,15 +7,15 @@ type GameInfo = {
   whitePlayerUsername?: string
   blackPlayerId: string
   blackPlayerUsername?: string
-  time?: number
+  time: number
   increment: number
 }
 
 type GameState = {
   fen: string
   outcome: GameOutcome,
-  timeLeftWhite?: number
-  timeLeftBlack?: number
+  timeLeftWhite: number
+  timeLeftBlack: number
   moveSans: string[]
   updatedAt: number
 }
@@ -28,6 +28,7 @@ type GameContext = {
 
   initGame: (gameInfo: GameInfo, initialState: GameState) => void
   updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft?: number) => void
+  optimisticallyUpdateFen: (updatedFen: string) => void
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
@@ -51,6 +52,22 @@ export const useGameContext = create<GameContext>((set, get) => ({
     const sideToMove = updatedFen.split(" ")[1] as "b" | "w"
     if (sideToMove === "b") updatedState.timeLeftWhite = updatedTimeLeft
     else updatedState.timeLeftBlack = updatedTimeLeft
+
+    set({ gameState: updatedState as GameState })
+  },
+
+  optimisticallyUpdateFen: (updatedFen: string) => {
+    const updatedState = { ...get().gameState }
+    const playerSide = get().side
+
+    const elapsedTime = Math.round((Date.now() - (updatedState.updatedAt ?? 0)) / 1000)
+
+    updatedState.fen = updatedFen
+    updatedState.updatedAt = Date.now() // TODO: fix
+    const increment = get().gameInfo!.increment
+
+    if (playerSide === "white") updatedState.timeLeftWhite! -= elapsedTime + increment
+    else updatedState.timeLeftBlack! -= elapsedTime + increment
 
     set({ gameState: updatedState as GameState })
   }

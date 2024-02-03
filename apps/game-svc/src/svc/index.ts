@@ -173,12 +173,13 @@ export class GameService implements gameProtos.GameServiceImplementation {
       };
     }
 
+    game.state.drawAskedBy = undefined
     game.state.moves.push({ san, createdAt: Date.now() });
     const updatedTimeLeft = timeLeft
       ? timeLeft - elapsedSeconds + game.settings.increment
       : undefined;
     if (colorToMove === "w") game.state.timeLeftWhite = updatedTimeLeft;
-    else if (colorToMove === "b") game.state.timeLeftBlack = elapsedSeconds;
+    else if (colorToMove === "b") game.state.timeLeftBlack = updatedTimeLeft;
 
     const client = new Chess(game.state.fen);
 

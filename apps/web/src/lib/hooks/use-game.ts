@@ -17,12 +17,14 @@ export function useGame(gameId: string) {
       whitePlayerUsername: data.whitePlayerUsername,
       blackPlayerId: data.blackPlayerId,
       blackPlayerUsername: data.blackPlayerUsername,
-      time: data.settings?.time,
+      time: data.settings?.time ?? Infinity,
       increment: data.settings?.increment ?? 0
     }, {
       fen: data.state.fen,
       outcome: data.state.outcome,
       moveSans: data.state.moveSans,
+      timeLeftWhite: data.state.timeLeftWhite ?? Infinity,
+      timeLeftBlack: data.state.timeLeftBlack ?? Infinity,
       updatedAt: Date.now() // TODO: correct
     });
 
@@ -47,12 +49,12 @@ export function useGame(gameId: string) {
   const makeMoveMutation = trpc.game.makeMove.useMutation();
   const makeMove = async (san: string) => {
     const res = await makeMoveMutation.mutateAsync({ gameId, san });
-    game.updateState(
-      res.updatedFen,
-      res.updatedOutcome,
-      res.san,
-      res.updatedTimeLeft
-    )
+    // game.updateState(
+    //   res.updatedFen,
+    //   res.updatedOutcome,
+    //   res.san,
+    //   res.updatedTimeLeft
+    // )
   };
 
   const leave = () => {

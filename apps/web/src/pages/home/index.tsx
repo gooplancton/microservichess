@@ -1,4 +1,4 @@
-import React, { FormEvent, useCallback, useState } from "react";
+import React, { FormEvent, useCallback, useEffect, useState } from "react";
 import {
   Text,
   TextInput,
@@ -38,6 +38,13 @@ export function HomePage() {
   const [inviteLink, setInviteLink] = useState<string>("");
   const [inviteLinkToConsume, setInviteLinkToConsume] = useState<string>("");
   const { startWaiting, isWaiting, stopWaiting } = useWaitForOpponent();
+  const { data: me, isLoading } = trpc.user.me.useQuery(undefined, { retry: false });
+
+  useEffect(() => {
+    if (isLoading) return;
+
+    if (!me) navigate("/auth/login");
+  }, [isLoading])
 
   const createInviteLink = useCallback(
     async (e: FormEvent) => {
@@ -148,7 +155,7 @@ export function HomePage() {
             ]}
             {...form.getInputProps("playAs")}
           />
-          <Button fullWidth my="md" type="submit">
+          <Button fullWidth my="md" type="submit" disabled={isLoading}>
             Create Game
           </Button>
         </form>

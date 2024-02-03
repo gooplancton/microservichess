@@ -4,7 +4,7 @@ import * as React from "react";
 import { trpc } from "./trpc";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { LoginPage } from "./pages/auth/login";
-import { createTheme, MantineProvider } from "@mantine/core";
+import { MantineProvider } from "@mantine/core";
 import { Notifications } from "@mantine/notifications";
 import { SignupPage } from "./pages/auth/signup";
 import { HomePage } from "./pages/home";
@@ -12,9 +12,6 @@ import { GamePage } from "./pages/game";
 import { JoinPage } from "./pages/join";
 import Cookies from "js-cookie";
 
-const theme = createTheme({
-  /** Put your mantine theme override here */
-});
 
 const wsClient = createWSClient({
   url: `ws://localhost:8080/trpc`,
@@ -68,7 +65,7 @@ export function App() {
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
-        <MantineProvider theme={theme}>
+        <MantineProvider>
           <Notifications />
           <RouterProvider router={router} />
         </MantineProvider>

@@ -4,19 +4,21 @@ import { Chess } from "chess.js";
 import { useGameContext } from "../lib/context/game-context";
 
 type ChessboardProps = React.ComponentProps<typeof BareChessboard> & {
+  fen: string
+  side: "white" | "black"
   submitMove: (move: string) => void;
 };
 
 export function Chessboard(props: ChessboardProps) {
-  const gameContext = useGameContext();
-  const game = new Chess(gameContext.gameState!.fen);
+  const game = new Chess(props.fen);
+  const optimisticallyUpdateFen = useGameContext((state) => state.optimisticallyUpdateFen)
 
   const onPieceDrop = (from: string, to: string, _piece: string) => {
     try {
       const move = game.move({ from, to });
       if (!move) return false;
       props.submitMove(move.san);
-      // TODO: optimistic update
+      optimisticallyUpdateFen(game.fen())
 
       return true;
     } catch {
@@ -27,12 +29,12 @@ export function Chessboard(props: ChessboardProps) {
   return (
     <BareChessboard
       {...props}
-      boardOrientation={gameContext.side}
-      position={gameContext.gameState!.fen}
+      boardOrientation={props.side}
+      position={props.fen}
       onPieceDrop={onPieceDrop}
       isDraggablePiece={(args) => {
         const piece = game.get(args.sourceSquare);
-        return gameContext.side.startsWith(piece.color);
+        return props.side.startsWith(piece.color);
       }}
     />
   );
