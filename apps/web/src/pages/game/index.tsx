@@ -9,7 +9,7 @@ import { trpc } from "../../trpc";
 export function GamePage() {
   const [params] = useSearchParams();
   const gameId = params.get("gameId")!;
-  const game = useGame(gameId);
+  const { makeMove, isConnected, leave, game } = useGame(gameId);
   const forfeitMutation = trpc.game.forfeit.useMutation();
   const askDrawMutation = trpc.game.askDraw.useMutation();
   const acceptDrawMuation = trpc.game.acceptDraw.useMutation();
@@ -17,7 +17,7 @@ export function GamePage() {
   const handleForfeit = async () => {
     try {
       await forfeitMutation.mutateAsync({ gameId });
-      game.leave();
+      leave();
     } catch {
       alert("could not forfeit game");
     }
@@ -33,18 +33,21 @@ export function GamePage() {
         <Paper w={900} shadow="lg" withBorder>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div style={{ width: "70%" }}>
-              {game.isConnected && <Chessboard submitMove={game.makeMove} />}
+              {isConnected && <Chessboard submitMove={makeMove} />}
             </div>
             <div style={{ width: "28%", padding: "20px" }}>
               <Timer
-                username={""}
-                isPlayersTurn={false}
-                timeLeftAtLastUpdate={100}
+                username={"[WHITE] " + game.gameInfo?.whitePlayerUsername}
+                isPlayersTurn={game.gameState?.fen.split(" ")[1] === "w"}
+                timeLeftAtLastUpdate={game.gameState?.timeLeftWhite}
               />
+              <ul>
+                {game.gameState?.moveSans.map(moveSan => <li>{moveSan}</li>)}
+              </ul>
               <Timer
-                username={""}
-                isPlayersTurn={true}
-                timeLeftAtLastUpdate={100}
+                username={"[BLACK] " + game.gameInfo?.blackPlayerUsername}
+                isPlayersTurn={game.gameState?.fen.split(" ")[1] === "b"}
+                timeLeftAtLastUpdate={game.gameState?.timeLeftBlack}
               />
               <Button onClick={handleForfeit} fullWidth>
                 Forfeit

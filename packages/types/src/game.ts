@@ -18,6 +18,8 @@ export const gameSettingsSchema = z.strictObject({
 });
 
 const gameOutcomeSchema = z.nativeEnum(gameProtos.GameOutcome);
+export type GameOutcome = z.infer<typeof gameOutcomeSchema>
+
 export const gameStateSchema = z.object({
   fen: z.string().default(INITIAL_FEN),
   moves: z.array(moveSchema).default([]),

@@ -4,11 +4,11 @@ import { Paper, Text } from "@mantine/core";
 interface Props {
   username: string;
   isPlayersTurn: boolean;
-  timeLeftAtLastUpdate: number;
+  timeLeftAtLastUpdate?: number;
 }
 
 export function Timer(props: Props) {
-  const [timeLeft, setTimeLeft] = useState(props.timeLeftAtLastUpdate);
+  const [timeLeft, setTimeLeft] = useState(props.timeLeftAtLastUpdate ?? Infinity);
 
   useEffect(() => {
     if (!props.isPlayersTurn) return;

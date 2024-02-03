@@ -1,27 +1,57 @@
+import type { GameOutcome } from "types"
+import { getUserId } from "../utils/get-user-id"
 import { create } from "zustand";
 
-type GameState = {
-  side: "white" | "black";
-  isWhiteTurn: boolean;
-  moves: string[];
-  fen: string;
-};
+type GameInfo = {
+  whitePlayerId: string
+  whitePlayerUsername?: string
+  blackPlayerId: string
+  blackPlayerUsername?: string
+  time?: number
+  increment: number
+}
 
-type GameContext = GameState & {
-  setInitialState: (state: GameState) => void;
-  addMove: (move: string, newFen: string) => void;
+type GameState = {
+  fen: string
+  outcome: GameOutcome,
+  timeLeftWhite?: number
+  timeLeftBlack?: number
+  moveSans: string[]
+  updatedAt: number
+}
+
+type GameContext = {
+
+  side: "black" | "white"
+  gameInfo?: GameInfo
+  gameState?: GameState
+
+  initGame: (gameInfo: GameInfo, initialState: GameState) => void
+  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft?: number) => void
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
   side: "white" as const,
-  isWhiteTurn: true,
-  moves: [],
-  fen: "",
-  setInitialState: (state) => set(state),
-  addMove: (move, newFen) =>
-    set({
-      isWhiteTurn: get().isWhiteTurn!,
-      moves: [...get().moves, move],
-      fen: newFen,
-    }),
+
+  initGame: (gameInfo, initialState) => {
+    const userId = getUserId()
+    if (!userId) return
+
+    const side = userId === gameInfo.whitePlayerId ? "white" : "black"
+    set({ gameInfo, side, gameState: initialState })
+  },
+
+  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft?: number) => {
+    const updatedState = { ...get().gameState }
+    updatedState.fen = updatedFen
+    updatedState.outcome = updatedOutcome
+    updatedState.moveSans?.push(newSan)
+    updatedState.updatedAt = Date.now() // TODO: fix
+
+    const sideToMove = updatedFen.split(" ")[1] as "b" | "w"
+    if (sideToMove === "b") updatedState.timeLeftWhite = updatedTimeLeft
+    else updatedState.timeLeftBlack = updatedTimeLeft
+
+    set({ gameState: updatedState as GameState })
+  }
 }));

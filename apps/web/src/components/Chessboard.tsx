@@ -9,14 +9,14 @@ type ChessboardProps = React.ComponentProps<typeof BareChessboard> & {
 
 export function Chessboard(props: ChessboardProps) {
   const gameContext = useGameContext();
-  const game = new Chess(gameContext.fen);
+  const game = new Chess(gameContext.gameState!.fen);
 
   const onPieceDrop = (from: string, to: string, _piece: string) => {
     try {
       const move = game.move({ from, to });
       if (!move) return false;
       props.submitMove(move.san);
-      gameContext.addMove(move.san, game.fen());
+      // TODO: optimistic update
 
       return true;
     } catch {
@@ -28,7 +28,7 @@ export function Chessboard(props: ChessboardProps) {
     <BareChessboard
       {...props}
       boardOrientation={gameContext.side}
-      position={gameContext.fen}
+      position={gameContext.gameState!.fen}
       onPieceDrop={onPieceDrop}
       isDraggablePiece={(args) => {
         const piece = game.get(args.sourceSquare);

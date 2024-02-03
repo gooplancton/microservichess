@@ -1,25 +1,29 @@
 import { useEffect, useState } from "react";
 import { trpc } from "../../trpc";
 import { useNavigate } from "react-router-dom";
-import { getUserId } from "../utils/get-user-id";
 import { useGameContext } from "../context/game-context";
 
 export function useGame(gameId: string) {
-  const userId = getUserId();
   const [isConnected, setIsConnected] = useState(false);
   const { data } = trpc.game.info.useQuery(gameId, { enabled: !isConnected });
   const navigate = useNavigate();
-  const gameContext = useGameContext();
+  const game = useGameContext();
 
   useEffect(() => {
     if (!data || !data.state) return;
 
-    const side = userId === data.whitePlayerId ? "white" : "black";
-    gameContext.setInitialState({
-      side,
-      isWhiteTurn: data.state.moveSans.length % 2 === 0,
+    game.initGame({
+      whitePlayerId: data.whitePlayerId,
+      whitePlayerUsername: data.whitePlayerUsername,
+      blackPlayerId: data.blackPlayerId,
+      blackPlayerUsername: data.blackPlayerUsername,
+      time: data.settings?.time,
+      increment: data.settings?.increment ?? 0
+    }, {
       fen: data.state.fen,
-      moves: data.state.moveSans,
+      outcome: data.state.outcome,
+      moveSans: data.state.moveSans,
+      updatedAt: Date.now() // TODO: correct
     });
 
     setIsConnected(true);
@@ -30,7 +34,12 @@ export function useGame(gameId: string) {
     {
       enabled: isConnected,
       onData: (res) => {
-        gameContext.addMove(res.san, res.updatedFen);
+        game.updateState(
+          res.updatedFen,
+          res.updatedOutcome,
+          res.san,
+          res.updatedTimeLeft
+        )
       },
     },
   );
@@ -38,7 +47,12 @@ export function useGame(gameId: string) {
   const makeMoveMutation = trpc.game.makeMove.useMutation();
   const makeMove = async (san: string) => {
     const res = await makeMoveMutation.mutateAsync({ gameId, san });
-    gameContext.addMove(san, res.updatedFen);
+    game.updateState(
+      res.updatedFen,
+      res.updatedOutcome,
+      res.san,
+      res.updatedTimeLeft
+    )
   };
 
   const leave = () => {
@@ -46,5 +60,5 @@ export function useGame(gameId: string) {
     navigate("/");
   };
 
-  return { makeMove, leave, isConnected };
+  return { makeMove, leave, isConnected, game };
 }
