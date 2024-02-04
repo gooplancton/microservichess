@@ -1,0 +1,75 @@
+version: '3'
+
+services:
+  mongo:
+    image: mongo:latest
+    container_name: mongo
+    environment:
+      MONGO_INITDB_DATABASE: "microservichess"
+    ports:
+      - "27017:27017"
+    networks:
+      - internal
+
+  user:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: user-svc
+    container_name: user
+    environment:
+      MONGODB_URI: "mongodb://mongo:27017/microservichess"
+    networks:
+      - internal
+    depends_on:
+      - mongo
+
+  game:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: game-svc
+    container_name: game
+    environment:
+      MONGODB_URI: "mongodb://mongo:27017/microservichess"
+    networks:
+      - internal
+    depends_on:
+      - user
+      - mongo
+
+  invite:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: invite-svc
+    container_name: invite
+    environment:
+      MONGODB_URI: "mongodb://mongo:27017/microservichess"
+    networks:
+      - internal
+    depends_on:
+      - game
+      - mongo
+
+  api-gateway:
+    build:
+      context: .
+      dockerfile: Dockerfile
+      target: api-gateway
+    container_name: api-gateway
+    environment:
+      PANEL_ENABLED: yes
+    ports:
+      - "8080:8080"
+    networks:
+      - internal
+    depends_on:
+      - user
+      - game
+      - invite
+
+networks:
+  internal:
+    driver: bridge
+

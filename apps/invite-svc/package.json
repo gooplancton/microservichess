@@ -7,6 +7,7 @@
     "build": "tsc"
   },
   "dependencies": {
+    "mongodb": "^6.3.0",
     "nice-grpc": "^2.1.7",
     "protobufs": "workspace:*",
     "redis": "^4.6.12",

@@ -17,13 +17,8 @@ export class MemoryUserRepository implements UserRepository {
     return user as IRegisteredUser;
   }
 
-  async createUser(user: IRegisteredUser) {
-    //
+  async createUser(user: IUser) {
     this.users.set(user._id, user);
-  }
-
-  async createGuest(guest: IGuest) {
-    this.users.set(guest._id, guest);
   }
 
   async findUserById(userId: string): Promise<IUser | null> {

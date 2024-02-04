@@ -11,7 +11,7 @@ export class MongoDBGameRepository implements GameRepository {
     const client = new MongoClient(url);
     client.connect().then(() => (this.connected = true));
 
-    this.games = client.db().collection<IGame>("games");
+    this.games = client.db("microservichess").collection<IGame>("games");
   }
 
   async updateGameState(gameId: string, updatedState: IGameState) {

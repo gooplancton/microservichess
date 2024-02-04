@@ -4,19 +4,22 @@ import { UserServiceDefinition } from "protobufs/dist/user_svc";
 import { createClient, createChannel, ServerError, Status } from "nice-grpc";
 import { TRPCError } from "@trpc/server";
 
+const USER_SERVER_ADDR = process.env.USER_SERVER_ADDR ?? "user:50050";
 export const userServiceClient = createClient(
   UserServiceDefinition,
-  createChannel("0.0.0.0:50050"),
+  createChannel(USER_SERVER_ADDR),
 );
 
+const GAME_SERVER_ADDR = process.env.GAME_SERVER_ADDR ?? "game:50051";
 export const gameServiceClient = createClient(
   GameServiceDefinition,
-  createChannel("0.0.0.0:50051"),
+  createChannel(GAME_SERVER_ADDR),
 );
 
+const INVITE_SERVER_ADDR = process.env.USER_SERVER_ADDR ?? "invite:50052";
 export const inviteServiceClient = createClient(
   InviteServiceDefinition,
-  createChannel("0.0.0.0:50052"),
+  createChannel(INVITE_SERVER_ADDR),
 );
 
 export async function handleGrpcCallError(e: ServerError): Promise<never> {

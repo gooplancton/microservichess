@@ -147,8 +147,8 @@ export class GameService implements gameProtos.GameServiceImplementation {
     if (colorToMove === "b" && playerId !== game.blackPlayerId)
       throw new ServerError(Status.INVALID_ARGUMENT, "opponent turn");
 
-    const lastMoveTime = game.state.moves.at(-1)?.createdAt ?? game.createdAt;
-    const elapsedSeconds = now - lastMoveTime;
+    const lastMoveTime = game.state.moves.at(-1)?.createdAt;
+    const elapsedSeconds = lastMoveTime ? now - lastMoveTime : 0;
 
     const timeLeft =
       playerId === game.whitePlayerId

@@ -32,7 +32,7 @@ export class UserService implements userProtos.UserServiceImplementation {
     request: userProtos.GuestUsernameMsg,
   ): Promise<userProtos.UserIdMsg> {
     const guest = guestSchema.parse({ username: request.username });
-    await this.repo.createGuest(guest);
+    await this.repo.createUser(guest);
 
     const res = {
       userId: guest._id,

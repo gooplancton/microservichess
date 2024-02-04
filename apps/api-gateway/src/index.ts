@@ -7,6 +7,9 @@ import ws from "ws";
 import { inviteRouter, userRouter, gameRouter } from "./routers";
 import { createContext, router } from "./trpc";
 
+const PORT = process.env.PORT ?? "8080";
+const API_PUBLIC_URL = process.env.API_PUBLIC_URL ?? "http://localhost"
+
 const app = express();
 const appRouter = router({
   invite: inviteRouter,
@@ -24,13 +27,15 @@ app.use(
   }),
 );
 
-app.use("/panel", (_, res) => {
-  return res.send(
-    renderTrpcPanel(appRouter, { url: "http://localhost:8080/trpc" }),
-  );
-});
+if (process.env.PANEL_ENABLED) {
+  app.use("/panel", (_, res) => {
+    return res.send(
+      renderTrpcPanel(appRouter, { url: `${API_PUBLIC_URL}:${PORT}/trpc` }),
+    );
+  });
+}
 
-const server = app.listen(8080);
+const server = app.listen(Number.parseInt(PORT));
 
 const wss = new ws.Server({ server });
 const handler = applyWSSHandler({

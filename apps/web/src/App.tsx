@@ -1,5 +1,5 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createWSClient, httpBatchLink, splitLink, wsLink } from "@trpc/client";
+import { createWSClient, httpBatchLink, loggerLink, splitLink, wsLink } from "@trpc/client";
 import * as React from "react";
 import { trpc } from "./trpc";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -17,50 +17,51 @@ const wsClient = createWSClient({
   url: `ws://localhost:8080/trpc`,
 });
 
-export function App() {
-  const router = createBrowserRouter([
-    {
-      path: "/",
-      element: <HomePage />,
-    },
-    {
-      path: "/join",
-      element: <JoinPage />,
-    },
-    {
-      path: "/auth/login",
-      element: <LoginPage />,
-    },
-    {
-      path: "/auth/signup",
-      element: <SignupPage />,
-    },
-    {
-      path: "/game",
-      element: <GamePage />,
-    },
-  ]);
 
-  const [queryClient] = React.useState(() => new QueryClient());
-  const [trpcClient] = React.useState(() =>
-    trpc.createClient({
-      links: [
-        splitLink({
-          condition: (op) => op.type === "subscription",
-          true: wsLink({ client: wsClient }),
-          false: httpBatchLink({
-            url: "http://localhost:8080/trpc",
-            headers() {
-              const jwt = Cookies.get("microservichess-user-jwt");
-              if (jwt) return { authorization: `Bearer ${jwt}` };
+const queryClient = new QueryClient()
+const trpcClient = trpc.createClient({
+  links: [
+    loggerLink(),
+    splitLink({
+      condition: (op) => op.type === "subscription",
+      true: wsLink({ client: wsClient }),
+      false: httpBatchLink({
+        url: "http://localhost:8080/trpc",
+        headers() {
+          const jwt = Cookies.get("microservichess-user-jwt");
+          if (jwt) return { authorization: `Bearer ${jwt}` };
 
-              return {};
-            },
-          }),
-        }),
-      ],
+          return {};
+        },
+      }),
     }),
-  );
+  ],
+})
+
+const router = createBrowserRouter([
+  {
+    path: "/",
+    element: <HomePage />,
+  },
+  {
+    path: "/join",
+    element: <JoinPage />,
+  },
+  {
+    path: "/auth/login",
+    element: <LoginPage />,
+  },
+  {
+    path: "/auth/signup",
+    element: <SignupPage />,
+  },
+  {
+    path: "/game",
+    element: <GamePage />,
+  },
+]);
+
+export function App() {
 
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
