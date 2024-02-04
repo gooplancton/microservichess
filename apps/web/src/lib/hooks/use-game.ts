@@ -25,8 +25,7 @@ export function useGame(gameId: string) {
       moveSans: data.state.moveSans,
       timeLeftWhite: data.state.timeLeftWhite ?? Infinity,
       timeLeftBlack: data.state.timeLeftBlack ?? Infinity,
-      updatedAt: Date.now() // TODO: correct
-    });
+    }, data.updatedAt);
 
     setIsConnected(true);
   }, [data]);
@@ -40,7 +39,8 @@ export function useGame(gameId: string) {
           res.updatedFen,
           res.updatedOutcome,
           res.san,
-          res.updatedTimeLeft
+          res.updatedTimeLeft ?? Infinity,
+          res.updatedAt
         )
       },
     },

@@ -17,7 +17,6 @@ type GameState = {
   timeLeftWhite: number
   timeLeftBlack: number
   moveSans: string[]
-  updatedAt: number
 }
 
 type GameContext = {
@@ -25,50 +24,50 @@ type GameContext = {
   side: "black" | "white"
   gameInfo?: GameInfo
   gameState?: GameState
+  updatedAt: number
 
-  initGame: (gameInfo: GameInfo, initialState: GameState) => void
-  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft?: number) => void
+  initGame: (gameInfo: GameInfo, initialState: GameState, updatedAt: number) => void
+  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft: number, updatedAt: number) => void
   optimisticallyUpdateFen: (updatedFen: string) => void
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
   side: "white" as const,
+  updatedAt: Math.floor(Date.now() / 1000),
 
-  initGame: (gameInfo, initialState) => {
+  initGame: (gameInfo: GameInfo, initialState: GameState, updatedAt: number) => {
     const userId = getUserId()
     if (!userId) return
 
     const side = userId === gameInfo.whitePlayerId ? "white" : "black"
-    set({ gameInfo, side, gameState: initialState })
+    set({ gameInfo, side, gameState: initialState, updatedAt })
   },
 
-  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft?: number) => {
+  updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft: number, updatedAt: number) => {
     const updatedState = { ...get().gameState }
     updatedState.fen = updatedFen
     updatedState.outcome = updatedOutcome
     updatedState.moveSans?.push(newSan)
-    updatedState.updatedAt = Date.now() // TODO: fix
 
     const sideToMove = updatedFen.split(" ")[1] as "b" | "w"
     if (sideToMove === "b") updatedState.timeLeftWhite = updatedTimeLeft
     else updatedState.timeLeftBlack = updatedTimeLeft
 
-    set({ gameState: updatedState as GameState })
+    set({ gameState: updatedState as GameState, updatedAt })
   },
 
   optimisticallyUpdateFen: (updatedFen: string) => {
-    const updatedState = { ...get().gameState }
-    const playerSide = get().side
-
-    const elapsedTime = Math.round((Date.now() - (updatedState.updatedAt ?? 0)) / 1000)
+    const { gameState, side, updatedAt } = get()
+    const updatedState = { ...gameState }
+    const now = Math.floor(Date.now() / 1000)
+    const elapsedTime = now - updatedAt
 
     updatedState.fen = updatedFen
-    updatedState.updatedAt = Date.now() // TODO: fix
     const increment = get().gameInfo!.increment
 
-    if (playerSide === "white") updatedState.timeLeftWhite! -= elapsedTime + increment
+    if (side === "white") updatedState.timeLeftWhite! -= elapsedTime + increment
     else updatedState.timeLeftBlack! -= elapsedTime + increment
 
-    set({ gameState: updatedState as GameState })
+    set({ gameState: updatedState as GameState, updatedAt: now })
   }
 }));

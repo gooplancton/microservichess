@@ -40,6 +40,7 @@ message GetGameInfoResponse {
   GameStateMsg state = 4;
   optional string whitePlayerUsername = 5;
   optional string blackPlayerUsername = 6;  
+  uint32 updatedAt = 7;
 }
 
 message MakeMoveRequest {
@@ -54,6 +55,7 @@ message GameUpdateMsg {
   string updatedFen = 3;
   GameOutcome updatedOutcome = 4;
   optional uint32 updatedTimeLeft = 5;
+  uint32 updatedAt = 6;
 }
 
 message AskOrAcceptDrawRequest {

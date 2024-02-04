@@ -14,7 +14,7 @@ export class MemoryGameRepository implements GameRepository {
     if (!game) throw new ServerError(Status.INTERNAL, "unexpected");
 
     game.state = updatedState;
-    game.updatedAt = Date.now();
+    game.updatedAt = Math.floor(Date.now() / 1000);
   }
 
   async getGame(gameId: string) {

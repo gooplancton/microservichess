@@ -81,6 +81,7 @@ export interface GetGameInfoResponse {
   state: GameStateMsg | undefined;
   whitePlayerUsername?: string | undefined;
   blackPlayerUsername?: string | undefined;
+  updatedAt: number;
 }
 
 export interface MakeMoveRequest {
@@ -95,6 +96,7 @@ export interface GameUpdateMsg {
   updatedFen: string;
   updatedOutcome: GameOutcome;
   updatedTimeLeft?: number | undefined;
+  updatedAt: number;
 }
 
 export interface AskOrAcceptDrawRequest {
@@ -478,6 +480,7 @@ function createBaseGetGameInfoResponse(): GetGameInfoResponse {
     state: undefined,
     whitePlayerUsername: undefined,
     blackPlayerUsername: undefined,
+    updatedAt: 0,
   };
 }
 
@@ -500,6 +503,9 @@ export const GetGameInfoResponse = {
     }
     if (message.blackPlayerUsername !== undefined) {
       writer.uint32(50).string(message.blackPlayerUsername);
+    }
+    if (message.updatedAt !== 0) {
+      writer.uint32(56).uint32(message.updatedAt);
     }
     return writer;
   },
@@ -553,6 +559,13 @@ export const GetGameInfoResponse = {
 
           message.blackPlayerUsername = reader.string();
           continue;
+        case 7:
+          if (tag !== 56) {
+            break;
+          }
+
+          message.updatedAt = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -574,6 +587,7 @@ export const GetGameInfoResponse = {
       blackPlayerUsername: isSet(object.blackPlayerUsername)
         ? globalThis.String(object.blackPlayerUsername)
         : undefined,
+      updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
     };
   },
 
@@ -597,6 +611,9 @@ export const GetGameInfoResponse = {
     if (message.blackPlayerUsername !== undefined) {
       obj.blackPlayerUsername = message.blackPlayerUsername;
     }
+    if (message.updatedAt !== 0) {
+      obj.updatedAt = Math.round(message.updatedAt);
+    }
     return obj;
   },
 
@@ -615,6 +632,7 @@ export const GetGameInfoResponse = {
       : undefined;
     message.whitePlayerUsername = object.whitePlayerUsername ?? undefined;
     message.blackPlayerUsername = object.blackPlayerUsername ?? undefined;
+    message.updatedAt = object.updatedAt ?? 0;
     return message;
   },
 };
@@ -709,7 +727,7 @@ export const MakeMoveRequest = {
 };
 
 function createBaseGameUpdateMsg(): GameUpdateMsg {
-  return { gameId: "", san: "", updatedFen: "", updatedOutcome: 0, updatedTimeLeft: undefined };
+  return { gameId: "", san: "", updatedFen: "", updatedOutcome: 0, updatedTimeLeft: undefined, updatedAt: 0 };
 }
 
 export const GameUpdateMsg = {
@@ -728,6 +746,9 @@ export const GameUpdateMsg = {
     }
     if (message.updatedTimeLeft !== undefined) {
       writer.uint32(40).uint32(message.updatedTimeLeft);
+    }
+    if (message.updatedAt !== 0) {
+      writer.uint32(48).uint32(message.updatedAt);
     }
     return writer;
   },
@@ -774,6 +795,13 @@ export const GameUpdateMsg = {
 
           message.updatedTimeLeft = reader.uint32();
           continue;
+        case 6:
+          if (tag !== 48) {
+            break;
+          }
+
+          message.updatedAt = reader.uint32();
+          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -790,6 +818,7 @@ export const GameUpdateMsg = {
       updatedFen: isSet(object.updatedFen) ? globalThis.String(object.updatedFen) : "",
       updatedOutcome: isSet(object.updatedOutcome) ? gameOutcomeFromJSON(object.updatedOutcome) : 0,
       updatedTimeLeft: isSet(object.updatedTimeLeft) ? globalThis.Number(object.updatedTimeLeft) : undefined,
+      updatedAt: isSet(object.updatedAt) ? globalThis.Number(object.updatedAt) : 0,
     };
   },
 
@@ -810,6 +839,9 @@ export const GameUpdateMsg = {
     if (message.updatedTimeLeft !== undefined) {
       obj.updatedTimeLeft = Math.round(message.updatedTimeLeft);
     }
+    if (message.updatedAt !== 0) {
+      obj.updatedAt = Math.round(message.updatedAt);
+    }
     return obj;
   },
 
@@ -823,6 +855,7 @@ export const GameUpdateMsg = {
     message.updatedFen = object.updatedFen ?? "";
     message.updatedOutcome = object.updatedOutcome ?? 0;
     message.updatedTimeLeft = object.updatedTimeLeft ?? undefined;
+    message.updatedAt = object.updatedAt ?? 0;
     return message;
   },
 };

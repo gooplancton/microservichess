@@ -117,6 +117,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
       whitePlayerUsername: game.whitePlayerUsername,
       blackPlayerUsername: game.blackPlayerUsername,
       settings: game.settings,
+      updatedAt: game.updatedAt,
       state: {
         fen: game.state.fen,
         moveSans: game.state.moves.map((move) => move.san),
@@ -133,6 +134,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
     request: gameProtos.MakeMoveRequest,
   ): Promise<gameProtos.GameUpdateMsg> {
     const { gameId, playerId, san } = request;
+    const now = Math.floor(Date.now() / 1000)
 
     const game = await this.repo.getGame(gameId);
     if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
@@ -146,7 +148,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
       throw new ServerError(Status.INVALID_ARGUMENT, "opponent turn");
 
     const lastMoveTime = game.state.moves.at(-1)?.createdAt ?? game.createdAt;
-    const elapsedSeconds = Math.floor((Date.now() - lastMoveTime) / 1000);
+    const elapsedSeconds = now - lastMoveTime;
 
     const timeLeft =
       playerId === game.whitePlayerId
@@ -170,11 +172,12 @@ export class GameService implements gameProtos.GameServiceImplementation {
         san: "[TIME]",
         updatedFen: game.state.fen,
         updatedOutcome,
+        updatedAt: now
       };
     }
 
     game.state.drawAskedBy = undefined
-    game.state.moves.push({ san, createdAt: Date.now() });
+    game.state.moves.push({ san, createdAt: now });
     const updatedTimeLeft = timeLeft
       ? timeLeft - elapsedSeconds + game.settings.increment
       : undefined;
@@ -205,6 +208,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
       updatedFen: game.state.fen,
       updatedOutcome: game.state.outcome,
       updatedTimeLeft,
+      updatedAt: now
     };
 
     return res;

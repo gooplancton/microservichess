@@ -4,11 +4,11 @@ import { ColorSwatch, Flex, Paper, Space, Text } from "@mantine/core";
 interface Props {
   username: string;
   isPlayersTurn: boolean;
-  timeLeftAtLastUpdate: number;
+  initialTime: number;
 }
 
 export function Timer(props: Props) {
-  const [timeLeft, setTimeLeft] = useState(props.timeLeftAtLastUpdate);
+  const [timeLeft, setTimeLeft] = useState(props.initialTime);
 
   useEffect(() => {
     if (!props.isPlayersTurn) return;
@@ -27,7 +27,7 @@ export function Timer(props: Props) {
             {props.username}
           </Text>
         </Flex>
-        { props.timeLeftAtLastUpdate < Infinity && <Text ta="center" size="xl" fw={800}>
+        { props.initialTime < Infinity && <Text ta="center" size="xl" fw={800}>
           {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, "0")}`}
         </Text> }
       </Flex>

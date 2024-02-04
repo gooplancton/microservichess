@@ -23,7 +23,7 @@ export class MongoDBGameRepository implements GameRepository {
       {
         $set: {
           state: updatedState,
-          updatedAt: Date.now(),
+          updatedAt: Math.floor(Date.now() / 1000),
         },
       },
     );
