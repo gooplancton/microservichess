@@ -6,8 +6,6 @@ services:
     container_name: mongo
     environment:
       MONGO_INITDB_DATABASE: "microservichess"
-    ports:
-      - "27017:27017"
     networks:
       - internal
 
@@ -58,8 +56,6 @@ services:
       dockerfile: Dockerfile
       target: api-gateway
     container_name: api-gateway
-    environment:
-      PANEL_ENABLED: yes
     ports:
       - "8080:8080"
     networks:
@@ -72,4 +68,3 @@ services:
 networks:
   internal:
     driver: bridge
-
