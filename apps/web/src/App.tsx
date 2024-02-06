@@ -9,8 +9,8 @@ import { Notifications } from "@mantine/notifications";
 import { SignupPage } from "./pages/auth/signup";
 import { HomePage } from "./pages/home";
 import { GamePage } from "./pages/game";
-import { JoinPage } from "./pages/join";
 import Cookies from "js-cookie";
+import { AUTH_COOKIE_NAME } from "./constants"
 
 interface ImportMetaEnv {
   readonly VITE_PUBLIC_API_DOMAIN: string
@@ -20,7 +20,7 @@ interface ImportMeta {
   readonly env?: ImportMetaEnv
 }
 
-const VITE_PUBLIC_API_DOMAIN = (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN ?? "localhost:8080"
+const VITE_PUBLIC_API_DOMAIN = (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN || "localhost:8080"
 const httpProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost") ? "http" : "https"
 const wsProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost") ? "ws" : "wss"
 
@@ -38,7 +38,7 @@ const trpcClient = trpc.createClient({
       false: httpBatchLink({
         url: `${httpProtocol}://${VITE_PUBLIC_API_DOMAIN}/trpc`,
         headers() {
-          const jwt = Cookies.get("microservichess-user-jwt");
+          const jwt = Cookies.get(AUTH_COOKIE_NAME);
           if (jwt) return { authorization: `Bearer ${jwt}` };
 
           return {};
@@ -52,10 +52,6 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: <HomePage />,
-  },
-  {
-    path: "/join",
-    element: <JoinPage />,
   },
   {
     path: "/auth/login",

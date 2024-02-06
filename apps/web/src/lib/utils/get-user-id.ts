@@ -1,4 +1,5 @@
 import Cookies from "js-cookie";
+import { AUTH_COOKIE_NAME } from "../../constants";
 
 function parseJwt(token: string) {
   const base64Url = token.split(".")[1];
@@ -17,7 +18,7 @@ function parseJwt(token: string) {
 }
 
 export function getUserId() {
-  const token = Cookies.get("microservichess-user-jwt");
+  const token = Cookies.get(AUTH_COOKIE_NAME);
   if (!token) return undefined;
 
   const parsed = parseJwt(token);

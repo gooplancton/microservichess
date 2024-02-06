@@ -1,9 +1,9 @@
 import {
   publicProcedure,
   possiblyCreateGuest,
-  createUserJWT,
+  signUserJWT,
 } from "../../trpc";
 
 export const loginGuest = publicProcedure
   .use(possiblyCreateGuest)
-  .mutation(({ ctx }) => createUserJWT(ctx.userId, true));
+  .mutation(({ ctx }) => signUserJWT(ctx.userId, true));

@@ -2,6 +2,8 @@ import { useEffect, useState } from "react";
 import { trpc } from "../../trpc";
 import { useNavigate } from "react-router-dom";
 import { useGameContext } from "../context/game-context";
+import Cookies from "js-cookie";
+import { AUTH_COOKIE_NAME } from "../../constants"
 
 export function useGame(gameId: string) {
   const [isConnected, setIsConnected] = useState(false);
@@ -31,7 +33,7 @@ export function useGame(gameId: string) {
   }, [data]);
 
   trpc.game.join.useSubscription(
-    { gameId },
+    { gameId, jwt: Cookies.get(AUTH_COOKIE_NAME)! },
     {
       enabled: isConnected,
       onData: (res) => {

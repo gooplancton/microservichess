@@ -1,5 +1,5 @@
 import { userServiceClient } from "../../grpc-clients";
-import { createUserJWT, publicProcedure } from "../../trpc";
+import { signUserJWT, publicProcedure } from "../../trpc";
 import { z } from "zod";
 
 const userLoginInputSchema = z.strictObject({
@@ -12,5 +12,5 @@ export const loginUser = publicProcedure
   .mutation(({ input }) =>
     userServiceClient
       .userLogin(input)
-      .then((res) => createUserJWT(res.userId, false)),
+      .then((res) => signUserJWT(res.userId, false)),
   );

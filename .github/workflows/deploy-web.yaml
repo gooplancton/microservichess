@@ -46,3 +46,5 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
+        env:
+          VITE_PUBLIC_API_DOMAIN: "gooplancton.is-a.dev/microservichess-api"

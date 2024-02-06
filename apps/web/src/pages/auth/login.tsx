@@ -15,6 +15,7 @@ import { useDisclosure } from "@mantine/hooks";
 import { notifications } from "@mantine/notifications";
 import { useNavigate } from "react-router-dom";
 import Cookies from "js-cookie";
+import { AUTH_COOKIE_NAME } from "../../constants";
 
 export function LoginPage() {
   const [email, setEmail] = useState("");
@@ -33,7 +34,7 @@ export function LoginPage() {
         email,
         password,
       });
-      Cookies.set("microservichess-user-jwt", authToken, { path: "/" });
+      Cookies.set(AUTH_COOKIE_NAME, authToken, { path: "/" });
 
       navigate("/");
     } catch (e) {
@@ -53,7 +54,7 @@ export function LoginPage() {
 
   const loginAsGuest = useCallback(async () => {
     const authToken = await loginGuestMutation.mutateAsync();
-    Cookies.set("microservichess-user-jwt", authToken, { path: "/" });
+    Cookies.set(AUTH_COOKIE_NAME, authToken, { path: "/" });
 
     navigate("/");
   }, []);

@@ -18,10 +18,8 @@ import { useNavigate } from "react-router-dom";
 import { trpc } from "../../trpc";
 import { useForm } from "@mantine/form";
 import { useWaitForOpponent } from "../../lib";
+import { usePossiblyConsumeInviteLink } from "../../lib/hooks/use-consume-link";
 
-function getInviteLink(inviteLinkId: string) {
-  return `${window.location.origin}/microservichess/join?invite=${inviteLinkId}`;
-}
 
 export function HomePage() {
   const navigate = useNavigate();
@@ -33,6 +31,7 @@ export function HomePage() {
     },
   });
 
+  usePossiblyConsumeInviteLink()
   const createInviteMutation = trpc.invite.create.useMutation();
   const consumeInviteMutation = trpc.invite.consume.useMutation();
   const [inviteLink, setInviteLink] = useState<string>("");
@@ -59,7 +58,8 @@ export function HomePage() {
         },
       });
 
-      setInviteLink(getInviteLink(inviteLinkId));
+      const inviteLink = `${window.location.origin}/microservichess/?invite=${inviteLinkId}`;
+      setInviteLink(inviteLink);
 
       startWaiting();
     },
