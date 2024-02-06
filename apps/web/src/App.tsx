@@ -69,7 +69,7 @@ const router = createBrowserRouter([
     path: "/game",
     element: <GamePage />,
   },
-]);
+], { basename: "/microservichess" });
 
 export function App() {
 
