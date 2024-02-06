@@ -20,7 +20,7 @@ import { useForm } from "@mantine/form";
 import { useWaitForOpponent } from "../../lib";
 
 function getInviteLink(inviteLinkId: string) {
-  return `${window.location.origin}/join?invite=${inviteLinkId}`;
+  return `${window.location.origin}/microservichess/join?invite=${inviteLinkId}`;
 }
 
 export function HomePage() {
@@ -71,7 +71,7 @@ export function HomePage() {
     const { gameId } = await consumeInviteMutation.mutateAsync({
       inviteLinkId,
     });
-    if (gameId) navigate("/game?gameId" + gameId);
+    if (gameId) navigate("/game?gameId=" + gameId);
   }, [inviteLinkToConsume]);
 
   return (
