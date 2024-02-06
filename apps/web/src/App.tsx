@@ -20,10 +20,11 @@ interface ImportMeta {
   readonly env?: ImportMetaEnv
 }
 
-const VITE_PUBLIC_API_DOMAIN = (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN ?? "localhost:8080/trpc"
+const VITE_PUBLIC_API_DOMAIN = (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN ?? "localhost:8080"
+const protocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost") ? "http" : "https"
 
 const wsClient = createWSClient({
-  url: `ws://${VITE_PUBLIC_API_DOMAIN}`,
+  url: `ws://${VITE_PUBLIC_API_DOMAIN}/trpc`,
 });
 
 const queryClient = new QueryClient()
@@ -34,7 +35,7 @@ const trpcClient = trpc.createClient({
       condition: (op) => op.type === "subscription",
       true: wsLink({ client: wsClient }),
       false: httpBatchLink({
-        url: `http://${VITE_PUBLIC_API_DOMAIN}`,
+        url: `${protocol}://${VITE_PUBLIC_API_DOMAIN}/trpc`,
         headers() {
           const jwt = Cookies.get("microservichess-user-jwt");
           if (jwt) return { authorization: `Bearer ${jwt}` };
