@@ -37,12 +37,8 @@ jobs:
         run: pnpm install --no-frozen-lockfile
       - name: Build
         run: pnpm run build --filter web
-        env:
-          VITE_PUBLIC_API_DOMAIN: "gooplancton.is-a.dev/microservichess-api"
       - name: Setup Pages
         uses: actions/configure-pages@v3
-        env:
-          VITE_PUBLIC_API_DOMAIN: "gooplancton.is-a.dev/microservichess-api"
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v2
         with:
@@ -50,5 +46,3 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v2
-        env:
-          VITE_PUBLIC_API_DOMAIN: "gooplancton.is-a.dev/microservichess-api"
