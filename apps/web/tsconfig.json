@@ -4,6 +4,7 @@
   "compilerOptions": {
     "outDir": "./dist",
     "baseUrl": ".",
+    "strict": true,
     "paths": {
       "@/*": ["./src/*"]
     }
