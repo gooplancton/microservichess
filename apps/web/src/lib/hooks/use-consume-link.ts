@@ -21,4 +21,6 @@ export function usePossiblyConsumeInviteLink() {
         navigate("/game?gameId=" + gameId);
       });
   }, []);
+
+  return { isResolving: consumeLinkMutation.isLoading }
 }

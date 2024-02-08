@@ -1,7 +1,7 @@
 import React from "react";
 import { useGame } from "../../lib/hooks/use-game";
 import { useSearchParams } from "react-router-dom";
-import { Paper, Center, Button, Flex, List, Pill } from "@mantine/core";
+import { Paper, Center, Button, Flex, List, Pill, Group, Container } from "@mantine/core";
 import { Chessboard } from "../../components/Chessboard";
 import { Timer } from "../../components/Timer";
 import { trpc } from "../../trpc";
@@ -31,26 +31,20 @@ export function GamePage() {
 
   return (
     <>
-      <Center w={"100vw"} pt={50}>
-        <Flex direction={"column"} align={"center"}>
-          <Timer side={game.side === "white" ? "black" : "white"} />
-          <Paper w={800} shadow="md" withBorder>
-            <Flex>
-              <div style={{ width: "80%" }}>
-                <Chessboard submitMove={makeMove} fen={game.gameState!.fen} side={game.side} />
-              </div>
-              <div style={{ width: "20%", padding: "2rem", height: 600, overflow: "auto" }}>
-                <List type="ordered">
-                  {game.gameState?.moveSans.map((moveSan, idx) => <List.Item key={idx} pb={5}>
-                    <Pill size="lg">{moveSan}</Pill>
-                  </List.Item>)}
-                </List>
-              </div>
-            </Flex>
-          </Paper>
-          <Timer side={game.side} />
-        </Flex>
-      </Center>
+      <Flex direction={"column"} align={"center"}>
+        <Timer side={game.side === "white" ? "black" : "white"} />
+        <Paper w={{ lg: "70vh", base: "80vw" }} shadow="md" withBorder>
+          <Flex direction={{ lg: "row", base: "column" }} >
+            <List type="ordered" h={{ base: "10vh", lg: undefined }} withPadding pt={20} pr={20}>
+              {game.gameState?.moveSans.map((moveSan, idx) => <List.Item key={idx} pb={5}>
+                <Pill size="lg">{moveSan}</Pill>
+              </List.Item>)}
+            </List>
+            <Chessboard submitMove={makeMove} fen={game.gameState!.fen} side={game.side} />
+          </Flex>
+        </Paper>
+        <Timer side={game.side} />
+      </Flex>
     </>
   );
 }

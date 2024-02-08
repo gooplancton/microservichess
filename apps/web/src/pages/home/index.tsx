@@ -31,7 +31,7 @@ export function HomePage() {
     },
   });
 
-  usePossiblyConsumeInviteLink()
+  const { isResolving } = usePossiblyConsumeInviteLink()
   const createInviteMutation = trpc.invite.create.useMutation();
   const consumeInviteMutation = trpc.invite.consume.useMutation();
   const [inviteLink, setInviteLink] = useState<string>("");
@@ -40,7 +40,7 @@ export function HomePage() {
   const { data: me, isLoading } = trpc.user.me.useQuery(undefined, { retry: false });
 
   useEffect(() => {
-    if (isLoading) return;
+    if (isLoading || isResolving) return;
 
     if (!me) navigate("/auth/login");
   }, [isLoading])
@@ -73,6 +73,8 @@ export function HomePage() {
     });
     if (gameId) navigate("/game?gameId=" + gameId);
   }, [inviteLinkToConsume]);
+
+  if (isLoading || isResolving) return <></>
 
   return (
     <Container size={420} my={40} pt={40} pos="relative">
