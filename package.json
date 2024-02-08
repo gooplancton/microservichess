@@ -4,6 +4,7 @@
   "scripts": {
     "build": "turbo build",
     "dev": "dotenv -- turbo dev",
+    "dev-backend": "dotenv -- turbo dev --filter=\\!web",
     "lint": "turbo lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\""
   },

@@ -5,7 +5,8 @@
   "main": "./dist/index.js",
   "types": "./src/index.ts",
   "scripts": {
-    "dev": "nodemon ./src/index.ts",
+    "dev": "node ./dist/index.js",
+    "dev:watch": "nodemon ./src/index.ts",
     "build": "tsc"
   },
   "dependencies": {
