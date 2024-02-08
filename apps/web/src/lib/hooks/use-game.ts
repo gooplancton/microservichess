@@ -50,13 +50,7 @@ export function useGame(gameId: string) {
 
   const makeMoveMutation = trpc.game.makeMove.useMutation();
   const makeMove = async (san: string) => {
-    const res = await makeMoveMutation.mutateAsync({ gameId, san });
-    // game.updateState(
-    //   res.updatedFen,
-    //   res.updatedOutcome,
-    //   res.san,
-    //   res.updatedTimeLeft
-    // )
+    await makeMoveMutation.mutateAsync({ gameId, san });
   };
 
   const leave = () => {

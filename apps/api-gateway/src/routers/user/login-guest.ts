@@ -1,9 +1,20 @@
+import z from "zod";
 import {
   publicProcedure,
-  possiblyCreateGuest,
   signUserJWT,
 } from "../../trpc";
+import { handleGrpcCallError, userServiceClient } from "../../grpc-clients";
+
+const inputSchema = z.object({
+  username: z.string().optional()
+})
 
 export const loginGuest = publicProcedure
-  .use(possiblyCreateGuest)
-  .mutation(({ ctx }) => signUserJWT(ctx.userId, true));
+  .input(inputSchema)
+  .mutation(async ({ input }) => {
+    const res = await userServiceClient
+      .guestLogin({ username: input.username })
+      .catch(handleGrpcCallError)
+
+    return signUserJWT(res.userId, true)
+  });

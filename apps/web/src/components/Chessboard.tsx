@@ -11,14 +11,14 @@ type ChessboardProps = React.ComponentProps<typeof BareChessboard> & {
 
 export function Chessboard(props: ChessboardProps) {
   const game = new Chess(props.fen);
-  const optimisticallyUpdateFen = useGameContext((state) => state.optimisticallyUpdateFen)
+  const optimisticallyUpdateState = useGameContext((state) => state.optimisticallyUpdateState)
 
   const onPieceDrop = (from: string, to: string, _piece: string) => {
     try {
       const move = game.move({ from, to });
       if (!move) return false;
       props.submitMove(move.san);
-      optimisticallyUpdateFen(game.fen())
+      optimisticallyUpdateState(game.fen())
 
       return true;
     } catch {

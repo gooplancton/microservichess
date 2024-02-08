@@ -2,6 +2,8 @@ import type { GameOutcome } from "types"
 import { getUserId } from "../utils/get-user-id"
 import { create } from "zustand";
 
+type Side = "white" | "black"
+
 type GameInfo = {
   whitePlayerId: string
   whitePlayerUsername?: string
@@ -21,14 +23,16 @@ type GameState = {
 
 type GameContext = {
 
-  side: "black" | "white"
+  side: Side
   gameInfo?: GameInfo
   gameState?: GameState
   updatedAt: number
 
   initGame: (gameInfo: GameInfo, initialState: GameState, updatedAt: number) => void
   updateState: (updatedFen: string, updatedOutcome: GameOutcome, newSan: string, updatedTimeLeft: number, updatedAt: number) => void
-  optimisticallyUpdateFen: (updatedFen: string) => void
+  optimisticallyUpdateState: (updatedFen: string) => void
+  getTurn: () => Side,
+  getTimeLeft: (side: Side) => number
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
@@ -56,7 +60,7 @@ export const useGameContext = create<GameContext>((set, get) => ({
     set({ gameState: updatedState as GameState, updatedAt })
   },
 
-  optimisticallyUpdateFen: (updatedFen: string) => {
+  optimisticallyUpdateState: (updatedFen: string) => {
     const { gameState, side, updatedAt } = get()
     const updatedState = { ...gameState }
     const now = Math.floor(Date.now() / 1000)
@@ -69,5 +73,27 @@ export const useGameContext = create<GameContext>((set, get) => ({
     else updatedState.timeLeftBlack! -= elapsedTime + increment
 
     set({ gameState: updatedState as GameState, updatedAt: now })
+  },
+  
+  getTurn: () => {
+    const { gameState } = get()
+    const firstLetter = gameState!.fen.split(" ")[1]
+    return firstLetter === "w" ? "white" : "black"
+  },
+
+  getTimeLeft: (side: Side) => {
+    const now = Math.floor(Date.now() / 1000)
+    const { gameState, updatedAt, getTurn } = get()
+    const isGameRunning = gameState?.outcome === 3 && gameState.moveSans.length > 0
+    const elapsedSeconds = isGameRunning ? now - updatedAt : 0
+    const isPlayerToMove = side === getTurn()
+
+    let initialTime = side === "white" ? gameState!.timeLeftWhite : gameState!.timeLeftBlack
+
+    let timeLeft: number = initialTime
+    if (isPlayerToMove) timeLeft = initialTime - elapsedSeconds
+    timeLeft = Math.max(timeLeft, 0)
+
+    return timeLeft
   }
 }));

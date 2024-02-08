@@ -25,19 +25,6 @@ export function GamePage() {
 
   if (!isConnected) return <></>
 
-  const playerUsername = game.side === "white" ? game.gameInfo!.whitePlayerUsername : game.gameInfo!.blackPlayerUsername
-  let playerTime = game.side === "white" ? game.gameState!.timeLeftWhite : game.gameState!.timeLeftBlack
-
-  const opponentUsername = game.side === "white" ? game.gameInfo!.blackPlayerUsername : game.gameInfo!.whitePlayerUsername
-  let opponentTime = game.side === "white" ? game.gameState!.timeLeftBlack : game.gameState!.timeLeftWhite
-
-  const now = Math.floor(Date.now() / 1000)
-  const elapsedSeconds = now - game.updatedAt
-  const isPlayerTurn = game.side.startsWith(game.gameState!.fen.split(" ")[1])
-
-  if (isPlayerTurn) playerTime -= elapsedSeconds
-  else opponentTime -= elapsedSeconds
-
   const handleDraw = () => {
     // Implement draw logic here
   };
@@ -46,7 +33,7 @@ export function GamePage() {
     <>
       <Center w={"100vw"} pt={50}>
         <Flex direction={"column"} align={"center"}>
-          <Timer username={opponentUsername ?? "Guest"} initialTime={opponentTime} isPlayersTurn={!isPlayerTurn} />
+          <Timer side={game.side === "white" ? "black" : "white"} />
           <Paper w={800} shadow="md" withBorder>
             <Flex>
               <div style={{ width: "80%" }}>
@@ -61,7 +48,7 @@ export function GamePage() {
               </div>
             </Flex>
           </Paper>
-          <Timer username={playerUsername ?? "Guest"} initialTime={playerTime} isPlayersTurn={isPlayerTurn} />
+          <Timer side={game.side} />
         </Flex>
       </Center>
     </>

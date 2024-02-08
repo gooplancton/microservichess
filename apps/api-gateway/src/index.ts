@@ -27,7 +27,7 @@ app.use(
   }),
 );
 
-if (process.env.PANEL_ENABLED) {
+if (API_PUBLIC_URL === "http://localhost") {
   app.use("/panel", (_, res) => {
     return res.send(
       renderTrpcPanel(appRouter, { url: `${API_PUBLIC_URL}:${PORT}/trpc` }),
@@ -35,7 +35,9 @@ if (process.env.PANEL_ENABLED) {
   });
 }
 
-const server = app.listen(Number.parseInt(PORT));
+const server = app.listen(Number.parseInt(PORT), () => {
+  console.log("API Gateway listening on", PORT);
+});
 
 const wss = new ws.Server({ server });
 const handler = applyWSSHandler({
