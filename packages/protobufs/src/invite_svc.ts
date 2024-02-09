@@ -73,7 +73,10 @@ function createBaseInviteLinkIdMsg(): InviteLinkIdMsg {
 }
 
 export const InviteLinkIdMsg = {
-  encode(message: InviteLinkIdMsg, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: InviteLinkIdMsg,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.inviteLinkId !== "") {
       writer.uint32(10).string(message.inviteLinkId);
     }
@@ -81,7 +84,8 @@ export const InviteLinkIdMsg = {
   },
 
   decode(input: _m0.Reader | Uint8Array, length?: number): InviteLinkIdMsg {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInviteLinkIdMsg();
     while (reader.pos < end) {
@@ -104,7 +108,11 @@ export const InviteLinkIdMsg = {
   },
 
   fromJSON(object: any): InviteLinkIdMsg {
-    return { inviteLinkId: isSet(object.inviteLinkId) ? globalThis.String(object.inviteLinkId) : "" };
+    return {
+      inviteLinkId: isSet(object.inviteLinkId)
+        ? globalThis.String(object.inviteLinkId)
+        : "",
+    };
   },
 
   toJSON(message: InviteLinkIdMsg): unknown {
@@ -130,12 +138,18 @@ function createBaseCreateInviteLinkRequest(): CreateInviteLinkRequest {
 }
 
 export const CreateInviteLinkRequest = {
-  encode(message: CreateInviteLinkRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: CreateInviteLinkRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
     if (message.gameSettings !== undefined) {
-      GameSettingsMsg.encode(message.gameSettings, writer.uint32(18).fork()).ldelim();
+      GameSettingsMsg.encode(
+        message.gameSettings,
+        writer.uint32(18).fork(),
+      ).ldelim();
     }
     if (message.playAs !== undefined) {
       writer.uint32(24).int32(message.playAs);
@@ -143,8 +157,12 @@ export const CreateInviteLinkRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): CreateInviteLinkRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): CreateInviteLinkRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseCreateInviteLinkRequest();
     while (reader.pos < end) {
@@ -162,7 +180,10 @@ export const CreateInviteLinkRequest = {
             break;
           }
 
-          message.gameSettings = GameSettingsMsg.decode(reader, reader.uint32());
+          message.gameSettings = GameSettingsMsg.decode(
+            reader,
+            reader.uint32(),
+          );
           continue;
         case 3:
           if (tag !== 24) {
@@ -183,7 +204,9 @@ export const CreateInviteLinkRequest = {
   fromJSON(object: any): CreateInviteLinkRequest {
     return {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
-      gameSettings: isSet(object.gameSettings) ? GameSettingsMsg.fromJSON(object.gameSettings) : undefined,
+      gameSettings: isSet(object.gameSettings)
+        ? GameSettingsMsg.fromJSON(object.gameSettings)
+        : undefined,
       playAs: isSet(object.playAs) ? playAsFromJSON(object.playAs) : undefined,
     };
   },
@@ -205,12 +228,15 @@ export const CreateInviteLinkRequest = {
   create(base?: DeepPartial<CreateInviteLinkRequest>): CreateInviteLinkRequest {
     return CreateInviteLinkRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<CreateInviteLinkRequest>): CreateInviteLinkRequest {
+  fromPartial(
+    object: DeepPartial<CreateInviteLinkRequest>,
+  ): CreateInviteLinkRequest {
     const message = createBaseCreateInviteLinkRequest();
     message.userId = object.userId ?? "";
-    message.gameSettings = (object.gameSettings !== undefined && object.gameSettings !== null)
-      ? GameSettingsMsg.fromPartial(object.gameSettings)
-      : undefined;
+    message.gameSettings =
+      object.gameSettings !== undefined && object.gameSettings !== null
+        ? GameSettingsMsg.fromPartial(object.gameSettings)
+        : undefined;
     message.playAs = object.playAs ?? undefined;
     return message;
   },
@@ -221,7 +247,10 @@ function createBaseConsumeInviteLinkRequest(): ConsumeInviteLinkRequest {
 }
 
 export const ConsumeInviteLinkRequest = {
-  encode(message: ConsumeInviteLinkRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ConsumeInviteLinkRequest,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.inviteLinkId !== "") {
       writer.uint32(10).string(message.inviteLinkId);
     }
@@ -231,8 +260,12 @@ export const ConsumeInviteLinkRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ConsumeInviteLinkRequest {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ConsumeInviteLinkRequest {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsumeInviteLinkRequest();
     while (reader.pos < end) {
@@ -263,7 +296,9 @@ export const ConsumeInviteLinkRequest = {
 
   fromJSON(object: any): ConsumeInviteLinkRequest {
     return {
-      inviteLinkId: isSet(object.inviteLinkId) ? globalThis.String(object.inviteLinkId) : "",
+      inviteLinkId: isSet(object.inviteLinkId)
+        ? globalThis.String(object.inviteLinkId)
+        : "",
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
     };
   },
@@ -279,10 +314,14 @@ export const ConsumeInviteLinkRequest = {
     return obj;
   },
 
-  create(base?: DeepPartial<ConsumeInviteLinkRequest>): ConsumeInviteLinkRequest {
+  create(
+    base?: DeepPartial<ConsumeInviteLinkRequest>,
+  ): ConsumeInviteLinkRequest {
     return ConsumeInviteLinkRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ConsumeInviteLinkRequest>): ConsumeInviteLinkRequest {
+  fromPartial(
+    object: DeepPartial<ConsumeInviteLinkRequest>,
+  ): ConsumeInviteLinkRequest {
     const message = createBaseConsumeInviteLinkRequest();
     message.inviteLinkId = object.inviteLinkId ?? "";
     message.userId = object.userId ?? "";
@@ -295,7 +334,10 @@ function createBaseConsumeInviteLinkResponse(): ConsumeInviteLinkResponse {
 }
 
 export const ConsumeInviteLinkResponse = {
-  encode(message: ConsumeInviteLinkResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: ConsumeInviteLinkResponse,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.gameId !== "") {
       writer.uint32(10).string(message.gameId);
     }
@@ -305,8 +347,12 @@ export const ConsumeInviteLinkResponse = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): ConsumeInviteLinkResponse {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): ConsumeInviteLinkResponse {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseConsumeInviteLinkResponse();
     while (reader.pos < end) {
@@ -338,7 +384,9 @@ export const ConsumeInviteLinkResponse = {
   fromJSON(object: any): ConsumeInviteLinkResponse {
     return {
       gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
-      inviterId: isSet(object.inviterId) ? globalThis.String(object.inviterId) : "",
+      inviterId: isSet(object.inviterId)
+        ? globalThis.String(object.inviterId)
+        : "",
     };
   },
 
@@ -353,10 +401,14 @@ export const ConsumeInviteLinkResponse = {
     return obj;
   },
 
-  create(base?: DeepPartial<ConsumeInviteLinkResponse>): ConsumeInviteLinkResponse {
+  create(
+    base?: DeepPartial<ConsumeInviteLinkResponse>,
+  ): ConsumeInviteLinkResponse {
     return ConsumeInviteLinkResponse.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<ConsumeInviteLinkResponse>): ConsumeInviteLinkResponse {
+  fromPartial(
+    object: DeepPartial<ConsumeInviteLinkResponse>,
+  ): ConsumeInviteLinkResponse {
     const message = createBaseConsumeInviteLinkResponse();
     message.gameId = object.gameId ?? "";
     message.inviterId = object.inviterId ?? "";
@@ -369,15 +421,22 @@ function createBaseInvalidateLinkMessage(): InvalidateLinkMessage {
 }
 
 export const InvalidateLinkMessage = {
-  encode(message: InvalidateLinkMessage, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+  encode(
+    message: InvalidateLinkMessage,
+    writer: _m0.Writer = _m0.Writer.create(),
+  ): _m0.Writer {
     if (message.userId !== "") {
       writer.uint32(10).string(message.userId);
     }
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): InvalidateLinkMessage {
-    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+  decode(
+    input: _m0.Reader | Uint8Array,
+    length?: number,
+  ): InvalidateLinkMessage {
+    const reader =
+      input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
     const message = createBaseInvalidateLinkMessage();
     while (reader.pos < end) {
@@ -400,7 +459,9 @@ export const InvalidateLinkMessage = {
   },
 
   fromJSON(object: any): InvalidateLinkMessage {
-    return { userId: isSet(object.userId) ? globalThis.String(object.userId) : "" };
+    return {
+      userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
+    };
   },
 
   toJSON(message: InvalidateLinkMessage): unknown {
@@ -414,7 +475,9 @@ export const InvalidateLinkMessage = {
   create(base?: DeepPartial<InvalidateLinkMessage>): InvalidateLinkMessage {
     return InvalidateLinkMessage.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<InvalidateLinkMessage>): InvalidateLinkMessage {
+  fromPartial(
+    object: DeepPartial<InvalidateLinkMessage>,
+  ): InvalidateLinkMessage {
     const message = createBaseInvalidateLinkMessage();
     message.userId = object.userId ?? "";
     return message;
@@ -467,13 +530,24 @@ export interface InviteServiceClient<CallOptionsExt = {}> {
   ): Promise<ConsumeInviteLinkResponse>;
 }
 
-type Builtin = Date | Function | Uint8Array | string | number | boolean | undefined;
+type Builtin =
+  | Date
+  | Function
+  | Uint8Array
+  | string
+  | number
+  | boolean
+  | undefined;
 
-export type DeepPartial<T> = T extends Builtin ? T
-  : T extends globalThis.Array<infer U> ? globalThis.Array<DeepPartial<U>>
-  : T extends ReadonlyArray<infer U> ? ReadonlyArray<DeepPartial<U>>
-  : T extends {} ? { [K in keyof T]?: DeepPartial<T[K]> }
-  : Partial<T>;
+export type DeepPartial<T> = T extends Builtin
+  ? T
+  : T extends globalThis.Array<infer U>
+    ? globalThis.Array<DeepPartial<U>>
+    : T extends ReadonlyArray<infer U>
+      ? ReadonlyArray<DeepPartial<U>>
+      : T extends {}
+        ? { [K in keyof T]?: DeepPartial<T[K]> }
+        : Partial<T>;
 
 function isSet(value: any): boolean {
   return value !== null && value !== undefined;

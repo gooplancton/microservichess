@@ -19,7 +19,7 @@ export const gameSettingsSchema = z.strictObject({
 });
 
 const gameOutcomeSchema = z.nativeEnum(gameProtos.GameOutcome);
-export type GameOutcome = z.infer<typeof gameOutcomeSchema>
+export type GameOutcome = z.infer<typeof gameOutcomeSchema>;
 
 export const gameStateSchema = z.object({
   fen: z.string().default(INITIAL_FEN),
@@ -40,6 +40,6 @@ export const gameSchema = z.object({
   blackPlayerUsername: z.string().optional(),
   settings: gameSettingsSchema,
   state: gameStateSchema,
-  updatedAt: timestampSchema
+  updatedAt: timestampSchema,
 });
 export type IGame = z.infer<typeof gameSchema>;

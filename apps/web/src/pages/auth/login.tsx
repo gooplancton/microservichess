@@ -23,8 +23,10 @@ import { AUTH_COOKIE_NAME } from "../../constants";
 export function LoginPage() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
-  const [opened, setOpened] = useState(false)
-  const [guestUsername, setGuestUsername] = useState<string | undefined>(undefined)
+  const [opened, setOpened] = useState(false);
+  const [guestUsername, setGuestUsername] = useState<string | undefined>(
+    undefined,
+  );
   const [loading, { open: startLoading, close: stopLoading }] =
     useDisclosure(false);
   const navigate = useNavigate();
@@ -58,18 +60,31 @@ export function LoginPage() {
   }, [email, password]);
 
   const guestLogin = useCallback(async () => {
-    const authToken = await loginGuestMutation.mutateAsync({ username: guestUsername || undefined });
+    const authToken = await loginGuestMutation.mutateAsync({
+      username: guestUsername || undefined,
+    });
     Cookies.set(AUTH_COOKIE_NAME, authToken, { path: "/" });
 
-    setOpened(false)
+    setOpened(false);
     navigate("/");
-  }, [guestUsername])
+  }, [guestUsername]);
 
   return (
     <>
-      <Modal opened={opened} withCloseButton onClose={guestLogin} size="lg" radius="md" title="(Optional) Pick a Username">
+      <Modal
+        opened={opened}
+        withCloseButton
+        onClose={guestLogin}
+        size="lg"
+        radius="md"
+        title="(Optional) Pick a Username"
+      >
         <Group align="flex-end">
-          <TextInput placeholder="microservichamp" onChange={(e) => setGuestUsername(e.currentTarget.value)} style={{ flex: 1 }} />
+          <TextInput
+            placeholder="microservichamp"
+            onChange={(e) => setGuestUsername(e.currentTarget.value)}
+            style={{ flex: 1 }}
+          />
           <Button onClick={guestLogin}>Continue</Button>
         </Group>
       </Modal>

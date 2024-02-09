@@ -5,7 +5,7 @@ import { observable } from "@trpc/server/observable";
 
 const inputSchema = z.strictObject({
   gameId: z.string(),
-  jwt: z.string()
+  jwt: z.string(),
 });
 
 export const join = publicProcedure

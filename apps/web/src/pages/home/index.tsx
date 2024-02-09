@@ -20,7 +20,6 @@ import { useForm } from "@mantine/form";
 import { useWaitForOpponent } from "../../lib";
 import { usePossiblyConsumeInviteLink } from "../../lib/hooks/use-consume-link";
 
-
 export function HomePage() {
   const navigate = useNavigate();
   const form = useForm({
@@ -31,19 +30,21 @@ export function HomePage() {
     },
   });
 
-  const { isResolving } = usePossiblyConsumeInviteLink()
+  const { isResolving } = usePossiblyConsumeInviteLink();
   const createInviteMutation = trpc.invite.create.useMutation();
   const consumeInviteMutation = trpc.invite.consume.useMutation();
   const [inviteLink, setInviteLink] = useState<string>("");
   const [inviteLinkToConsume, setInviteLinkToConsume] = useState<string>("");
   const { startWaiting, isWaiting, stopWaiting } = useWaitForOpponent();
-  const { data: me, isLoading } = trpc.user.me.useQuery(undefined, { retry: false });
+  const { data: me, isLoading } = trpc.user.me.useQuery(undefined, {
+    retry: false,
+  });
 
   useEffect(() => {
     if (isLoading || isResolving) return;
 
     if (!me) navigate("/auth/login");
-  }, [isLoading])
+  }, [isLoading]);
 
   const createInviteLink = useCallback(
     async (e: FormEvent) => {
@@ -74,7 +75,7 @@ export function HomePage() {
     if (gameId) navigate("/game?gameId=" + gameId);
   }, [inviteLinkToConsume]);
 
-  if (isLoading || isResolving) return <></>
+  if (isLoading || isResolving) return <></>;
 
   return (
     <Container size={420} my={40} pt={40} pos="relative">

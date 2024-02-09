@@ -3,27 +3,29 @@ import { ColorSwatch, Flex, Paper, Space, Text } from "@mantine/core";
 import { useGameContext } from "../lib";
 
 interface Props {
-  side: "white" | "black"
+  side: "white" | "black";
 }
 
 export function Timer(props: Props) {
-  const { gameInfo, getTimeLeft, getTurn } = useGameContext()
+  const { gameInfo, getTimeLeft, getTurn } = useGameContext();
 
   const [timeLeft, setTimeLeft] = useState(() => getTimeLeft(props.side));
 
   useEffect(() => {
     const timer = setTimeout(() => {
-      setTimeLeft(getTimeLeft(props.side))
-    }, 1000)
+      setTimeLeft(getTimeLeft(props.side));
+    }, 1000);
 
-    return () => clearTimeout(timer)
-  })
+    return () => clearTimeout(timer);
+  });
 
-  const username = props.side === "white" ? gameInfo?.whitePlayerUsername : gameInfo?.blackPlayerUsername
-  const isPlayerToMove = props.side === getTurn()
+  const username =
+    props.side === "white"
+      ? gameInfo?.whitePlayerUsername
+      : gameInfo?.blackPlayerUsername;
+  const isPlayerToMove = props.side === getTurn();
 
   return (
-
     <Paper w={300} shadow="md" withBorder my={15}>
       <Flex direction={"column"} py={10}>
         <Flex direction={"row"} justify={"center"} align={"center"}>
@@ -34,7 +36,10 @@ export function Timer(props: Props) {
           </Text>
         </Flex>
         <Text ta="center" size="xl" fw={800}>
-          {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(2, "0")}`}
+          {`${Math.floor(timeLeft / 60)}:${String(timeLeft % 60).padStart(
+            2,
+            "0",
+          )}`}
         </Text>
       </Flex>
     </Paper>

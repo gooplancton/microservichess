@@ -4,8 +4,8 @@ import { InviteLinkConsumedInfo } from "./consume";
 import z from "zod";
 
 const inputSchema = z.object({
-  jwt: z.string()
-})
+  jwt: z.string(),
+});
 
 export const wait = publicProcedure
   .input(inputSchema)

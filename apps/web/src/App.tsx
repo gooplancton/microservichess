@@ -1,5 +1,11 @@
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { createWSClient, httpBatchLink, loggerLink, splitLink, wsLink } from "@trpc/client";
+import {
+  createWSClient,
+  httpBatchLink,
+  loggerLink,
+  splitLink,
+  wsLink,
+} from "@trpc/client";
 import * as React from "react";
 import { trpc } from "./trpc";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
@@ -10,25 +16,30 @@ import { SignupPage } from "./pages/auth/signup";
 import { HomePage } from "./pages/home";
 import { GamePage } from "./pages/game";
 import Cookies from "js-cookie";
-import { AUTH_COOKIE_NAME } from "./constants"
+import { AUTH_COOKIE_NAME } from "./constants";
 
 interface ImportMetaEnv {
-  readonly VITE_PUBLIC_API_DOMAIN: string
+  readonly VITE_PUBLIC_API_DOMAIN: string;
 }
 
 interface ImportMeta {
-  readonly env?: ImportMetaEnv
+  readonly env?: ImportMetaEnv;
 }
 
-const VITE_PUBLIC_API_DOMAIN = (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN || "localhost:8080"
-const httpProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost") ? "http" : "https"
-const wsProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost") ? "ws" : "wss"
+const VITE_PUBLIC_API_DOMAIN =
+  (import.meta as ImportMeta).env?.VITE_PUBLIC_API_DOMAIN || "localhost:8080";
+const httpProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost")
+  ? "http"
+  : "https";
+const wsProtocol = VITE_PUBLIC_API_DOMAIN.startsWith("localhost")
+  ? "ws"
+  : "wss";
 
 const wsClient = createWSClient({
   url: `${wsProtocol}://${VITE_PUBLIC_API_DOMAIN}/trpc`,
 });
 
-const queryClient = new QueryClient()
+const queryClient = new QueryClient();
 const trpcClient = trpc.createClient({
   links: [
     loggerLink(),
@@ -46,29 +57,31 @@ const trpcClient = trpc.createClient({
       }),
     }),
   ],
-})
+});
 
-const router = createBrowserRouter([
-  {
-    path: "/",
-    element: <HomePage />,
-  },
-  {
-    path: "/auth/login",
-    element: <LoginPage />,
-  },
-  {
-    path: "/auth/signup",
-    element: <SignupPage />,
-  },
-  {
-    path: "/game",
-    element: <GamePage />,
-  },
-], { basename: "/microservichess" });
+const router = createBrowserRouter(
+  [
+    {
+      path: "/",
+      element: <HomePage />,
+    },
+    {
+      path: "/auth/login",
+      element: <LoginPage />,
+    },
+    {
+      path: "/auth/signup",
+      element: <SignupPage />,
+    },
+    {
+      path: "/game",
+      element: <GamePage />,
+    },
+  ],
+  { basename: "/microservichess" },
+);
 
 export function App() {
-
   return (
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>

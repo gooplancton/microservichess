@@ -9,11 +9,14 @@ export function useWaitForOpponent() {
 
   const [isWaiting, setIsWaiting] = useState(false);
 
-  trpc.invite.wait.useSubscription({ jwt: Cookies.get(AUTH_COOKIE_NAME)! }, {
-    enabled: isWaiting,
-    onStarted: () => console.log("started waiting"),
-    onData: (gameJoined) => navigate(`/game?gameId=${gameJoined.gameId}`),
-  });
+  trpc.invite.wait.useSubscription(
+    { jwt: Cookies.get(AUTH_COOKIE_NAME)! },
+    {
+      enabled: isWaiting,
+      onStarted: () => console.log("started waiting"),
+      onData: (gameJoined) => navigate(`/game?gameId=${gameJoined.gameId}`),
+    },
+  );
 
   const startWaiting = () => setIsWaiting(true);
   const stopWaiting = () => setIsWaiting(false);

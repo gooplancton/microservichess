@@ -2,7 +2,7 @@ import Cookies from "js-cookie";
 import { useEffect } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import { trpc } from "../../trpc";
-import { AUTH_COOKIE_NAME } from "../../constants"
+import { AUTH_COOKIE_NAME } from "../../constants";
 
 export function usePossiblyConsumeInviteLink() {
   const navigate = useNavigate();
@@ -22,5 +22,5 @@ export function usePossiblyConsumeInviteLink() {
       });
   }, []);
 
-  return { isResolving: consumeLinkMutation.isLoading }
+  return { isResolving: consumeLinkMutation.isLoading };
 }

@@ -134,7 +134,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
     request: gameProtos.MakeMoveRequest,
   ): Promise<gameProtos.GameUpdateMsg> {
     const { gameId, playerId, san } = request;
-    const now = Math.floor(Date.now() / 1000)
+    const now = Math.floor(Date.now() / 1000);
 
     const game = await this.repo.getGame(gameId);
     if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
@@ -172,11 +172,11 @@ export class GameService implements gameProtos.GameServiceImplementation {
         san: "[TIME]",
         updatedFen: game.state.fen,
         updatedOutcome,
-        updatedAt: now
+        updatedAt: now,
       };
     }
 
-    game.state.drawAskedBy = undefined
+    game.state.drawAskedBy = undefined;
     game.state.moves.push({ san, createdAt: now });
     const updatedTimeLeft = timeLeft
       ? timeLeft - elapsedSeconds + game.settings.increment
@@ -208,7 +208,7 @@ export class GameService implements gameProtos.GameServiceImplementation {
       updatedFen: game.state.fen,
       updatedOutcome: game.state.outcome,
       updatedTimeLeft,
-      updatedAt: now
+      updatedAt: now,
     };
 
     return res;

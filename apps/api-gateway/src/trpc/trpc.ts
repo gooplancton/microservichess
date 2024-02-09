@@ -1,7 +1,11 @@
-import { experimental_standaloneMiddleware, initTRPC, TRPCError } from "@trpc/server";
+import {
+  experimental_standaloneMiddleware,
+  initTRPC,
+  TRPCError,
+} from "@trpc/server";
 import { constructContextFromToken, Context, signUserJWT } from "./context";
-import { userServiceClient } from "../grpc-clients"
-import { EventEmitter } from "events"
+import { userServiceClient } from "../grpc-clients";
+import { EventEmitter } from "events";
 
 const t = initTRPC.context<Context>().create();
 export const isAuthenticated = t.middleware(({ ctx, next }) => {
@@ -33,15 +37,17 @@ export const possiblyCreateGuest = t.middleware(async ({ ctx, next }) => {
  * headers to protocol switch requests needed for clients to subscribe to procedures.
  * Instead of messing around with cookies, we can just pass the jwt in the input.
  */
-export const readJWTFromInput = experimental_standaloneMiddleware<{ input: { jwt: string } }>().create(({ input, next }) => {
-    try {
-        const token = input.jwt
-        const ctx = constructContextFromToken(token)
-        return next({ ctx })
-    } catch {
-        throw new TRPCError({ code: "UNAUTHORIZED" })
-    }
-})
+export const readJWTFromInput = experimental_standaloneMiddleware<{
+  input: { jwt: string };
+}>().create(({ input, next }) => {
+  try {
+    const token = input.jwt;
+    const ctx = constructContextFromToken(token);
+    return next({ ctx });
+  } catch {
+    throw new TRPCError({ code: "UNAUTHORIZED" });
+  }
+});
 
 export const router = t.router;
 export const publicProcedure = t.procedure;

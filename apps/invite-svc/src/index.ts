@@ -4,9 +4,11 @@ import { createChannel, createClient, createServer } from "nice-grpc";
 import { GameServiceDefinition } from "protobufs/dist/game_svc";
 import { MongoDBInviteLinkRepository } from "./repo";
 
-const GAME_SERVER_ADDR = process.env.GAME_SERVER_ADDR ?? "http://localhost:50051";
+const GAME_SERVER_ADDR =
+  process.env.GAME_SERVER_ADDR ?? "http://localhost:50051";
 const PORT = process.env.PORT ?? "50052";
-const MONGODB_URI = process.env.MONGODB_URI ?? "mongodb://localhost:27017/microservichess";
+const MONGODB_URI =
+  process.env.MONGODB_URI ?? "mongodb://localhost:27017/microservichess";
 
 const gameClient = createClient(
   GameServiceDefinition,

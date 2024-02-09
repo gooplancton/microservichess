@@ -8,7 +8,7 @@ import { inviteRouter, userRouter, gameRouter } from "./routers";
 import { createContext, router } from "./trpc";
 
 const PORT = process.env.PORT ?? "8080";
-const API_PUBLIC_URL = process.env.API_PUBLIC_URL ?? "http://localhost"
+const API_PUBLIC_URL = process.env.API_PUBLIC_URL ?? "http://localhost";
 
 const app = express();
 const appRouter = router({
