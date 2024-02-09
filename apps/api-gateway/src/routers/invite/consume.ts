@@ -3,7 +3,6 @@ import { publicProcedure, possiblyCreateGuest, emitter } from "../../trpc";
 import { handleGrpcCallError, inviteServiceClient } from "../../grpc-clients";
 
 const inviteLinkConsumedSchema = z.strictObject({
-  inviteLinkId: z.string(),
   inviterId: z.string(),
   joinerId: z.string(),
   gameId: z.string(),
@@ -11,7 +10,7 @@ const inviteLinkConsumedSchema = z.strictObject({
 export type InviteLinkConsumedInfo = z.infer<typeof inviteLinkConsumedSchema>;
 
 const inputSchema = z.strictObject({
-  inviteLinkId: z.string(),
+  inviterId: z.string(),
 });
 
 export const consume = publicProcedure
@@ -21,14 +20,13 @@ export const consume = publicProcedure
     const res = await inviteServiceClient
       .consumeInviteLink({
         userId: ctx.userId,
-        inviteLinkId: input.inviteLinkId,
+        inviterId: input.inviterId
       })
       .catch(handleGrpcCallError);
 
     const inviteLinkComsumedInfo: InviteLinkConsumedInfo = {
       gameId: res.gameId,
       inviterId: res.inviterId,
-      inviteLinkId: input.inviteLinkId,
       joinerId: ctx.userId,
     };
 

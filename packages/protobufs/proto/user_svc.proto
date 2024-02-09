@@ -15,10 +15,6 @@ message GuestUsernameMsg {
     optional string username = 1;
 }
 
-message GetUserMessage {
-    string userId = 1;
-}
-
 message UserIdMsg {
     string userId = 1;
 }

@@ -8,18 +8,21 @@ export class MemoryInviteLinkRepository implements InviteLinkRepository {
     this.links = new Map();
   }
 
-  async getInviteLink(inviteLinkId: string) {
+  async getInviteLink(inviteLinkId: string, validOnly: boolean = true) {
     const inviteLink = this.links.get(inviteLinkId);
     if (!inviteLink) return null;
+
+    const isExpired = inviteLink.expiresAt > Math.floor(Date.now() / 1000);
+    if (validOnly && isExpired) return null;
 
     return inviteLink;
   }
 
   async createInviteLink(inviteLink: IInviteLink) {
-    this.links.set(inviteLink._id, inviteLink);
+    this.links.set(inviteLink.inviterId, inviteLink);
   }
 
-  async deleteInviteLink(inviteLinkId: string) {
-    return this.links.delete(inviteLinkId);
+  async deleteInviteLink(inviterId: string) {
+    return this.links.delete(inviterId);
   }
 }

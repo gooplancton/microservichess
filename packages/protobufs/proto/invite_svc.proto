@@ -1,5 +1,6 @@
 syntax = "proto3";
 
+import "google/protobuf/empty.proto";
 import "game_svc.proto";
 
 enum PlayAs {
@@ -8,18 +9,15 @@ enum PlayAs {
     RANDOM = 2;
 }
 
-message InviteLinkIdMsg {
-    string inviteLinkId = 1;
-}
-
 message CreateInviteLinkRequest {
     string userId = 1;
     GameSettingsMsg gameSettings = 2;
-    optional PlayAs playAs = 3;
+    PlayAs playAs = 3;
+    uint32 ttlSeconds = 4;
 }
 
 message ConsumeInviteLinkRequest {
-    string inviteLinkId = 1;
+    string inviterId = 1;
     string userId = 2;
 }
 
@@ -28,12 +26,12 @@ message ConsumeInviteLinkResponse {
     string inviterId = 2;
 }
 
-message InvalidateLinkMessage {
+message UserIdMessage {
     string userId = 1;
 }
 
 service InviteService {
-    rpc CreateInviteLink(CreateInviteLinkRequest) returns (InviteLinkIdMsg) {}
+    rpc CreateInviteLink(CreateInviteLinkRequest) returns (google.protobuf.Empty) {}
     rpc ConsumeInviteLink(ConsumeInviteLinkRequest) returns (ConsumeInviteLinkResponse) {}
-    // rpc invalidateInviteLink(InvalidateLinkMessage) returns (InviteSvcEmptyMessage) {}
+    rpc invalidateInviteLink(UserIdMessage) returns (google.protobuf.Empty) {}
 }

@@ -1,4 +1,4 @@
-import { Collection, MongoClient } from "mongodb";
+import { Collection, Filter, MongoClient } from "mongodb";
 import { ServerError, Status } from "nice-grpc";
 import { InviteLinkRepository } from "./base";
 import { IInviteLink } from "types";
@@ -16,11 +16,14 @@ export class MongoDBInviteLinkRepository implements InviteLinkRepository {
       .collection<IInviteLink>("invites");
   }
 
-  async getInviteLink(inviteLinkId: string) {
+  async getInviteLink(inviterId: string, validOnly: boolean = true) {
     if (!this.connected)
       throw new ServerError(Status.UNAVAILABLE, "not connected");
 
-    const inviteLink = await this.invites.findOne({ _id: inviteLinkId });
+    const filter: Filter<IInviteLink> = { inviterId }
+    if (validOnly) filter.expiresAt = { $gt: Math.floor(Date.now() / 1000) }
+
+    const inviteLink = await this.invites.findOne(filter);
 
     return inviteLink;
   }
@@ -29,14 +32,18 @@ export class MongoDBInviteLinkRepository implements InviteLinkRepository {
     if (!this.connected)
       throw new ServerError(Status.UNAVAILABLE, "not connected");
 
-    await this.invites.insertOne(inviteLink);
+    await this.invites.updateOne(
+      { inviterId: inviteLink.inviterId },
+      inviteLink,
+      { upsert: true }
+    )
   }
 
-  async deleteInviteLink(inviteLinkId: string) {
+  async deleteInviteLink(inviterId: string) {
     if (!this.connected)
       throw new ServerError(Status.UNAVAILABLE, "not connected");
 
-    const res = await this.invites.deleteOne({ _id: inviteLinkId });
+    const res = await this.invites.deleteOne({ inviterId });
 
     return res.deletedCount === 1;
   }

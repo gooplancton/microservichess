@@ -7,10 +7,10 @@ import { timestampSchema } from ".";
 export const playAsSchema = z.nativeEnum(inviteProtos.PlayAs);
 
 export const inviteLinkSchema = z.object({
-  _id: z.string().default(uuidv4),
+  inviterId: z.string().default(uuidv4),
   createdAt: timestampSchema,
-  inviterId: z.string(),
   gameSettings: gameSettingsSchema,
   playAs: playAsSchema.default(inviteProtos.PlayAs.RANDOM),
+  expiresAt: timestampSchema
 });
 export type IInviteLink = z.infer<typeof inviteLinkSchema>;

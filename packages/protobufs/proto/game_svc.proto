@@ -72,7 +72,6 @@ service GameService {
   rpc CreateGame(CreateGameRequest) returns (GameIdMsg) {}
   rpc MakeMove(MakeMoveRequest) returns (GameUpdateMsg) {}
   rpc GetGameInfo(GameIdMsg) returns (GetGameInfoResponse) {}
-  // rpc GetGames(GetGamesMessage) returns (GameRecordsMessage) {}
   rpc AskDraw(AskOrAcceptDrawRequest) returns (google.protobuf.Empty) {}
   rpc AcceptDraw(AskOrAcceptDrawRequest) returns (google.protobuf.Empty) {}
   rpc Forfeit(ForfeitRequest) returns (GameUpdateMsg) {}
