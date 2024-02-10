@@ -6,7 +6,6 @@ import z from "zod";
 const inputSchema = z.object({
   gameSettings: gameSettingsSchema,
   playAs: playAsSchema,
-  ttlSeconds: z.number().min(0).optional()
 });
 
 export const create = authenticatedProcedure

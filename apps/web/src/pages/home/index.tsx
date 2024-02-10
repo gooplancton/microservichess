@@ -17,7 +17,7 @@ import {
 import { useNavigate } from "react-router-dom";
 import { trpc } from "../../trpc";
 import { useForm } from "@mantine/form";
-import { useWaitForOpponent } from "../../lib";
+import { getUserId, useWaitForOpponent } from "../../lib";
 import { usePossiblyConsumeInviteLink } from "../../lib/hooks/use-consume-link";
 
 export function HomePage() {
@@ -51,7 +51,7 @@ export function HomePage() {
       e.preventDefault();
       const { timeMins, increment, playAs } = form.values;
 
-      const { inviteLinkId } = await createInviteMutation.mutateAsync({
+      await createInviteMutation.mutateAsync({
         playAs: ["White", "Black", "Random"].indexOf(playAs),
         gameSettings: {
           time: timeMins * 60,
@@ -59,7 +59,8 @@ export function HomePage() {
         },
       });
 
-      const inviteLink = `${window.location.origin}/microservichess/?invite=${inviteLinkId}`;
+      const userId = getUserId()
+      const inviteLink = `${window.location.origin}/microservichess/?inviter=${userId}`;
       setInviteLink(inviteLink);
 
       startWaiting();
@@ -68,9 +69,9 @@ export function HomePage() {
   );
 
   const consumeInviteLink = useCallback(async () => {
-    const inviteLinkId = inviteLinkToConsume.split("=")[1];
+    const inviterId = inviteLinkToConsume.split("=")[1];
     const { gameId } = await consumeInviteMutation.mutateAsync({
-      inviteLinkId,
+      inviterId,
     });
     if (gameId) navigate("/game?gameId=" + gameId);
   }, [inviteLinkToConsume]);
@@ -102,6 +103,7 @@ export function HomePage() {
           </Flex>
         </Paper>
         <Text>Hand this link to a friend to play with them!</Text>
+        <Text>The link will be invalidated upon closing this window</Text>
         <Flex direction={"row"}>
           <TextInput
             readOnly

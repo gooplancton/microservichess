@@ -12,8 +12,7 @@ export class MemoryInviteLinkRepository implements InviteLinkRepository {
     const inviteLink = this.links.get(inviteLinkId);
     if (!inviteLink) return null;
 
-    const isExpired = inviteLink.expiresAt > Math.floor(Date.now() / 1000);
-    if (validOnly && isExpired) return null;
+    if (validOnly && inviteLink.hasBeenConsumed) return null;
 
     return inviteLink;
   }

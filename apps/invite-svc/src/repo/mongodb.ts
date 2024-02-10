@@ -21,7 +21,7 @@ export class MongoDBInviteLinkRepository implements InviteLinkRepository {
       throw new ServerError(Status.UNAVAILABLE, "not connected");
 
     const filter: Filter<IInviteLink> = { inviterId }
-    if (validOnly) filter.expiresAt = { $gt: Math.floor(Date.now() / 1000) }
+    if (validOnly) filter.hasBeenConsumed = false
 
     const inviteLink = await this.invites.findOne(filter);
 
@@ -34,7 +34,7 @@ export class MongoDBInviteLinkRepository implements InviteLinkRepository {
 
     await this.invites.updateOne(
       { inviterId: inviteLink.inviterId },
-      inviteLink,
+      { $set: inviteLink },
       { upsert: true }
     )
   }

@@ -10,11 +10,11 @@ export function usePossiblyConsumeInviteLink() {
   const consumeLinkMutation = trpc.invite.consume.useMutation();
 
   useEffect(() => {
-    const inviteLinkId = params.get("invite");
-    if (!inviteLinkId) return;
+    const inviterId = params.get("inviter");
+    if (!inviterId) return;
 
     consumeLinkMutation
-      .mutateAsync({ inviteLinkId })
+      .mutateAsync({ inviterId })
       .then(({ gameId, jwt }) => {
         if (jwt) Cookies.set(AUTH_COOKIE_NAME, jwt, { path: "/" });
 

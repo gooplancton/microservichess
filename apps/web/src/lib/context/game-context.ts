@@ -16,13 +16,13 @@ type GameInfo = {
 type GameState = {
   fen: string;
   outcome: GameOutcome;
-  timeLeftWhite: number;
-  timeLeftBlack: number;
+  timeLeftPlayer: number;
+  timeLeftOpponent: number;
   moveSans: string[];
 };
 
 type GameContext = {
-  side: Side;
+  side?: Side;
   gameInfo?: GameInfo;
   gameState?: GameState;
   updatedAt: number;
@@ -40,12 +40,11 @@ type GameContext = {
     updatedAt: number,
   ) => void;
   optimisticallyUpdateState: (updatedFen: string) => void;
+  getSide: () => Side | undefined,
   getTurn: () => Side;
-  getTimeLeft: (side: Side) => number;
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
-  side: "white" as const,
   updatedAt: Math.floor(Date.now() / 1000),
 
   initGame: (
@@ -73,14 +72,15 @@ export const useGameContext = create<GameContext>((set, get) => ({
     updatedState.moveSans?.push(newSan);
 
     const sideToMove = updatedFen.split(" ")[1] as "b" | "w";
-    if (sideToMove === "b") updatedState.timeLeftWhite = updatedTimeLeft;
-    else updatedState.timeLeftBlack = updatedTimeLeft;
+    const hasPlayerJustMoved = !get().getSide()!.startsWith(sideToMove)
+    if (hasPlayerJustMoved) updatedState.timeLeftPlayer = updatedTimeLeft;
+    else updatedState.timeLeftOpponent = updatedTimeLeft;
 
     set({ gameState: updatedState as GameState, updatedAt });
   },
 
   optimisticallyUpdateState: (updatedFen: string) => {
-    const { gameState, side, updatedAt } = get();
+    const { gameState, updatedAt } = get();
     const updatedState = { ...gameState };
     const now = Math.floor(Date.now() / 1000);
     const elapsedTime = now - updatedAt;
@@ -88,34 +88,23 @@ export const useGameContext = create<GameContext>((set, get) => ({
     updatedState.fen = updatedFen;
     const increment = get().gameInfo!.increment;
 
-    if (side === "white")
-      updatedState.timeLeftWhite! -= elapsedTime + increment;
-    else updatedState.timeLeftBlack! -= elapsedTime + increment;
+    updatedState.timeLeftPlayer! -= elapsedTime + increment;
 
     set({ gameState: updatedState as GameState, updatedAt: now });
   },
 
-  getTurn: () => {
-    const { gameState } = get();
-    const firstLetter = gameState!.fen.split(" ")[1];
-    return firstLetter === "w" ? "white" : "black";
+  getSide: () => {
+    const { gameInfo } = get()
+    const userId = getUserId();
+    if (!userId || !gameInfo) return;
+
+    const side = userId === gameInfo.whitePlayerId ? "white" : "black";
+    return side
   },
 
-  getTimeLeft: (side: Side) => {
-    const now = Math.floor(Date.now() / 1000);
-    const { gameState, updatedAt, getTurn } = get();
-    const isGameRunning =
-      gameState?.outcome === 3 && gameState.moveSans.length > 0;
-    const elapsedSeconds = isGameRunning ? now - updatedAt : 0;
-    const isPlayerToMove = side === getTurn();
-
-    let initialTime =
-      side === "white" ? gameState!.timeLeftWhite : gameState!.timeLeftBlack;
-
-    let timeLeft: number = initialTime;
-    if (isPlayerToMove) timeLeft = initialTime - elapsedSeconds;
-    timeLeft = Math.max(timeLeft, 0);
-
-    return timeLeft;
+  getTurn: () => {
+    const { gameState } = get();
+    const isWhiteTurn = gameState!.moveSans.length % 2 === 0
+    return isWhiteTurn ? "white" : "black";
   },
 }));

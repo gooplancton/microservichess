@@ -18,8 +18,13 @@ export function useWaitForOpponent() {
     },
   );
 
+  const invalidateMutation = trpc.invite.invalidate.useMutation()
+
   const startWaiting = () => setIsWaiting(true);
-  const stopWaiting = () => setIsWaiting(false);
+  const stopWaiting = () => {
+    setIsWaiting(false)
+    invalidateMutation.mutate()
+  };
 
   return { startWaiting, isWaiting, stopWaiting };
 }

@@ -13,7 +13,6 @@ message CreateInviteLinkRequest {
     string userId = 1;
     GameSettingsMsg gameSettings = 2;
     PlayAs playAs = 3;
-    uint32 ttlSeconds = 4;
 }
 
 message ConsumeInviteLinkRequest {

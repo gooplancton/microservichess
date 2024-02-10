@@ -49,7 +49,6 @@ export interface CreateInviteLinkRequest {
   userId: string;
   gameSettings: GameSettingsMsg | undefined;
   playAs: PlayAs;
-  ttlSeconds: number;
 }
 
 export interface ConsumeInviteLinkRequest {
@@ -67,7 +66,7 @@ export interface UserIdMessage {
 }
 
 function createBaseCreateInviteLinkRequest(): CreateInviteLinkRequest {
-  return { userId: "", gameSettings: undefined, playAs: 0, ttlSeconds: 0 };
+  return { userId: "", gameSettings: undefined, playAs: 0 };
 }
 
 export const CreateInviteLinkRequest = {
@@ -80,9 +79,6 @@ export const CreateInviteLinkRequest = {
     }
     if (message.playAs !== 0) {
       writer.uint32(24).int32(message.playAs);
-    }
-    if (message.ttlSeconds !== 0) {
-      writer.uint32(32).uint32(message.ttlSeconds);
     }
     return writer;
   },
@@ -115,13 +111,6 @@ export const CreateInviteLinkRequest = {
 
           message.playAs = reader.int32() as any;
           continue;
-        case 4:
-          if (tag !== 32) {
-            break;
-          }
-
-          message.ttlSeconds = reader.uint32();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -136,7 +125,6 @@ export const CreateInviteLinkRequest = {
       userId: isSet(object.userId) ? globalThis.String(object.userId) : "",
       gameSettings: isSet(object.gameSettings) ? GameSettingsMsg.fromJSON(object.gameSettings) : undefined,
       playAs: isSet(object.playAs) ? playAsFromJSON(object.playAs) : 0,
-      ttlSeconds: isSet(object.ttlSeconds) ? globalThis.Number(object.ttlSeconds) : 0,
     };
   },
 
@@ -151,9 +139,6 @@ export const CreateInviteLinkRequest = {
     if (message.playAs !== 0) {
       obj.playAs = playAsToJSON(message.playAs);
     }
-    if (message.ttlSeconds !== 0) {
-      obj.ttlSeconds = Math.round(message.ttlSeconds);
-    }
     return obj;
   },
 
@@ -167,7 +152,6 @@ export const CreateInviteLinkRequest = {
       ? GameSettingsMsg.fromPartial(object.gameSettings)
       : undefined;
     message.playAs = object.playAs ?? 0;
-    message.ttlSeconds = object.ttlSeconds ?? 0;
     return message;
   },
 };

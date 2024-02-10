@@ -11,6 +11,6 @@ export const inviteLinkSchema = z.object({
   createdAt: timestampSchema,
   gameSettings: gameSettingsSchema,
   playAs: playAsSchema.default(inviteProtos.PlayAs.RANDOM),
-  expiresAt: timestampSchema
+  hasBeenConsumed: z.boolean().default(false)
 });
 export type IInviteLink = z.infer<typeof inviteLinkSchema>;

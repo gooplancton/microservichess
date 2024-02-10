@@ -25,12 +25,10 @@ export class InviteService implements inviteProtos.InviteServiceImplementation {
       throw new ServerError(Status.INVALID_ARGUMENT, "invalid game settings");
 
     const gameSettings = gameSettingsParse.data;
-    const ttlSeconds = request.ttlSeconds || 600;
     const inviteLink = inviteLinkSchema.parse({
       inviterId: userId,
       gameSettings,
       playAs,
-      expiresAt: Math.floor(Date.now() / 1000) + ttlSeconds
     });
 
     await this.repo.createInviteLink(inviteLink);

@@ -3,48 +3,30 @@ import { useGame } from "../../lib/hooks/use-game";
 import { useSearchParams } from "react-router-dom";
 import {
   Paper,
-  Center,
-  Button,
   Flex,
   List,
   Pill,
-  Group,
-  Container,
   Space,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Chessboard } from "../../components/Chessboard";
 import { Timer } from "../../components/Timer";
-import { trpc } from "../../trpc";
 
 export function GamePage() {
   const [params] = useSearchParams();
   const gameId = params.get("gameId")!;
-  const { game, makeMove, isConnected, leave } = useGame(gameId);
+  const { game, timers, makeMove, isConnected } = useGame(gameId);
   const shouldRenderMoveList = useMediaQuery("(min-width: 49em)");
-  const forfeitMutation = trpc.game.forfeit.useMutation();
-  const askDrawMutation = trpc.game.askDraw.useMutation();
-  const acceptDrawMuation = trpc.game.acceptDraw.useMutation();
-
-  const handleForfeit = async () => {
-    try {
-      await forfeitMutation.mutateAsync({ gameId });
-      leave();
-    } catch {
-      alert("could not forfeit game");
-    }
-  };
 
   if (!isConnected) return <></>;
-
-  const handleDraw = () => {
-    // Implement draw logic here
-  };
 
   return (
     <>
       <Flex direction={"column"} align={"center"}>
-        <Timer side={game.side === "white" ? "black" : "white"} />
+        <Timer 
+          time={timers.opponentTime}
+          running={timers.currentTimer === "opponent"}
+        />
         <Flex direction={"row"} justify={"center"} align={"center"}>
           <Paper w={"min(70vh, 90vw)"} shadow="md" withBorder>
             <Chessboard
@@ -76,7 +58,10 @@ export function GamePage() {
             </>
           )}
         </Flex>
-        <Timer side={game.side} />
+         <Timer 
+          time={timers.playerTime}
+          running={timers.currentTimer === "player"}
+        />
       </Flex>
     </>
   );
