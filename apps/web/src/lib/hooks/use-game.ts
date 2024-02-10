@@ -66,7 +66,7 @@ export function useGame(gameId: string) {
           res.updatedAt,
         );
 
-        const isPlayerTurn = game.getTurn() === game.side
+        const isPlayerTurn = game.getTurn() === game.getSide()
         if (!isPlayerTurn) {
           timers.setPlayerTime(res.updatedTimeLeft ?? Infinity)
           timers.setCurrentTimer("opponent")
