@@ -22,13 +22,15 @@ export function useGame(gameId: string) {
     const isWhitePlayer = data.whitePlayerId === userId
     const timeLeftPlayer = (isWhitePlayer ? data.state.timeLeftWhite : data.state.timeLeftBlack) ?? Infinity
     const timeLeftOpponent = (isWhitePlayer ? data.state.timeLeftBlack : data.state.timeLeftWhite) ?? Infinity
+    const playerUsername = isWhitePlayer ? data.whitePlayerUsername : data.blackPlayerUsername
+    const opponentUsername = isWhitePlayer ? data.blackPlayerUsername : data.whitePlayerUsername
 
     game.initGame(
       {
         whitePlayerId: data.whitePlayerId,
-        whitePlayerUsername: data.whitePlayerUsername,
         blackPlayerId: data.blackPlayerId,
-        blackPlayerUsername: data.blackPlayerUsername,
+        playerUsername,
+        opponentUsername,
         time: data.settings?.time ?? Infinity,
         increment: data.settings?.increment ?? 0,
       },

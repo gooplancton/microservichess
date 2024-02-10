@@ -6,9 +6,9 @@ type Side = "white" | "black";
 
 type GameInfo = {
   whitePlayerId: string;
-  whitePlayerUsername?: string;
   blackPlayerId: string;
-  blackPlayerUsername?: string;
+  playerUsername?: string;
+  opponentUsername?: string;
   time: number;
   increment: number;
 };
@@ -22,7 +22,6 @@ type GameState = {
 };
 
 type GameContext = {
-  side?: Side;
   gameInfo?: GameInfo;
   gameState?: GameState;
   updatedAt: number;
@@ -52,11 +51,8 @@ export const useGameContext = create<GameContext>((set, get) => ({
     initialState: GameState,
     updatedAt: number,
   ) => {
-    const userId = getUserId();
-    if (!userId) return;
-
-    const side = userId === gameInfo.whitePlayerId ? "white" : "black";
-    set({ gameInfo, side, gameState: initialState, updatedAt });
+    
+    set({ gameInfo, gameState: initialState, updatedAt });
   },
 
   updateState: (
@@ -104,6 +100,8 @@ export const useGameContext = create<GameContext>((set, get) => ({
 
   getTurn: () => {
     const { gameState } = get();
+    if (!gameState) return "white"
+
     const isWhiteTurn = gameState!.moveSans.length % 2 === 0
     return isWhiteTurn ? "white" : "black";
   },

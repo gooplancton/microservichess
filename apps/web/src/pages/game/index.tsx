@@ -26,13 +26,14 @@ export function GamePage() {
         <Timer 
           time={timers.opponentTime}
           running={timers.currentTimer === "opponent"}
+          username={game.gameInfo?.opponentUsername}
         />
         <Flex direction={"row"} justify={"center"} align={"center"}>
           <Paper w={"min(70vh, 90vw)"} shadow="md" withBorder>
             <Chessboard
               submitMove={makeMove}
               fen={game.gameState!.fen}
-              side={game.side}
+              side={game.getSide()!}
             />
           </Paper>
 
@@ -61,6 +62,7 @@ export function GamePage() {
          <Timer 
           time={timers.playerTime}
           running={timers.currentTimer === "player"}
+          username={game.gameInfo?.playerUsername}
         />
       </Flex>
     </>
