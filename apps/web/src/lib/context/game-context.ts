@@ -19,6 +19,7 @@ type GameState = {
   timeLeftPlayer: number;
   timeLeftOpponent: number;
   moveSans: string[];
+  drawAskedBy?: string;
 };
 
 type GameContext = {
@@ -38,8 +39,9 @@ type GameContext = {
     updatedTimeLeft: number,
     updatedAt: number,
   ) => void;
+  updateDrawStatus: (drawRequesterId: string, wasDrawAccepted: boolean) => void;
   optimisticallyUpdateState: (updatedFen: string) => void;
-  getSide: () => Side | undefined,
+  getSide: () => Side | undefined;
   getTurn: () => Side;
 };
 
@@ -72,7 +74,17 @@ export const useGameContext = create<GameContext>((set, get) => ({
     if (hasPlayerJustMoved) updatedState.timeLeftPlayer = updatedTimeLeft;
     else updatedState.timeLeftOpponent = updatedTimeLeft;
 
+    updatedState.drawAskedBy = undefined
+
     set({ gameState: updatedState as GameState, updatedAt });
+  },
+
+  updateDrawStatus: (drawRequesterId: string, wasDrawAccepted: boolean) => {
+    const updatedState = { ...get().gameState };
+    if (wasDrawAccepted) updatedState.outcome = 2
+    else updatedState.drawAskedBy = drawRequesterId
+
+    set({ gameState: updatedState as GameState })
   },
 
   optimisticallyUpdateState: (updatedFen: string) => {

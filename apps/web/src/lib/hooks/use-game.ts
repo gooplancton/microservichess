@@ -6,6 +6,8 @@ import Cookies from "js-cookie";
 import { AUTH_COOKIE_NAME } from "../../constants";
 import { getUserId } from "../utils";
 import { useChessTimers } from "./use-chess-timers";
+import type { gameProtos } from "protobufs"
+import { notifications } from "@mantine/notifications";
 
 export function useGame(gameId: string) {
   const [isConnected, setIsConnected] = useState(false);
@@ -55,29 +57,49 @@ export function useGame(gameId: string) {
     setIsConnected(true);
   }, [data]);
 
+  const updateStateAfterMove = (res: gameProtos.GameUpdateMsg) => {
+    game.updateState(
+      res.updatedFen,
+      res.updatedOutcome,
+      res.san,
+      res.updatedTimeLeft ?? Infinity,
+      res.updatedAt,
+    );
+
+    const isPlayerTurn = game.getTurn() === game.getSide()
+    if (!isPlayerTurn) {
+      timers.setPlayerTime(res.updatedTimeLeft ?? Infinity)
+      timers.setCurrentTimer("opponent")
+    } else {
+      timers.setOpponentTime(res.updatedTimeLeft ?? Infinity)
+      timers.setCurrentTimer("player")
+    }
+
+    timers.setIsActive(true)
+  }
+
+  const updateStateAfterDraw = (res: gameProtos.DrawResponse) => {
+    game.updateDrawStatus(res.drawRequesterId, res.wasDrawAccepted)
+    if (res.drawRequesterId === getUserId()) return
+
+    notifications.show({
+      autoClose: 2000,
+      title: "Draw Offer",
+      message: `${game.gameInfo?.opponentUsername} has offered a Draw`,
+      color: "blue",
+      style: {
+        width: 500,
+      }
+    })
+  }
+
   trpc.game.join.useSubscription(
     { gameId, jwt: Cookies.get(AUTH_COOKIE_NAME)! },
     {
       enabled: isConnected,
-      onData: (res) => {
-        game.updateState(
-          res.updatedFen,
-          res.updatedOutcome,
-          res.san,
-          res.updatedTimeLeft ?? Infinity,
-          res.updatedAt,
-        );
-
-        const isPlayerTurn = game.getTurn() === game.getSide()
-        if (!isPlayerTurn) {
-          timers.setPlayerTime(res.updatedTimeLeft ?? Infinity)
-          timers.setCurrentTimer("opponent")
-        } else {
-          timers.setOpponentTime(res.updatedTimeLeft ?? Infinity)
-          timers.setCurrentTimer("player")
-        }
-
-        timers.setIsActive(true)
+      onData: ({ msg, typ }) => {
+        if (typ === "move") updateStateAfterMove(msg)
+        else if (typ === "draw") updateStateAfterDraw(msg)
       },
     },
   );
@@ -88,10 +110,16 @@ export function useGame(gameId: string) {
     await makeMoveMutation.mutateAsync({ gameId, san });
   };
 
+  const forfeitMutation = trpc.game.forfeit.useMutation()
+  const forfeit = () => forfeitMutation.mutate({ gameId })
+
+  const drawMutation = trpc.game.draw.useMutation()
+  const draw = () => drawMutation.mutate({ gameId })
+
   const leave = () => {
     setIsConnected(false);
     navigate("/");
   };
 
-  return { makeMove, leave, isConnected, game, timers };
+  return { makeMove, forfeit, draw, leave, isConnected, game, timers };
 }

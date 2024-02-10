@@ -1,7 +1,6 @@
 /* eslint-disable */
 import type { CallContext, CallOptions } from "nice-grpc-common";
 import * as _m0 from "protobufjs/minimal";
-import { Empty } from "./google/protobuf/empty";
 
 export const protobufPackage = "";
 
@@ -99,9 +98,15 @@ export interface GameUpdateMsg {
   updatedAt: number;
 }
 
-export interface AskOrAcceptDrawRequest {
+export interface DrawRequest {
   gameId: string;
   playerId: string;
+}
+
+export interface DrawResponse {
+  gameId: string;
+  drawRequesterId: string;
+  wasDrawAccepted: boolean;
 }
 
 export interface ForfeitRequest {
@@ -860,12 +865,12 @@ export const GameUpdateMsg = {
   },
 };
 
-function createBaseAskOrAcceptDrawRequest(): AskOrAcceptDrawRequest {
+function createBaseDrawRequest(): DrawRequest {
   return { gameId: "", playerId: "" };
 }
 
-export const AskOrAcceptDrawRequest = {
-  encode(message: AskOrAcceptDrawRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+export const DrawRequest = {
+  encode(message: DrawRequest, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
     if (message.gameId !== "") {
       writer.uint32(10).string(message.gameId);
     }
@@ -875,10 +880,10 @@ export const AskOrAcceptDrawRequest = {
     return writer;
   },
 
-  decode(input: _m0.Reader | Uint8Array, length?: number): AskOrAcceptDrawRequest {
+  decode(input: _m0.Reader | Uint8Array, length?: number): DrawRequest {
     const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
     let end = length === undefined ? reader.len : reader.pos + length;
-    const message = createBaseAskOrAcceptDrawRequest();
+    const message = createBaseDrawRequest();
     while (reader.pos < end) {
       const tag = reader.uint32();
       switch (tag >>> 3) {
@@ -905,14 +910,14 @@ export const AskOrAcceptDrawRequest = {
     return message;
   },
 
-  fromJSON(object: any): AskOrAcceptDrawRequest {
+  fromJSON(object: any): DrawRequest {
     return {
       gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
       playerId: isSet(object.playerId) ? globalThis.String(object.playerId) : "",
     };
   },
 
-  toJSON(message: AskOrAcceptDrawRequest): unknown {
+  toJSON(message: DrawRequest): unknown {
     const obj: any = {};
     if (message.gameId !== "") {
       obj.gameId = message.gameId;
@@ -923,13 +928,102 @@ export const AskOrAcceptDrawRequest = {
     return obj;
   },
 
-  create(base?: DeepPartial<AskOrAcceptDrawRequest>): AskOrAcceptDrawRequest {
-    return AskOrAcceptDrawRequest.fromPartial(base ?? {});
+  create(base?: DeepPartial<DrawRequest>): DrawRequest {
+    return DrawRequest.fromPartial(base ?? {});
   },
-  fromPartial(object: DeepPartial<AskOrAcceptDrawRequest>): AskOrAcceptDrawRequest {
-    const message = createBaseAskOrAcceptDrawRequest();
+  fromPartial(object: DeepPartial<DrawRequest>): DrawRequest {
+    const message = createBaseDrawRequest();
     message.gameId = object.gameId ?? "";
     message.playerId = object.playerId ?? "";
+    return message;
+  },
+};
+
+function createBaseDrawResponse(): DrawResponse {
+  return { gameId: "", drawRequesterId: "", wasDrawAccepted: false };
+}
+
+export const DrawResponse = {
+  encode(message: DrawResponse, writer: _m0.Writer = _m0.Writer.create()): _m0.Writer {
+    if (message.gameId !== "") {
+      writer.uint32(10).string(message.gameId);
+    }
+    if (message.drawRequesterId !== "") {
+      writer.uint32(18).string(message.drawRequesterId);
+    }
+    if (message.wasDrawAccepted === true) {
+      writer.uint32(24).bool(message.wasDrawAccepted);
+    }
+    return writer;
+  },
+
+  decode(input: _m0.Reader | Uint8Array, length?: number): DrawResponse {
+    const reader = input instanceof _m0.Reader ? input : _m0.Reader.create(input);
+    let end = length === undefined ? reader.len : reader.pos + length;
+    const message = createBaseDrawResponse();
+    while (reader.pos < end) {
+      const tag = reader.uint32();
+      switch (tag >>> 3) {
+        case 1:
+          if (tag !== 10) {
+            break;
+          }
+
+          message.gameId = reader.string();
+          continue;
+        case 2:
+          if (tag !== 18) {
+            break;
+          }
+
+          message.drawRequesterId = reader.string();
+          continue;
+        case 3:
+          if (tag !== 24) {
+            break;
+          }
+
+          message.wasDrawAccepted = reader.bool();
+          continue;
+      }
+      if ((tag & 7) === 4 || tag === 0) {
+        break;
+      }
+      reader.skipType(tag & 7);
+    }
+    return message;
+  },
+
+  fromJSON(object: any): DrawResponse {
+    return {
+      gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
+      drawRequesterId: isSet(object.drawRequesterId) ? globalThis.String(object.drawRequesterId) : "",
+      wasDrawAccepted: isSet(object.wasDrawAccepted) ? globalThis.Boolean(object.wasDrawAccepted) : false,
+    };
+  },
+
+  toJSON(message: DrawResponse): unknown {
+    const obj: any = {};
+    if (message.gameId !== "") {
+      obj.gameId = message.gameId;
+    }
+    if (message.drawRequesterId !== "") {
+      obj.drawRequesterId = message.drawRequesterId;
+    }
+    if (message.wasDrawAccepted === true) {
+      obj.wasDrawAccepted = message.wasDrawAccepted;
+    }
+    return obj;
+  },
+
+  create(base?: DeepPartial<DrawResponse>): DrawResponse {
+    return DrawResponse.fromPartial(base ?? {});
+  },
+  fromPartial(object: DeepPartial<DrawResponse>): DrawResponse {
+    const message = createBaseDrawResponse();
+    message.gameId = object.gameId ?? "";
+    message.drawRequesterId = object.drawRequesterId ?? "";
+    message.wasDrawAccepted = object.wasDrawAccepted ?? false;
     return message;
   },
 };
@@ -1037,19 +1131,11 @@ export const GameServiceDefinition = {
       responseStream: false,
       options: {},
     },
-    askDraw: {
-      name: "AskDraw",
-      requestType: AskOrAcceptDrawRequest,
+    draw: {
+      name: "Draw",
+      requestType: DrawRequest,
       requestStream: false,
-      responseType: Empty,
-      responseStream: false,
-      options: {},
-    },
-    acceptDraw: {
-      name: "AcceptDraw",
-      requestType: AskOrAcceptDrawRequest,
-      requestStream: false,
-      responseType: Empty,
+      responseType: DrawResponse,
       responseStream: false,
       options: {},
     },
@@ -1068,8 +1154,7 @@ export interface GameServiceImplementation<CallContextExt = {}> {
   createGame(request: CreateGameRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GameIdMsg>>;
   makeMove(request: MakeMoveRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GameUpdateMsg>>;
   getGameInfo(request: GameIdMsg, context: CallContext & CallContextExt): Promise<DeepPartial<GetGameInfoResponse>>;
-  askDraw(request: AskOrAcceptDrawRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
-  acceptDraw(request: AskOrAcceptDrawRequest, context: CallContext & CallContextExt): Promise<DeepPartial<Empty>>;
+  draw(request: DrawRequest, context: CallContext & CallContextExt): Promise<DeepPartial<DrawResponse>>;
   forfeit(request: ForfeitRequest, context: CallContext & CallContextExt): Promise<DeepPartial<GameUpdateMsg>>;
 }
 
@@ -1077,8 +1162,7 @@ export interface GameServiceClient<CallOptionsExt = {}> {
   createGame(request: DeepPartial<CreateGameRequest>, options?: CallOptions & CallOptionsExt): Promise<GameIdMsg>;
   makeMove(request: DeepPartial<MakeMoveRequest>, options?: CallOptions & CallOptionsExt): Promise<GameUpdateMsg>;
   getGameInfo(request: DeepPartial<GameIdMsg>, options?: CallOptions & CallOptionsExt): Promise<GetGameInfoResponse>;
-  askDraw(request: DeepPartial<AskOrAcceptDrawRequest>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
-  acceptDraw(request: DeepPartial<AskOrAcceptDrawRequest>, options?: CallOptions & CallOptionsExt): Promise<Empty>;
+  draw(request: DeepPartial<DrawRequest>, options?: CallOptions & CallOptionsExt): Promise<DrawResponse>;
   forfeit(request: DeepPartial<ForfeitRequest>, options?: CallOptions & CallOptionsExt): Promise<GameUpdateMsg>;
 }
 

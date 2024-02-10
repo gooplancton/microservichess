@@ -86,7 +86,7 @@ export function App() {
     <trpc.Provider client={trpcClient} queryClient={queryClient}>
       <QueryClientProvider client={queryClient}>
         <MantineProvider>
-          <Notifications />
+          <Notifications position="top-right" />
           <RouterProvider router={router} />
         </MantineProvider>
       </QueryClientProvider>

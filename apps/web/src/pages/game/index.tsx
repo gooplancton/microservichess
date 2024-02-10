@@ -1,27 +1,45 @@
-import React from "react";
+import React, { useCallback, useEffect, useState } from "react";
 import { useGame } from "../../lib/hooks/use-game";
-import { useSearchParams } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import {
+  Text,
   Paper,
   Flex,
   List,
   Pill,
   Space,
+  Modal,
 } from "@mantine/core";
 import { useMediaQuery } from "@mantine/hooks";
 import { Chessboard } from "../../components/Chessboard";
 import { Timer } from "../../components/Timer";
+import { useGameContext } from "../../lib";
+
+// TODO: not really pretty
+function getGameOverMessage(outcome: number) {
+  switch (outcome) {
+    case 0: return "White Wins"
+    case 1: return "Black Wins"
+    case 2: return "Draw"
+    default: ""
+  }
+}
 
 export function GamePage() {
+  const navigate = useNavigate()
   const [params] = useSearchParams();
   const gameId = params.get("gameId")!;
-  const { game, timers, makeMove, isConnected } = useGame(gameId);
+  const { game, timers, forfeit, draw, makeMove, isConnected } = useGame(gameId);
   const shouldRenderMoveList = useMediaQuery("(min-width: 49em)");
 
   if (!isConnected) return <></>;
 
   return (
     <>
+      <Modal title="Game Over" opened={game.gameState?.outcome !== 3} onClose={() => navigate("/")}>
+        <Text><b>{getGameOverMessage(game.gameState!.outcome)}</b></Text>
+        <Text>Close this window to return to the homepage</Text>
+      </Modal>
       <Flex direction={"column"} align={"center"}>
         <Timer 
           time={timers.opponentTime}
@@ -63,6 +81,9 @@ export function GamePage() {
           time={timers.playerTime}
           running={timers.currentTimer === "player"}
           username={game.gameInfo?.playerUsername}
+          forfeitFn={forfeit}
+          drawFn={draw}
+          drawRequester={game.gameState?.drawAskedBy}
         />
       </Flex>
     </>

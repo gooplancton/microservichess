@@ -289,6 +289,9 @@ importers:
       postcss-simple-vars:
         specifier: ^7.0.1
         version: 7.0.1(postcss@8.4.32)
+      protobufs:
+        specifier: workspace:*
+        version: link:../../packages/protobufs
       typescript:
         specifier: ^5.2.2
         version: 5.2.2

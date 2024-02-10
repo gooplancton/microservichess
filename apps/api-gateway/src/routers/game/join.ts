@@ -8,17 +8,27 @@ const inputSchema = z.strictObject({
   jwt: z.string(),
 });
 
+type GameUpdate = {
+  typ: "move"
+  msg: gameProtos.GameUpdateMsg
+} | {
+  typ: "draw"
+  msg: gameProtos.DrawResponse
+}
+
 export const join = publicProcedure
   .input(inputSchema)
   .use(readJWTFromInput)
   .subscription(({ input }) => {
-    return observable<gameProtos.GameUpdateMsg>((emit) => {
-      const onMoveValidated = (msg: gameProtos.GameUpdateMsg) => {
-        if (msg.gameId === input.gameId) emit.next(msg);
+    return observable<GameUpdate>((emit) => {
+      const sendUpdate = (update: GameUpdate) => {
+        if (update.msg.gameId === input.gameId) emit.next(update);
       };
 
-      emitter.on("move", onMoveValidated);
+      emitter.on("update", sendUpdate);
 
-      return () => emitter.off("move", emit.next);
+      return () => {
+        emitter.off("update", emit.next);
+      }
     });
   });

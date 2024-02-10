@@ -10,7 +10,7 @@ const inputSchema = z.strictObject({
 export const makeMove = authenticatedProcedure
   .input(inputSchema)
   .mutation(async ({ ctx, input }) => {
-    const res = await gameServiceClient
+    const msg = await gameServiceClient
       .makeMove({
         playerId: ctx.userId,
         gameId: input.gameId,
@@ -18,6 +18,6 @@ export const makeMove = authenticatedProcedure
       })
       .catch(handleGrpcCallError);
 
-    emitter.emit("move", res);
-    return res;
+    emitter.emit("update", { typ: "move", msg });
+    return msg;
   });

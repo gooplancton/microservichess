@@ -1,7 +1,5 @@
 syntax = "proto3";
 
-import "google/protobuf/empty.proto";
-
 enum GameOutcome {
   WHITE_WINS = 0;
   BLACK_WINS = 1;
@@ -58,9 +56,15 @@ message GameUpdateMsg {
   uint32 updatedAt = 6;
 }
 
-message AskOrAcceptDrawRequest {
+message DrawRequest {
   string gameId = 1;
   string playerId = 2;
+}
+
+message DrawResponse {
+  string gameId = 1;
+  string drawRequesterId = 2;
+  bool wasDrawAccepted = 3;
 }
 
 message ForfeitRequest {
@@ -72,7 +76,6 @@ service GameService {
   rpc CreateGame(CreateGameRequest) returns (GameIdMsg) {}
   rpc MakeMove(MakeMoveRequest) returns (GameUpdateMsg) {}
   rpc GetGameInfo(GameIdMsg) returns (GetGameInfoResponse) {}
-  rpc AskDraw(AskOrAcceptDrawRequest) returns (google.protobuf.Empty) {}
-  rpc AcceptDraw(AskOrAcceptDrawRequest) returns (google.protobuf.Empty) {}
+  rpc Draw(DrawRequest) returns (DrawResponse) {}
   rpc Forfeit(ForfeitRequest) returns (GameUpdateMsg) {}
 }

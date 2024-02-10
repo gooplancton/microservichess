@@ -13,34 +13,36 @@ export class GameService implements gameProtos.GameServiceImplementation {
     this.userClient = userClient;
   }
 
-  async askDraw(request: gameProtos.AskOrAcceptDrawRequest) {
+  async draw(request: gameProtos.DrawRequest) {
     const game = await this.repo.getGame(request.gameId);
 
-    if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
-    if (game.state.drawAskedBy === request.playerId)
-      throw new ServerError(Status.INVALID_ARGUMENT, "invalid draw proposal");
-
-    game.state.drawAskedBy = request.playerId;
-    await this.repo.updateGameState(game._id, game.state);
-
-    return {};
-  }
-
-  async acceptDraw(request: gameProtos.AskOrAcceptDrawRequest) {
-    const game = await this.repo.getGame(request.gameId);
     if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
     if (game.state.outcome !== gameProtos.GameOutcome.KEEP_PLAYING)
       throw new ServerError(Status.INVALID_ARGUMENT, "game already over");
-    if (game.state.drawAskedBy && game.state.drawAskedBy !== request.playerId)
+    if (game.state.drawAskedBy && game.state.drawAskedBy === request.playerId)
       throw new ServerError(Status.INVALID_ARGUMENT, "invalid draw acceptance");
 
-    game.state.outcome = gameProtos.GameOutcome.TIE;
+    const isDrawPending = !!game.state.drawAskedBy
+    let hasDrawBeenAccepted = false
+
+    if (isDrawPending) {
+      hasDrawBeenAccepted = true
+      game.state.outcome = gameProtos.GameOutcome.TIE;
+    } else {
+      game.state.drawAskedBy = request.playerId;
+    }
+
     await this.repo.updateGameState(game._id, game.state);
 
-    return {};
+    return {
+      drawRequesterId: game.state.drawAskedBy,
+      hasDrawBeenAccepted,
+      gameId: game._id
+    };
   }
 
   async forfeit(request: gameProtos.ForfeitRequest) {
+    const now = Math.floor(Date.now() / 1000)
     const game = await this.repo.getGame(request.gameId);
     if (!game) throw new ServerError(Status.INVALID_ARGUMENT, "game not found");
     if (game.state.outcome !== gameProtos.GameOutcome.KEEP_PLAYING)
@@ -52,14 +54,21 @@ export class GameService implements gameProtos.GameServiceImplementation {
     )
       throw new ServerError(Status.INVALID_ARGUMENT, "not a player");
 
+    const outcome = request.playerId === game.whitePlayerId
+      ? gameProtos.GameOutcome.BLACK_WINS
+      : gameProtos.GameOutcome.WHITE_WINS
+
+    this.repo.updateGameState(request.gameId, {
+      ...game.state,
+      moves: [...game.state.moves, { san: "[FORFEIT]", createdAt: now }],
+      outcome,
+    })
+
     return {
       gameId: game._id,
       san: "[FORFEIT]",
       updatedFen: game.state.fen,
-      updatedOutcome:
-        request.playerId === game.whitePlayerId
-          ? gameProtos.GameOutcome.BLACK_WINS
-          : gameProtos.GameOutcome.WHITE_WINS,
+      updatedOutcome: outcome
     };
   }
 
@@ -213,19 +222,4 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
     return res;
   }
-
-  // async getGames(request: GetGamesMessage): Promise<GameRecordsMessage> {
-  //     const games = await this.repo.getGames(request.playerId)
-  //     const res: GameRecordsMessage = {
-  //         games: games.map(game => ({
-  //             gameId: game._id,
-  //             whitePlayerId: game.whitePlayerId,
-  //             blackPlayerId: game.blackPlayerId,
-  //             createdAt: game.createdAt,
-  //             moves: game.moves.map(m => m.move)
-  //         }))
-  //     }
-
-  //     return res
-  // }
 }
