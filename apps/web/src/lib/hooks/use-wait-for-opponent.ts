@@ -13,7 +13,6 @@ export function useWaitForOpponent() {
     { jwt: Cookies.get(AUTH_COOKIE_NAME)! },
     {
       enabled: isWaiting,
-      onStarted: () => console.log("started waiting"),
       onData: (gameJoined) => navigate(`/game?gameId=${gameJoined.gameId}`),
     },
   );

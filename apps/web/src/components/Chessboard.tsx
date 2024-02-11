@@ -12,7 +12,7 @@ type ChessboardProps = React.ComponentProps<typeof BareChessboard> & {
 export function Chessboard(props: ChessboardProps) {
   const game = new Chess(props.fen);
   const optimisticallyUpdateState = useGameContext(
-    (state) => state.optimisticallyUpdateState,
+    (state) => state.optimisticallyUpdateStateAfterMove,
   );
 
   const onPieceDrop = (from: string, to: string, piece: string) => {

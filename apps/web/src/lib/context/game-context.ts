@@ -20,101 +20,74 @@ type GameState = {
   timeLeftOpponent: number;
   moveSans: string[];
   drawAskedBy?: string;
+  updatedAt: number;
 };
 
-type GameContext = {
-  gameInfo?: GameInfo;
-  gameState?: GameState;
-  updatedAt: number;
+type GameContext = Partial<GameInfo> & Partial<GameState> & {
 
-  initGame: (
-    gameInfo: GameInfo,
-    initialState: GameState,
-    updatedAt: number,
-  ) => void;
-  updateState: (
+  updateStateAfterMove: (
     updatedFen: string,
     updatedOutcome: GameOutcome,
     newSan: string,
     updatedTimeLeft: number,
     updatedAt: number,
   ) => void;
-  updateDrawStatus: (drawRequesterId: string, wasDrawAccepted: boolean) => void;
-  optimisticallyUpdateState: (updatedFen: string) => void;
+  updateDrawStatus: (drawRequesterId: string) => void;
+  optimisticallyUpdateStateAfterMove: (updatedFen: string) => void;
   getSide: () => Side | undefined;
   getTurn: () => Side;
 };
 
 export const useGameContext = create<GameContext>((set, get) => ({
-  updatedAt: Math.floor(Date.now() / 1000),
 
-  initGame: (
-    gameInfo: GameInfo,
-    initialState: GameState,
-    updatedAt: number,
-  ) => {
-    
-    set({ gameInfo, gameState: initialState, updatedAt });
+  updateStateAfterMove: (fen: string, outcome: GameOutcome, san: string, timeLeft: number, updatedAt: number) => {
+    set((state) => {
+      const moveSans = state.moveSans ? [...state.moveSans, san] : [san]
+      const side = state.getSide!()!
+      const sideToMove = fen.split(" ")[1] as "b" | "w";
+      const hasPlayerJustMoved = !side.startsWith(sideToMove)
+      let timeLeftPlayer = state.timeLeftPlayer
+      let timeLeftOpponent = state.timeLeftOpponent
+      if (hasPlayerJustMoved) timeLeftPlayer = timeLeft;
+      else timeLeftOpponent = timeLeft;
+
+      return { fen, outcome, moveSans, timeLeftOpponent, timeLeftPlayer, updatedAt, drawAskedBy: undefined }
+    })
   },
 
-  updateState: (
-    updatedFen: string,
-    updatedOutcome: GameOutcome,
-    newSan: string,
-    updatedTimeLeft: number,
-    updatedAt: number,
-  ) => {
-    const updatedState = { ...get().gameState };
-    updatedState.fen = updatedFen;
-    updatedState.outcome = updatedOutcome;
-    updatedState.moveSans?.push(newSan);
-
-    const sideToMove = updatedFen.split(" ")[1] as "b" | "w";
-    const hasPlayerJustMoved = !get().getSide()!.startsWith(sideToMove)
-    if (hasPlayerJustMoved) updatedState.timeLeftPlayer = updatedTimeLeft;
-    else updatedState.timeLeftOpponent = updatedTimeLeft;
-
-    updatedState.drawAskedBy = undefined
-
-    set({ gameState: updatedState as GameState, updatedAt });
+  updateDrawStatus: (drawRequesterId: string) => {
+    set((state) => {
+      const isDrawPending = !!state.drawAskedBy
+      if (!isDrawPending) return { drawAskedBy: drawRequesterId }
+      else return { outcome: 2 }
+    })
   },
 
-  updateDrawStatus: (drawRequesterId: string, wasDrawAccepted: boolean) => {
-    const updatedState = { ...get().gameState };
-    if (wasDrawAccepted) updatedState.outcome = 2
-    else updatedState.drawAskedBy = drawRequesterId
+  optimisticallyUpdateStateAfterMove: (fen: string) => {
+    set((state) => {
+      const now = Math.floor(Date.now() / 1000)
+      const elapsedTime = now - state.updatedAt!
+      const increment = state.increment!
+      const timeLeftPlayer = state.timeLeftPlayer! - elapsedTime + increment
 
-    set({ gameState: updatedState as GameState })
-  },
-
-  optimisticallyUpdateState: (updatedFen: string) => {
-    const { gameState, updatedAt } = get();
-    const updatedState = { ...gameState };
-    const now = Math.floor(Date.now() / 1000);
-    const elapsedTime = now - updatedAt;
-
-    updatedState.fen = updatedFen;
-    const increment = get().gameInfo!.increment;
-
-    updatedState.timeLeftPlayer! -= elapsedTime + increment;
-
-    set({ gameState: updatedState as GameState, updatedAt: now });
+      return { fen, timeLeftPlayer, updatedAt: now }
+    })
   },
 
   getSide: () => {
-    const { gameInfo } = get()
+    const { whitePlayerId } = get()
     const userId = getUserId();
-    if (!userId || !gameInfo) return;
+    if (!userId || !whitePlayerId) return;
 
-    const side = userId === gameInfo.whitePlayerId ? "white" : "black";
+    const side = userId === whitePlayerId ? "white" : "black";
     return side
   },
 
   getTurn: () => {
-    const { gameState } = get();
-    if (!gameState) return "white"
+    const { moveSans } = get();
+    if (!moveSans) return "white"
 
-    const isWhiteTurn = gameState!.moveSans.length % 2 === 0
+    const isWhiteTurn = moveSans.length % 2 === 0
     return isWhiteTurn ? "white" : "black";
   },
 }));

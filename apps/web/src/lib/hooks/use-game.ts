@@ -24,10 +24,10 @@ export function useGame(gameId: string) {
     const isWhitePlayer = data.whitePlayerId === userId
     const timeLeftPlayer = (isWhitePlayer ? data.state.timeLeftWhite : data.state.timeLeftBlack) ?? Infinity
     const timeLeftOpponent = (isWhitePlayer ? data.state.timeLeftBlack : data.state.timeLeftWhite) ?? Infinity
-    const playerUsername = isWhitePlayer ? data.whitePlayerUsername : data.blackPlayerUsername
-    const opponentUsername = isWhitePlayer ? data.blackPlayerUsername : data.whitePlayerUsername
+    const playerUsername = (isWhitePlayer ? data.whitePlayerUsername : data.blackPlayerUsername) ?? "Guest"
+    const opponentUsername = (isWhitePlayer ? data.blackPlayerUsername : data.whitePlayerUsername) ?? "Guest"
 
-    game.initGame(
+    useGameContext.setState(
       {
         whitePlayerId: data.whitePlayerId,
         blackPlayerId: data.blackPlayerId,
@@ -35,15 +35,15 @@ export function useGame(gameId: string) {
         opponentUsername,
         time: data.settings?.time ?? Infinity,
         increment: data.settings?.increment ?? 0,
-      },
-      {
+
         fen: data.state.fen,
         outcome: data.state.outcome,
         moveSans: data.state.moveSans,
         timeLeftPlayer: timeLeftPlayer,
         timeLeftOpponent: timeLeftOpponent,
+
+        updatedAt: data.updatedAt
       },
-      data.updatedAt,
     );
 
     const hasGameStarted = data.state.moveSans.length > 0
@@ -58,7 +58,7 @@ export function useGame(gameId: string) {
   }, [data]);
 
   const updateStateAfterMove = (res: gameProtos.GameUpdateMsg) => {
-    game.updateState(
+    game.updateStateAfterMove(
       res.updatedFen,
       res.updatedOutcome,
       res.san,
@@ -79,13 +79,13 @@ export function useGame(gameId: string) {
   }
 
   const updateStateAfterDraw = (res: gameProtos.DrawResponse) => {
-    game.updateDrawStatus(res.drawRequesterId, res.wasDrawAccepted)
+    game.updateDrawStatus(res.drawRequesterId)
     if (res.drawRequesterId === getUserId()) return
 
     notifications.show({
       autoClose: 2000,
       title: "Draw Offer",
-      message: `${game.gameInfo?.opponentUsername} has offered a Draw`,
+      message: `${game.opponentUsername} has offered a Draw`,
       color: "blue",
       style: {
         width: 500,

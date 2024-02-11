@@ -64,7 +64,6 @@ message DrawRequest {
 message DrawResponse {
   string gameId = 1;
   string drawRequesterId = 2;
-  bool wasDrawAccepted = 3;
 }
 
 message ForfeitRequest {

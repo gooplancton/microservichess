@@ -42,7 +42,6 @@ const wsClient = createWSClient({
 const queryClient = new QueryClient();
 const trpcClient = trpc.createClient({
   links: [
-    loggerLink(),
     splitLink({
       condition: (op) => op.type === "subscription",
       true: wsLink({ client: wsClient }),

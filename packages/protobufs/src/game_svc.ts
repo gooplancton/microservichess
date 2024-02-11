@@ -106,7 +106,6 @@ export interface DrawRequest {
 export interface DrawResponse {
   gameId: string;
   drawRequesterId: string;
-  wasDrawAccepted: boolean;
 }
 
 export interface ForfeitRequest {
@@ -940,7 +939,7 @@ export const DrawRequest = {
 };
 
 function createBaseDrawResponse(): DrawResponse {
-  return { gameId: "", drawRequesterId: "", wasDrawAccepted: false };
+  return { gameId: "", drawRequesterId: "" };
 }
 
 export const DrawResponse = {
@@ -950,9 +949,6 @@ export const DrawResponse = {
     }
     if (message.drawRequesterId !== "") {
       writer.uint32(18).string(message.drawRequesterId);
-    }
-    if (message.wasDrawAccepted === true) {
-      writer.uint32(24).bool(message.wasDrawAccepted);
     }
     return writer;
   },
@@ -978,13 +974,6 @@ export const DrawResponse = {
 
           message.drawRequesterId = reader.string();
           continue;
-        case 3:
-          if (tag !== 24) {
-            break;
-          }
-
-          message.wasDrawAccepted = reader.bool();
-          continue;
       }
       if ((tag & 7) === 4 || tag === 0) {
         break;
@@ -998,7 +987,6 @@ export const DrawResponse = {
     return {
       gameId: isSet(object.gameId) ? globalThis.String(object.gameId) : "",
       drawRequesterId: isSet(object.drawRequesterId) ? globalThis.String(object.drawRequesterId) : "",
-      wasDrawAccepted: isSet(object.wasDrawAccepted) ? globalThis.Boolean(object.wasDrawAccepted) : false,
     };
   },
 
@@ -1010,9 +998,6 @@ export const DrawResponse = {
     if (message.drawRequesterId !== "") {
       obj.drawRequesterId = message.drawRequesterId;
     }
-    if (message.wasDrawAccepted === true) {
-      obj.wasDrawAccepted = message.wasDrawAccepted;
-    }
     return obj;
   },
 
@@ -1023,7 +1008,6 @@ export const DrawResponse = {
     const message = createBaseDrawResponse();
     message.gameId = object.gameId ?? "";
     message.drawRequesterId = object.drawRequesterId ?? "";
-    message.wasDrawAccepted = object.wasDrawAccepted ?? false;
     return message;
   },
 };

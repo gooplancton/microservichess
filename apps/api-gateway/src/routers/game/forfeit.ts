@@ -14,6 +14,6 @@ export const forfeit = authenticatedProcedure
       playerId: ctx.userId,
     });
 
-    emitter.emit("update", { _type: "move", msg });
+    emitter.emit("update", { typ: "move", msg });
     return msg;
   });

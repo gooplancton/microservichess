@@ -23,10 +23,8 @@ export class GameService implements gameProtos.GameServiceImplementation {
       throw new ServerError(Status.INVALID_ARGUMENT, "invalid draw acceptance");
 
     const isDrawPending = !!game.state.drawAskedBy
-    let hasDrawBeenAccepted = false
 
     if (isDrawPending) {
-      hasDrawBeenAccepted = true
       game.state.outcome = gameProtos.GameOutcome.TIE;
     } else {
       game.state.drawAskedBy = request.playerId;
@@ -36,7 +34,6 @@ export class GameService implements gameProtos.GameServiceImplementation {
 
     return {
       drawRequesterId: game.state.drawAskedBy,
-      hasDrawBeenAccepted,
       gameId: game._id
     };
   }

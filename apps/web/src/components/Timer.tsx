@@ -12,6 +12,7 @@ interface Props {
 }
 
 function formatTime(time: number) {
+  time = Math.max(time, 0)
   if (time === Infinity) return "∞"
 
   const minutes = Math.floor(time / 60)
